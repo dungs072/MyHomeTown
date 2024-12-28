@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -6,7 +7,7 @@ public class AgentManager : MonoBehaviour
     [Header("Agents")]
     [SerializeField] private AgentController agentPrefab;
     [SerializeField] private int maxAgents = 10;
-    [Header("Test")]
+    [Header("Path")]
     [SerializeField] private PathNodes path;
     private List<AgentController> agents;
 
@@ -18,13 +19,29 @@ public class AgentManager : MonoBehaviour
 
     private void Start()
     {
-        for (int i = 0; i < maxAgents; i++)
+        StartCoroutine(SpawnAgents());
+    }
+
+    private IEnumerator SpawnAgents()
+    {
+        int count = 0;
+        Vector3 startPath = path.GetPath()[0];
+        Vector3 startSpawnPosition = new Vector3(startPath.x, startPath.y + 2, startPath.z);
+        while (count < maxAgents)
         {
-            AgentController agent = Instantiate(agentPrefab, transform);
-            agents.Add(agent);
+            AgentController agent = GetAgent();
+            agent.transform.position = startSpawnPosition;
+            count++;
+            print("Agent counter: " + agents.Count);
+            yield return new WaitForSeconds(3.4f);
         }
 
-        AssignPathToAgents(path.GetPath());
+
+    }
+
+    private void AssignPathToAgent(AgentController agent)
+    {
+        agent.SetAndFollowPath(path.GetPath());
     }
     private void AssignPathToAgents(Vector3[] path)
     {
@@ -32,6 +49,25 @@ public class AgentManager : MonoBehaviour
         {
             agents[i].SetAndFollowPath(path);
         }
+    }
+
+
+    // handle pool
+    private AgentController GetAgent()
+    {
+        AgentController agent = agents.Find(a => !a.gameObject.activeSelf);
+        if (agent == null)
+        {
+            agent = Instantiate(agentPrefab, transform);
+            agent.SetCanGoBack(true);
+            agent.SetCanUsePool(true);
+            agents.Add(agent);
+        }
+        else
+        {
+            agent.gameObject.SetActive(true);
+        }
+        return agent;
     }
 
 }
