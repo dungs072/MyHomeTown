@@ -34,7 +34,7 @@ public class Person : MonoBehaviour
     private void ParseTaskToRealTask(TaskData taskData)
     {
         List<ActionData> actionDatas = taskData.Actions;
-        List<ActionHolder> actionHolders = new List<ActionHolder>();
+        List<List<ActionHolder>> actionHoldersList = new List<List<ActionHolder>>();
         ActionManager actionManager = ManagerSingleton.Instance.ActionManager;
         foreach (ActionData actionData in actionDatas)
         {
@@ -44,11 +44,14 @@ public class Person : MonoBehaviour
                 Debug.LogError("No actions found for action name: " + actionData.ActionName);
                 return;
             }
-            actionHolders.Add(actions[0]);
+            //ActionHolder action = GetShortestPathToActionHolder(actions);
+            actionHoldersList.Add(actions);
         }
-        Task task = new Task(actionHolders);
+        Task task = new Task(actionHoldersList);
         tasks.Add(task);
     }
+
+
 
     private void HandleTask()
     {
@@ -59,20 +62,22 @@ public class Person : MonoBehaviour
     {
         for (int i = 0; i < tasks.Count; i++)
         {
-            Task task = tasks[i];
-            List<ActionHolder> actionHolders = task.GetActionHolders();
-            for (int j = 0; j < actionHolders.Count; j++)
-            {
-                ActionHolder actionHolder = actionHolders[j];
-                Vector3 target = actionHolder.transform.position;
-                agent.SetDestination(target);
-                StartCoroutine(ProcessWhileMoving(target, actionHolder));
-                yield return new WaitUntil(() => finishedMoving);
-                actionHolder.SetBusy(true);
-                float timeToComplete = actionHolder.ActionData.FinishTime;
-                yield return new WaitForSeconds(timeToComplete);
-                actionHolder.SetBusy(false);
-            }
+
+            //! need to fix there
+            // Task task = tasks[i];
+            // List<ActionHolder> actionHolders = task.GetActionHolderList();
+            // for (int j = 0; j < actionHolders.Count; j++)
+            // {
+            //     ActionHolder actionHolder = actionHolders[j];
+            //     Vector3 target = actionHolder.transform.position;
+            //     agent.SetDestination(target);
+            //     StartCoroutine(ProcessWhileMoving(target, actionHolder));
+            //     yield return new WaitUntil(() => finishedMoving);
+            //     actionHolder.SetBusy(true);
+            //     float timeToComplete = actionHolder.ActionData.FinishTime;
+            //     yield return new WaitForSeconds(timeToComplete);
+            //     actionHolder.SetBusy(false);
+            // }
 
         }
         gameObject.SetActive(false);
@@ -95,5 +100,24 @@ public class Person : MonoBehaviour
             yield return null;
         }
         finishedMoving = true;
+    }
+
+    private ActionHolder GetShortestPathToActionHolder(List<ActionHolder> actions)
+    {
+        ActionHolder shortestPathAction = actions[0];
+        float shortestDistance = Vector3.Distance(transform.position, shortestPathAction.transform.position);
+        print(actions.Count);
+        List<ActionHolder> notBusyActions = actions.FindAll(a => !a.IsBusy);
+        for (int i = 1; i < notBusyActions.Count; i++)
+        {
+            ActionHolder action = actions[i];
+            float distance = Vector3.Distance(transform.position, action.transform.position);
+            if (distance < shortestDistance)
+            {
+                shortestDistance = distance;
+                shortestPathAction = action;
+            }
+        }
+        return shortestPathAction;
     }
 }

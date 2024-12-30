@@ -3,22 +3,27 @@ using UnityEngine;
 
 public class Task
 {
-    private List<ActionHolder> actionHolders;
-    private int currentActionIndex = 0;
+    private List<List<ActionHolder>> actionHoldersList;
     private bool isTaskCompleted = false;
 
     public bool IsTaskCompleted => isTaskCompleted;
+
+    public Task(List<List<ActionHolder>> list)
+    {
+        actionHoldersList = list;
+    }
+
     public void SetTaskCompleted(bool isTaskCompleted)
     {
         this.isTaskCompleted = isTaskCompleted;
     }
-    public List<ActionHolder> GetActionHolders()
+    public List<List<ActionHolder>> GetActionHolderList()
     {
-        return actionHolders;
+        return actionHoldersList;
     }
     public Task(List<ActionHolder> actionHolders)
     {
-        this.actionHolders = actionHolders;
+        this.actionHoldersList.Add(actionHolders);
     }
 
 
