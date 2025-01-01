@@ -42,6 +42,10 @@ public class AgentController : MonoBehaviour
     {
         agent.isStopped = true;
     }
+    public void Resume()
+    {
+        agent.isStopped = false;
+    }
 
     public void SetAndFollowPath(Vector3[] path)
     {

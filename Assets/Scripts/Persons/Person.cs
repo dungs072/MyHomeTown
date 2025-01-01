@@ -10,6 +10,8 @@ public class Person : MonoBehaviour
 
     private bool finishedMoving = false;
 
+    private ActionHolder currentActionHolder;
+
     private void Awake()
     {
         tasks = new List<Task>();
@@ -60,38 +62,64 @@ public class Person : MonoBehaviour
     }
     private IEnumerator PerformTasks()
     {
+
         for (int i = 0; i < tasks.Count; i++)
         {
 
             //! need to fix there
-            // Task task = tasks[i];
-            // List<ActionHolder> actionHolders = task.GetActionHolderList();
-            // for (int j = 0; j < actionHolders.Count; j++)
-            // {
-            //     ActionHolder actionHolder = actionHolders[j];
-            //     Vector3 target = actionHolder.transform.position;
-            //     agent.SetDestination(target);
-            //     StartCoroutine(ProcessWhileMoving(target, actionHolder));
-            //     yield return new WaitUntil(() => finishedMoving);
-            //     actionHolder.SetBusy(true);
-            //     float timeToComplete = actionHolder.ActionData.FinishTime;
-            //     yield return new WaitForSeconds(timeToComplete);
-            //     actionHolder.SetBusy(false);
-            // }
+            Task task = tasks[i];
+            var actionHoldersList = task.GetActionHolderList();
+            for (int j = 0; j < actionHoldersList.Count; j++)
+            {
+                var actionHolders = actionHoldersList[j];
+                ActionHolder shortestActionHolder = null;
+                while (!shortestActionHolder)
+                {
+                    agent.Stop();
+                    shortestActionHolder = GetShortestPathToActionHolder(actionHolders);
+                    Debug.LogWarning("run run");
+                    yield return new WaitForEndOfFrame();
+
+                }
+                agent.Resume();
+
+                currentActionHolder = shortestActionHolder;
+
+                Vector3 target = currentActionHolder.transform.position;
+                agent.SetDestination(target);
+                StartCoroutine(ProcessWhileMoving(actionHolders));
+                yield return new WaitUntil(() => finishedMoving);
+                currentActionHolder.SetBusy(true);
+                float timeToComplete = currentActionHolder.ActionData.FinishTime;
+                yield return new WaitForSeconds(timeToComplete);
+                Debug.LogWarning("finish");
+                currentActionHolder.SetBusy(false);
+            }
 
         }
         gameObject.SetActive(false);
 
     }
 
-    private IEnumerator ProcessWhileMoving(Vector3 target, ActionHolder actionHolder)
+    private IEnumerator ProcessWhileMoving(List<ActionHolder> actions)
     {
         finishedMoving = false;
+        var target = currentActionHolder.transform.position;
         while (!agent.IsReachedDestination(target))
         {
-            if (actionHolder.IsBusy)
+            if (currentActionHolder.IsBusy)
             {
-                agent.Stop();
+                currentActionHolder = GetShortestPathToActionHolder(actions);
+                if (currentActionHolder == null)
+                {
+                    agent.Stop();
+                }
+                else
+                {
+                    target = currentActionHolder.transform.position;
+                    agent.Resume();
+                }
+
             }
             else
             {
@@ -117,6 +145,10 @@ public class Person : MonoBehaviour
                 shortestDistance = distance;
                 shortestPathAction = action;
             }
+        }
+        if (shortestPathAction.IsBusy)
+        {
+            return null;
         }
         return shortestPathAction;
     }
