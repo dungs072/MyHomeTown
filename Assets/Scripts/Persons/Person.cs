@@ -60,75 +60,43 @@ public class Person : MonoBehaviour
         if (tasks.Count == 0) return;
         StartCoroutine(PerformTasks());
     }
+    // first case: is find the best actionHolder to perform the task
+    // second case: while moving, the action holder can be occupied by another person
+    // third case: two small case there: return to the first case 
+    // if another best action holder is still available 
+    // if not, wait for the action holder to be free    
     private IEnumerator PerformTasks()
     {
-
-        for (int i = 0; i < tasks.Count; i++)
+        foreach (var task in this.tasks)
         {
-
-            //! need to fix there
-            Task task = tasks[i];
             var actionHoldersList = task.GetActionHolderList();
-            for (int j = 0; j < actionHoldersList.Count; j++)
-            {
-                var actionHolders = actionHoldersList[j];
-                ActionHolder shortestActionHolder = null;
-                while (!shortestActionHolder)
-                {
-                    agent.Stop();
-                    shortestActionHolder = GetShortestPathToActionHolder(actionHolders);
-                    Debug.LogWarning("run run");
-                    yield return new WaitForEndOfFrame();
-
-                }
-                agent.Resume();
-
-                currentActionHolder = shortestActionHolder;
-
-                Vector3 target = currentActionHolder.transform.position;
-                agent.SetDestination(target);
-                StartCoroutine(ProcessWhileMoving(actionHolders));
-                yield return new WaitUntil(() => finishedMoving);
-                currentActionHolder.SetBusy(true);
-                float timeToComplete = currentActionHolder.ActionData.FinishTime;
-                yield return new WaitForSeconds(timeToComplete);
-                Debug.LogWarning("finish");
-                currentActionHolder.SetBusy(false);
-            }
+            yield return StartCoroutine(HandlePerformTaskAndMove(actionHoldersList));
 
         }
-        gameObject.SetActive(false);
-
     }
-
-    private IEnumerator ProcessWhileMoving(List<ActionHolder> actions)
+    private IEnumerator HandlePerformTaskAndMove(List<List<ActionHolder>> actionHoldersList)
     {
-        finishedMoving = false;
-        var target = currentActionHolder.transform.position;
-        while (!agent.IsReachedDestination(target))
+        foreach (var actionHolders in actionHoldersList)
         {
-            if (currentActionHolder.IsBusy)
-            {
-                currentActionHolder = GetShortestPathToActionHolder(actions);
-                if (currentActionHolder == null)
-                {
-                    agent.Stop();
-                }
-                else
-                {
-                    target = currentActionHolder.transform.position;
-                    agent.Resume();
-                }
-
-            }
-            else
-            {
-                agent.SetDestination(target);
-            }
-            yield return null;
+            yield return StartCoroutine(HandlePerformAction(actionHolders));
         }
-        finishedMoving = true;
     }
+
+    private IEnumerator HandlePerformAction(List<ActionHolder> actionHolders)
+    {
+        var suitableActionHolder = GetShortestPathToActionHolder(actionHolders);
+        do
+        {
+            agent.Stop();
+            yield return new WaitUntil(() => GetShortestPathToActionHolder(actionHolders) != null);
+            suitableActionHolder = GetShortestPathToActionHolder(actionHolders);
+        } while (!suitableActionHolder);
+
+        agent.Resume();
+        agent.SetDestination(suitableActionHolder.transform.position);
+    }
+
+
 
     private ActionHolder GetShortestPathToActionHolder(List<ActionHolder> actions)
     {
@@ -151,5 +119,10 @@ public class Person : MonoBehaviour
             return null;
         }
         return shortestPathAction;
+    }
+
+    private ActionHolder getFreeActionHolder(List<ActionHolder> actionHolders)
+    {
+        return actionHolders.Find(a => !a.IsBusy);
     }
 }
