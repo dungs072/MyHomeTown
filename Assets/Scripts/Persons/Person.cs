@@ -8,10 +8,6 @@ public class Person : MonoBehaviour
     private List<Task> tasks;
     private AgentController agent;
 
-    private bool finishedMoving = false;
-
-    private ActionHolder currentActionHolder;
-
     private void Awake()
     {
         tasks = new List<Task>();
@@ -28,10 +24,6 @@ public class Person : MonoBehaviour
         HandleTask();
 
     }
-    private void OnEnable()
-    {
-        HandleTask();
-    }
 
     private void ParseTaskToRealTask(TaskData taskData)
     {
@@ -46,7 +38,6 @@ public class Person : MonoBehaviour
                 Debug.LogError("No actions found for action name: " + actionData.ActionName);
                 return;
             }
-            //ActionHolder action = GetShortestPathToActionHolder(actions);
             actionHoldersList.Add(actions);
         }
         Task task = new Task(actionHoldersList);
@@ -65,40 +56,64 @@ public class Person : MonoBehaviour
     // third case: two small case there: return to the first case 
     // if another best action holder is still available 
     // if not, wait for the action holder to be free    
+
     private IEnumerator PerformTasks()
     {
-        foreach (var task in this.tasks)
+        foreach (var task in tasks)
         {
-            var actionHoldersList = task.GetActionHolderList();
-            yield return StartCoroutine(HandlePerformTaskAndMove(actionHoldersList));
-
+            foreach (var stepHolders in task.GetActionHolderList())
+            {
+                yield return StartCoroutine(HandleMoveToHolderAndFinish(stepHolders));
+            }
         }
+        gameObject.SetActive(false);
     }
-    private IEnumerator HandlePerformTaskAndMove(List<List<ActionHolder>> actionHoldersList)
+    private IEnumerator HandleMoveToHolderAndFinish(List<ActionHolder> actionHolders)
     {
-        foreach (var actionHolders in actionHoldersList)
-        {
-            yield return StartCoroutine(HandlePerformAction(actionHolders));
-        }
-    }
-
-    private IEnumerator HandlePerformAction(List<ActionHolder> actionHolders)
-    {
-        var suitableActionHolder = GetShortestPathToActionHolder(actionHolders);
-        do
-        {
-            agent.Stop();
-            yield return new WaitUntil(() => GetShortestPathToActionHolder(actionHolders) != null);
-            suitableActionHolder = GetShortestPathToActionHolder(actionHolders);
-        } while (!suitableActionHolder);
-
+        var personHolderData = new PersonActionHolderData();
+        ActionHolder actionHolder = GetSuitableHolder(actionHolders);
+        personHolderData.holder = actionHolder;
+        personHolderData.isFinished = false;
         agent.Resume();
-        agent.SetDestination(suitableActionHolder.transform.position);
+        while (!personHolderData.isFinished)
+        {
+            var holder = personHolderData.holder;
+            if (holder == null || holder.IsBusy)
+            {
+                var anotherHolder = GetSuitableHolder(actionHolders);
+                if (anotherHolder == null)
+                {
+                    agent.Stop();
+                }
+                else
+                {
+                    agent.Resume();
+                    personHolderData.holder = anotherHolder;
+                }
+                yield return null;
+            }
+            else
+            {
+                var destination = holder.transform.position;
+
+                if (agent.IsReachedDestination(destination))
+                {
+                    holder.SetBusy(true);
+                    yield return new WaitForSeconds(holder.ActionData.FinishTime);
+                    personHolderData.isFinished = true;
+                    holder.SetBusy(false);
+                }
+                else
+                {
+                    agent.SetDestination(destination);
+                    yield return null;
+                }
+            }
+        }
     }
 
 
-
-    private ActionHolder GetShortestPathToActionHolder(List<ActionHolder> actions)
+    private ActionHolder GetSuitableHolder(List<ActionHolder> actions)
     {
         ActionHolder shortestPathAction = actions[0];
         float shortestDistance = Vector3.Distance(transform.position, shortestPathAction.transform.position);
@@ -121,8 +136,4 @@ public class Person : MonoBehaviour
         return shortestPathAction;
     }
 
-    private ActionHolder getFreeActionHolder(List<ActionHolder> actionHolders)
-    {
-        return actionHolders.Find(a => !a.IsBusy);
-    }
 }

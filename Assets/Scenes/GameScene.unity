@@ -1889,7 +1889,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   agentPrefab: {fileID: 1877402803306990159, guid: dff38a08e0967c14b957a7fd50d5f49e, type: 3}
-  maxAgents: 2
+  maxAgents: 5
   path: {fileID: 1708748890}
 --- !u!4 &1909947371
 Transform:
