@@ -5,7 +5,7 @@ public class ActionHolder : MonoBehaviour
 {
     [SerializeField] private ActionData actionData;
     [SerializeField] private bool isBusy = false;
-
+    public ActionData ActionData => actionData;
 
     public bool IsBusy => isBusy;
     public void SetBusy(bool isBusy)
@@ -13,6 +13,19 @@ public class ActionHolder : MonoBehaviour
         this.isBusy = isBusy;
     }
 
-    public ActionData ActionData => actionData;
+    private void OnDrawGizmos()
+    {
+        if (this.isBusy)
+        {
+            Gizmos.color = Color.red;
+            Gizmos.DrawWireSphere(transform.position, 5f);
+        }
+        else
+        {
+            Gizmos.color = Color.green;
+            Gizmos.DrawWireSphere(transform.position, 5f);
+        }
+    }
+
 
 }

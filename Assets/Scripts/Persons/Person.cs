@@ -24,6 +24,10 @@ public class Person : MonoBehaviour
         HandleTask();
 
     }
+    private void OnEnable()
+    {
+        HandleTask();
+    }
 
     private void ParseTaskToRealTask(TaskData taskData)
     {
@@ -80,17 +84,13 @@ public class Person : MonoBehaviour
             var holder = personHolderData.holder;
             if (holder == null || holder.IsBusy)
             {
+                agent.Stop();
                 var anotherHolder = GetSuitableHolder(actionHolders);
-                if (anotherHolder == null)
-                {
-                    agent.Stop();
-                }
-                else
+                if (anotherHolder)
                 {
                     agent.Resume();
                     personHolderData.holder = anotherHolder;
                 }
-                yield return null;
             }
             else
             {
@@ -106,22 +106,25 @@ public class Person : MonoBehaviour
                 else
                 {
                     agent.SetDestination(destination);
-                    yield return null;
                 }
             }
+            yield return null;
         }
     }
 
 
     private ActionHolder GetSuitableHolder(List<ActionHolder> actions)
     {
-        ActionHolder shortestPathAction = actions[0];
-        float shortestDistance = Vector3.Distance(transform.position, shortestPathAction.transform.position);
-        print(actions.Count);
         List<ActionHolder> notBusyActions = actions.FindAll(a => !a.IsBusy);
+        if (notBusyActions.Count == 0)
+        {
+            return null;
+        }
+        ActionHolder shortestPathAction = notBusyActions[0];
+        float shortestDistance = Vector3.Distance(transform.position, shortestPathAction.transform.position);
         for (int i = 1; i < notBusyActions.Count; i++)
         {
-            ActionHolder action = actions[i];
+            ActionHolder action = notBusyActions[i];
             float distance = Vector3.Distance(transform.position, action.transform.position);
             if (distance < shortestDistance)
             {
@@ -129,11 +132,8 @@ public class Person : MonoBehaviour
                 shortestPathAction = action;
             }
         }
-        if (shortestPathAction.IsBusy)
-        {
-            return null;
-        }
         return shortestPathAction;
     }
+    
 
 }

@@ -32,7 +32,6 @@ public class AgentManager : MonoBehaviour
             AgentController agent = GetAgent();
             agent.transform.position = startSpawnPosition;
             count++;
-            print("Agent counter: " + agents.Count);
             yield return new WaitForSeconds(2f);
         }
 
