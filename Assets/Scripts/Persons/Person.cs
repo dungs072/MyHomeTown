@@ -72,6 +72,11 @@ public class Person : MonoBehaviour
         }
         gameObject.SetActive(false);
     }
+
+    //! there is still some bugs when the next holder is 
+    //! busy and the person is in the previous holder whom is waiting for that to release
+    //! I want to add a new feature where each agent can detect the next holder may be busy or not
+    //! Must make agent can wait in line for each holder
     private IEnumerator HandleMoveToHolderAndFinish(List<ActionHolder> actionHolders)
     {
         var personHolderData = new PersonActionHolderData();
@@ -134,6 +139,6 @@ public class Person : MonoBehaviour
         }
         return shortestPathAction;
     }
-    
+
 
 }
