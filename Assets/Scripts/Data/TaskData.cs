@@ -4,3 +4,11 @@ public class PersonActionHolderData
 
     public ActionHolder holder;
 }
+
+public enum DIRECTION
+{
+    LEFT,
+    RIGHT,
+    UP,
+    DOWN
+}

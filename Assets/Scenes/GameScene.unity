@@ -608,6 +608,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1b1827358ee45f941ac1e7f4e23d7f00, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  directions: 02000000
   actionData: {fileID: 11400000, guid: 1188a9733e67a594d94fd0fc8955f665, type: 2}
   isBusy: 0
 --- !u!4 &629196551
@@ -1156,6 +1157,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1b1827358ee45f941ac1e7f4e23d7f00, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  directions: 02000000
   actionData: {fileID: 11400000, guid: abb903f63d79f7a46ad86c5f07c11a30, type: 2}
   isBusy: 0
 --- !u!1 &1146245278
@@ -1281,6 +1283,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1b1827358ee45f941ac1e7f4e23d7f00, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  directions: 02000000
   actionData: {fileID: 11400000, guid: b0b242d3ec4c2c647b25b4e55397919d, type: 2}
   isBusy: 0
 --- !u!4 &1202132396
@@ -1328,6 +1331,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1b1827358ee45f941ac1e7f4e23d7f00, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  directions: 
   actionData: {fileID: 11400000, guid: b0b242d3ec4c2c647b25b4e55397919d, type: 2}
   isBusy: 0
 --- !u!4 &1486364118
@@ -1426,6 +1430,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1b1827358ee45f941ac1e7f4e23d7f00, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  directions: 02000000
   actionData: {fileID: 11400000, guid: 1188a9733e67a594d94fd0fc8955f665, type: 2}
   isBusy: 0
 --- !u!4 &1619140879
@@ -1841,6 +1846,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1b1827358ee45f941ac1e7f4e23d7f00, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  directions: 02000000
   actionData: {fileID: 11400000, guid: b0b242d3ec4c2c647b25b4e55397919d, type: 2}
   isBusy: 0
 --- !u!4 &1860419350

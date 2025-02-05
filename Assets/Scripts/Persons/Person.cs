@@ -82,6 +82,7 @@ public class Person : MonoBehaviour
         var personHolderData = new PersonActionHolderData();
         ActionHolder actionHolder = GetSuitableHolder(actionHolders);
         personHolderData.holder = actionHolder;
+        actionHolder.AddPerson(this);
         personHolderData.isFinished = false;
         agent.Resume();
         while (!personHolderData.isFinished)
@@ -95,6 +96,7 @@ public class Person : MonoBehaviour
                 {
                     agent.Resume();
                     personHolderData.holder = anotherHolder;
+                    anotherHolder.AddPerson(this);
                 }
             }
             else
@@ -107,6 +109,7 @@ public class Person : MonoBehaviour
                     yield return new WaitForSeconds(holder.ActionData.FinishTime);
                     personHolderData.isFinished = true;
                     holder.SetBusy(false);
+                    holder.RemovePerson(this);
                 }
                 else
                 {
