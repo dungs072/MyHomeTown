@@ -134,4 +134,27 @@ public class GridSystem : MonoBehaviour
         return nodes;
     }
 
+    public void SnapToGridPoint(Transform target)
+    {
+        var targetPosition = target.position;
+
+        float smallestDistance = float.MaxValue;
+        Node nearestNode = null;
+        for (int i = 0; i < totalHorizontalSlot; i++)
+        {
+            for (int j = 0; j < totalVerticalSlot; j++)
+            {
+                Node node = grid[i, j];
+                float distance = Vector3.Distance(node.Position, targetPosition);
+                if (distance >= smallestDistance) continue;
+                smallestDistance = distance;
+                nearestNode = node;
+            }
+        }
+        if (nearestNode == null) return;
+        Debug.LogError(nearestNode.Position);
+        target.position = nearestNode.Position;
+
+    }
+
 }

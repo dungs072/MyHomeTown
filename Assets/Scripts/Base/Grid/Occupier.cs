@@ -28,8 +28,10 @@ public class Occupier : MonoBehaviour
 
     private void Update()
     {
+        singleton.GridSystem.SnapToGridPoint(transform);
         if (Utils.HasSamePosition(previousPosition, transform.position)) return;
         previousPosition = transform.position;
+
         StartCoroutine(HandleOccupiedSlots());
     }
     //! for debug in the editor.

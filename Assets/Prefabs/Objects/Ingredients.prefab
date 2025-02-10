@@ -153,5 +153,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ab3b3c2e0767cea469a081c4d2b381e3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  widthSlots: 8
+  widthSlots: 18
   heightSlots: 5
+  canShowGridVisualize: 1
