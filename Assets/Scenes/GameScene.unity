@@ -1964,6 +1964,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8730278271373967392, guid: 091740e2c09739642a7f652e7a39fe29, type: 3}
+      propertyPath: widthSlots
+      value: 11
+      objectReference: {fileID: 0}
+    - target: {fileID: 8730278271373967392, guid: 091740e2c09739642a7f652e7a39fe29, type: 3}
       propertyPath: canShowGridVisualize
       value: 0
       objectReference: {fileID: 0}

@@ -153,6 +153,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ab3b3c2e0767cea469a081c4d2b381e3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  widthSlots: 18
+  widthSlots: 11
   heightSlots: 5
   canShowGridVisualize: 1
+  meshRenderer: {fileID: 318088711494751154}
+  overlapMaterial: {fileID: 2100000, guid: 501d020476bc4ab409da21e184e3b775, type: 2}
+  unOverlapMaterial: {fileID: 2100000, guid: 178ca4ef31097e742b5a7c059098a530, type: 2}

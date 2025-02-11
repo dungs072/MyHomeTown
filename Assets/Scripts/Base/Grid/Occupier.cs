@@ -12,6 +12,11 @@ public class Occupier : MonoBehaviour
 
     [SerializeField] private bool canShowGridVisualize = false;
 
+    [Header("Debug only")]
+    [SerializeField] private MeshRenderer meshRenderer;
+    [SerializeField] private Material overlapMaterial;
+    [SerializeField] private Material unOverlapMaterial;
+
     private List<Node> occupiedNodes;
     //! use this to visualize the grid in the editor.
     private Node[,] visualizeNodes;
@@ -19,7 +24,10 @@ public class Occupier : MonoBehaviour
     private ManagerSingleton singleton;
 
     private Vector3 previousPosition;
-
+    private void Awake()
+    {
+        occupiedNodes = new List<Node>();
+    }
     private void Start()
     {
         singleton = ManagerSingleton.Instance;
@@ -43,11 +51,37 @@ public class Occupier : MonoBehaviour
     }
     private IEnumerator HandleOccupiedSlots()
     {
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(0.1f);
         var gridSystem = singleton.GridSystem;
         if (gridSystem == null) yield break;
         ClearOccupiedNodes();
-        occupiedNodes = gridSystem.SetOccupiedNodes(widthSlots, heightSlots, gameObject);
+        List<Node> occupyingNodes = gridSystem.FindOccupyingNodes(widthSlots, heightSlots, this);
+        CheckOccupyingNodes(occupyingNodes);
+    }
+    private void CheckOccupyingNodes(List<Node> occupyingNodes)
+    {
+        if (occupyingNodes == null)
+        {
+            SetOverlapDebugMaterial(true);
+            return;
+        }
+        for (int i = 0; i < occupyingNodes.Count; i++)
+        {
+            var node = occupyingNodes[i];
+            if (node.Owner != null)
+            {
+                SetOverlapDebugMaterial(true);
+                return;
+            }
+        }
+        for (int i = 0; i < occupyingNodes.Count; i++)
+        {
+            var node = occupyingNodes[i];
+            node.SetOwner(gameObject);
+            occupiedNodes.Add(node);
+        }
+        SetOverlapDebugMaterial(false);
+
     }
     private void ClearOccupiedNodes()
     {
@@ -56,7 +90,7 @@ public class Occupier : MonoBehaviour
         {
             node.SetOwner(null);
         }
-        occupiedNodes = null;
+        occupiedNodes.Clear();
     }
 
     private void CreateGrid()
@@ -103,5 +137,12 @@ public class Occupier : MonoBehaviour
                 Gizmos.DrawLine(bottomLeft, topLeft);
             }
         }
+    }
+
+
+    public void SetOverlapDebugMaterial(bool isOverlap)
+    {
+        if (meshRenderer == null) return;
+        meshRenderer.material = isOverlap ? overlapMaterial : unOverlapMaterial;
     }
 }

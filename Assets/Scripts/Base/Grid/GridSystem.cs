@@ -86,7 +86,7 @@ public class GridSystem : MonoBehaviour
     }
 
     // horizontal is x, vertical is y
-    public List<Node> SetOccupiedNodes(int xSlot, int ySlot, GameObject occupier)
+    public List<Node> FindOccupyingNodes(int xSlot, int ySlot, Occupier occupier)
     {
         List<Node> nodes = new List<Node>();
         Vector3 occupierPosition = occupier.transform.position;
@@ -127,7 +127,6 @@ public class GridSystem : MonoBehaviour
             {
                 Node node = grid[i, j];
                 nodes.Add(node);
-                grid[i, j].SetOwner(occupier);
             }
         }
         UnityEditor.SceneView.RepaintAll();
@@ -152,7 +151,6 @@ public class GridSystem : MonoBehaviour
             }
         }
         if (nearestNode == null) return;
-        Debug.LogError(nearestNode.Position);
         target.position = nearestNode.Position;
 
     }
