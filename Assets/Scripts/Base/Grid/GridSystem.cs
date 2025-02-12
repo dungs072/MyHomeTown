@@ -6,17 +6,42 @@ using UnityEngine;
 public class GridSystem : MonoBehaviour
 {
     [Range(2, 10000)]
-    [SerializeField] private int totalHorizontalSlot = 10;
+    [SerializeField] protected int totalHorizontalSlot = 10;
     [Range(2, 10000)]
-    [SerializeField] private int totalVerticalSlot = 10;
+    [SerializeField] protected int totalVerticalSlot = 10;
+    [Range(1, 10)]
+    [SerializeField] private float size = 10;
+    [SerializeField] private Color gridColor = Color.blue;
+    [SerializeField] private Color occupiedColor = Color.red;
+    [SerializeField] private bool showDebugger = true;
 
-    private float size = 10;
 
-    private Node[,] grid;
+
+    protected Node[,] grid;
 
     private Vector3 startPosition;
 
+    public Vector2Int GetGridPosition(Node node)
+    {
+        int x = node.GridX;
+        int y = node.GridY;
+        return new Vector2Int(x, y);
+    }
+    public Node GetNode(int x, int y)
+    {
+        return grid[x, y];
+    }
+    public bool IsValidGridPosition(Vector2Int gridPos)
+    {
+        return gridPos.x >= 0 && gridPos.x < totalHorizontalSlot &&
+            gridPos.y >= 0 && gridPos.y < totalVerticalSlot;
+    }
+
     private void Awake()
+    {
+        InitGridData();
+    }
+    protected virtual void InitGridData()
     {
         SetUpPropertiesOfGrid();
         SetStartGridPosition();
@@ -34,7 +59,7 @@ public class GridSystem : MonoBehaviour
     }
     private void SetUpPropertiesOfGrid()
     {
-        this.size = GridConstants.SMALL_DISTANCE;
+        //this.size = GridConstants.SMALL_DISTANCE;
     }
     private void CreateGrid()
     {
@@ -55,6 +80,7 @@ public class GridSystem : MonoBehaviour
 
     private void OnDrawGizmos()
     {
+        if (!showDebugger) return;
         if (grid == null)
         {
             return;
@@ -66,11 +92,11 @@ public class GridSystem : MonoBehaviour
             {
                 if (node.IsOccupied)
                 {
-                    Gizmos.color = Color.red;
+                    Gizmos.color = occupiedColor;
                 }
                 else
                 {
-                    Gizmos.color = Color.blue;
+                    Gizmos.color = gridColor;
                 }
                 Vector3 topLeft = node.Position + new Vector3(-size / 2, 0, size / 2);
                 Vector3 topRight = node.Position + new Vector3(size / 2, 0, size / 2);

@@ -1,13 +1,15 @@
 using UnityEngine;
 
-public class AStarNode : Node
+public class AStarNode
 {
+    private Vector2Int gridPosition;
     private int gCost;
     private int hCost;
     private AStarNode parent;
 
-    public AStarNode(int gridX, int gridY, Vector3 position) : base(gridX, gridY, position)
+    public AStarNode(Vector2Int gridPosition)
     {
+        this.gridPosition = gridPosition;
         gCost = 0;
         hCost = 0;
         parent = null;
@@ -29,5 +31,6 @@ public class AStarNode : Node
         get => parent;
         set => parent = value;
     }
+    public Vector2Int GridPosition => gridPosition;
 
 }
