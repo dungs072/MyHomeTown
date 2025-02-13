@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -11,6 +12,7 @@ public class Occupier : MonoBehaviour
     [SerializeField] private int heightSlots = 1;
 
     [SerializeField] private bool canShowGridVisualize = false;
+    [SerializeField] private bool canMove = true;
 
     [Header("Debug only")]
     [SerializeField] private MeshRenderer meshRenderer;
@@ -24,6 +26,7 @@ public class Occupier : MonoBehaviour
     private ManagerSingleton singleton;
 
     private Vector3 previousPosition;
+
     private void Awake()
     {
         occupiedNodes = new List<Node>();
@@ -36,10 +39,10 @@ public class Occupier : MonoBehaviour
 
     private void Update()
     {
+        if (canMove) return;
         singleton.GridSystem.SnapToGridPoint(transform);
         if (Utils.HasSamePosition(previousPosition, transform.position)) return;
         previousPosition = transform.position;
-
         StartCoroutine(HandleOccupiedSlots());
     }
     //! for debug in the editor.
@@ -95,17 +98,19 @@ public class Occupier : MonoBehaviour
 
     private void CreateGrid()
     {
-        int centerX = widthSlots / 2;
-        int centerY = heightSlots / 2;
+        int biggestCenterX = Mathf.CeilToInt(widthSlots / 2f);
+        int biggestCenterY = Mathf.CeilToInt(heightSlots / 2f);
+        int smallestCenterX = Mathf.FloorToInt(widthSlots / 2f);
+        int smallestCenterY = Mathf.FloorToInt(heightSlots / 2f);
         visualizeNodes = new Node[widthSlots, heightSlots];
         float size = GridConstants.SMALL_DISTANCE;
-        for (int i = -centerX + 1; i < centerX; i++)
+        for (int i = -biggestCenterX + 1; i < biggestCenterX; i++)
         {
-            for (int j = -centerY + 1; j < centerY; j++)
+            for (int j = -biggestCenterY + 1; j < biggestCenterY; j++)
             {
                 Vector3 position = transform.position + new Vector3(i * size, 0, j * size);
-                int indexX = i + centerX;
-                int indexY = j + centerY;
+                int indexX = i + smallestCenterX;
+                int indexY = j + smallestCenterY;
                 visualizeNodes[indexX, indexY] = new Node(indexX, indexY, position);
             }
         }
@@ -123,7 +128,6 @@ public class Occupier : MonoBehaviour
         float size = GridConstants.SMALL_DISTANCE;
         foreach (var node in visualizeNodes)
         {
-
             if (node != null)
             {
                 Vector3 topLeft = node.Position + new Vector3(-size / 2, 0, size / 2);

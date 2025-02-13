@@ -27,6 +27,26 @@ public class GridSystem : MonoBehaviour
         int y = node.GridY;
         return new Vector2Int(x, y);
     }
+
+    /// <summary>
+    /// This is temporary method to get the grid position of a point in the world. May be it can be wrong
+    /// </summary>
+    /// <param name="position"></param>
+    /// <returns></returns>
+    public Vector2Int GetGridPosition(Vector3 position)
+    {
+        int offsetX = totalHorizontalSlot / 2;
+        int offsetY = totalVerticalSlot / 2;
+        int x = Mathf.RoundToInt((position.x - startPosition.x) / size);
+        int y = Mathf.RoundToInt((position.z - startPosition.z) / size);
+        return new Vector2Int(x + offsetX, y + offsetY);
+    }
+    public Vector3 GetWorldPosition(Vector2Int gridPosition)
+    {
+        int x = gridPosition.x;
+        int y = gridPosition.y;
+        return grid[x, y].Position;
+    }
     public Node GetNode(int x, int y)
     {
         return grid[x, y];
@@ -63,16 +83,18 @@ public class GridSystem : MonoBehaviour
     }
     private void CreateGrid()
     {
-        int centerX = totalHorizontalSlot / 2;
-        int centerY = totalVerticalSlot / 2;
+        int biggestCenterX = Mathf.CeilToInt(totalHorizontalSlot / 2f);
+        int biggestCenterY = Mathf.CeilToInt(totalVerticalSlot / 2f);
+        int smallestCenterX = Mathf.FloorToInt(totalHorizontalSlot / 2f);
+        int smallestCenterY = Mathf.FloorToInt(totalVerticalSlot / 2f);
         grid = new Node[totalHorizontalSlot, totalVerticalSlot];
-        for (int i = -centerX; i < centerX; i++)
+        for (int i = -biggestCenterX; i < biggestCenterX; i++)
         {
-            for (int j = -centerY; j < centerY; j++)
+            for (int j = -biggestCenterY; j < biggestCenterY; j++)
             {
                 Vector3 position = startPosition + new Vector3(i * size, 0, j * size);
-                int indexX = i + centerX;
-                int indexY = j + centerY;
+                int indexX = i + smallestCenterX;
+                int indexY = j + smallestCenterY;
                 grid[indexX, indexY] = new Node(indexX, indexY, position);
             }
         }

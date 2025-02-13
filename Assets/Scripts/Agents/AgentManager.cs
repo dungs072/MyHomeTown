@@ -40,13 +40,13 @@ public class AgentManager : MonoBehaviour
 
     private void AssignPathToAgent(AgentController agent)
     {
-        agent.SetAndFollowPath(path.GetPath());
+        //agent.SetAndFollowPath(path.GetPath());
     }
     private void AssignPathToAgents(Vector3[] path)
     {
         for (int i = 0; i < agents.Count; i++)
         {
-            agents[i].SetAndFollowPath(path);
+            //agents[i].SetAndFollowPath(path);
         }
     }
 
@@ -58,8 +58,8 @@ public class AgentManager : MonoBehaviour
         if (agent == null)
         {
             agent = Instantiate(agentPrefab, transform);
-            agent.SetCanGoBack(true);
-            agent.SetCanUsePool(true);
+            // agent.SetCanGoBack(true);
+            // agent.SetCanUsePool(true);
             agents.Add(agent);
         }
         else

@@ -7,11 +7,11 @@ public class ActionManager : MonoBehaviour
     private Dictionary<string, List<ActionHolder>> actionsDict;
     private void Awake()
     {
-        actionsDict = new Dictionary<string, List<ActionHolder>>();
-        foreach (ActionHolder actionHolder in actionHolders)
-        {
-            AddActionHolder(actionHolder);
-        }
+        // actionsDict = new Dictionary<string, List<ActionHolder>>();
+        // foreach (ActionHolder actionHolder in actionHolders)
+        // {
+        //     AddActionHolder(actionHolder);
+        // }
     }
 
     public void AddActionHolder(ActionHolder actionHolder)

@@ -31,21 +31,21 @@ public class Person : MonoBehaviour
 
     private void ParseTaskToRealTask(TaskData taskData)
     {
-        List<ActionData> actionDatas = taskData.Actions;
-        List<List<ActionHolder>> actionHoldersList = new List<List<ActionHolder>>();
-        ActionManager actionManager = ManagerSingleton.Instance.ActionManager;
-        foreach (ActionData actionData in actionDatas)
-        {
-            var actions = actionManager.GetPossibleActions(actionData.ActionName);
-            if (actions.Count == 0)
-            {
-                Debug.LogError("No actions found for action name: " + actionData.ActionName);
-                return;
-            }
-            actionHoldersList.Add(actions);
-        }
-        Task task = new Task(actionHoldersList);
-        tasks.Add(task);
+        // List<ActionData> actionDatas = taskData.Actions;
+        // List<List<ActionHolder>> actionHoldersList = new List<List<ActionHolder>>();
+        // ActionManager actionManager = ManagerSingleton.Instance.ActionManager;
+        // foreach (ActionData actionData in actionDatas)
+        // {
+        //     var actions = actionManager.GetPossibleActions(actionData.ActionName);
+        //     if (actions.Count == 0)
+        //     {
+        //         Debug.LogError("No actions found for action name: " + actionData.ActionName);
+        //         return;
+        //     }
+        //     actionHoldersList.Add(actions);
+        // }
+        // Task task = new Task(actionHoldersList);
+        // tasks.Add(task);
     }
 
 
@@ -65,10 +65,11 @@ public class Person : MonoBehaviour
     {
         foreach (var task in tasks)
         {
-            foreach (var stepHolders in task.GetActionHolderList())
-            {
-                yield return StartCoroutine(HandleMoveToHolderAndFinish(stepHolders));
-            }
+            yield return null;
+            // foreach (var stepHolders in task.GetActionHolderList())
+            // {
+            //     yield return StartCoroutine(HandleMoveToHolderAndFinish(stepHolders));
+            // }
         }
         gameObject.SetActive(false);
     }
@@ -77,48 +78,48 @@ public class Person : MonoBehaviour
     //! busy and the person is in the previous holder whom is waiting for that to release
     //! I want to add a new feature where each agent can detect the next holder may be busy or not
     //! Must make agent can wait in line for each holder
-    private IEnumerator HandleMoveToHolderAndFinish(List<ActionHolder> actionHolders)
-    {
-        var personHolderData = new PersonActionHolderData();
-        ActionHolder actionHolder = GetSuitableHolder(actionHolders);
-        personHolderData.holder = actionHolder;
-        actionHolder.AddPerson(this);
-        personHolderData.isFinished = false;
-        agent.Resume();
-        while (!personHolderData.isFinished)
-        {
-            var holder = personHolderData.holder;
-            if (holder == null || holder.IsBusy)
-            {
-                agent.Stop();
-                var anotherHolder = GetSuitableHolder(actionHolders);
-                if (anotherHolder)
-                {
-                    agent.Resume();
-                    personHolderData.holder = anotherHolder;
-                    anotherHolder.AddPerson(this);
-                }
-            }
-            else
-            {
-                var destination = holder.transform.position;
+    // private IEnumerator HandleMoveToHolderAndFinish(List<ActionHolder> actionHolders)
+    // {
+    //     var personHolderData = new PersonActionHolderData();
+    //     ActionHolder actionHolder = GetSuitableHolder(actionHolders);
+    //     personHolderData.holder = actionHolder;
+    //     actionHolder.AddPerson(this);
+    //     personHolderData.isFinished = false;
+    //     agent.Resume();
+    //     while (!personHolderData.isFinished)
+    //     {
+    //         var holder = personHolderData.holder;
+    //         if (holder == null || holder.IsBusy)
+    //         {
+    //             agent.Stop();
+    //             var anotherHolder = GetSuitableHolder(actionHolders);
+    //             if (anotherHolder)
+    //             {
+    //                 agent.Resume();
+    //                 personHolderData.holder = anotherHolder;
+    //                 anotherHolder.AddPerson(this);
+    //             }
+    //         }
+    //         else
+    //         {
+    //             var destination = holder.transform.position;
 
-                if (agent.IsReachedDestination(destination))
-                {
-                    holder.SetBusy(true);
-                    yield return new WaitForSeconds(holder.ActionData.FinishTime);
-                    personHolderData.isFinished = true;
-                    holder.SetBusy(false);
-                    holder.RemovePerson(this);
-                }
-                else
-                {
-                    agent.SetDestination(destination);
-                }
-            }
-            yield return null;
-        }
-    }
+    //             // if (agent.IsReachedDestination(destination))
+    //             // {
+    //             //     holder.SetBusy(true);
+    //             //     yield return new WaitForSeconds(holder.ActionData.FinishTime);
+    //             //     personHolderData.isFinished = true;
+    //             //     holder.SetBusy(false);
+    //             //     holder.RemovePerson(this);
+    //             // }
+    //             // else
+    //             // {
+    //             //     //agent.SetDestination(destination);
+    //             // }
+    //         }
+    //         yield return null;
+    //     }
+    // }
 
 
     private ActionHolder GetSuitableHolder(List<ActionHolder> actions)

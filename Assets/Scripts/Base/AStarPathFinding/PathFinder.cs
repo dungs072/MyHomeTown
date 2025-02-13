@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -10,33 +11,87 @@ public class PathFinder : MonoBehaviour
 {
     private GridSystem grid;
 
+    private const float MOVE_SPEED = 0.1f;
 
-    void Awake()
+    void Start()
     {
         grid = ManagerSingleton.Instance.GridSystem;
-
     }
 
+    public void MoveToDestination(Vector3 destination)
+    {
+        List<AStarNode> path = FindPathTo(destination);
+        if (path == null) return;
+
+        StartCoroutine(PlayMovement(path));
+
+    }
+    protected IEnumerator PlayMovement(List<AStarNode> nodes)
+    {
+        foreach (var node in nodes)
+        {
+            Debug.Log(node.GridPosition);
+            yield return StartCoroutine(PlayMoveTo(node));
+        }
+    }
+    private IEnumerator PlayMoveTo(AStarNode node)
+    {
+        Vector2Int gridPosition = node.GridPosition;
+        Vector3 worldPosition = grid.GetWorldPosition(gridPosition);
+        while (!Utils.HasSamePosition(transform.position, worldPosition))
+        {
+            transform.position = Vector3.MoveTowards(transform.position, worldPosition, MOVE_SPEED);
+            yield return null;
+        }
+    }
+
+    public List<AStarNode> FindPathTo(Vector3 target)
+    {
+        return FindPath(transform.position, target);
+    }
+
+    /// <summary>
+    /// Find the path between two points in world position. 
+    /// Please for best performance use the FindPath(Vector2Int, Vector2Int) method.
+    /// </summary>
+    /// <param name="start"></param>
+    /// <param name="target"></param>
+    /// <returns></returns>
+    public List<AStarNode> FindPath(Vector3 start, Vector3 target)
+    {
+        Vector2Int startGridPos = grid.GetGridPosition(start);
+        Vector2Int targetGridPos = grid.GetGridPosition(target);
+        return FindPath(startGridPos, targetGridPos);
+    }
+
+
+    /// <summary>
+    /// Find the path between two points in grid system.
+    /// </summary>
+    /// <param name="start"> grid position in grid system </param>
+    /// <param name="target"> grid position in grid system </param>
+    /// <returns></returns>
     public List<AStarNode> FindPath(Vector2Int start, Vector2Int target)
     {
-        List<AStarNode> openSet = new List<AStarNode>();
+        PriorityQueue<AStarNode> openSet = new PriorityQueue<AStarNode>();
         HashSet<Vector2Int> closedSet = new HashSet<Vector2Int>();
         Dictionary<Vector2Int, AStarNode> allNodes = new Dictionary<Vector2Int, AStarNode>();
-        AStarNode startNode = new(start);
-        AStarNode targetNode = new(target);
 
-        openSet.Add(startNode);
+        AStarNode startNode = new(start)
+        {
+            GCost = 0,
+            HCost = GetHeuristic(start, target)
+        };
+
+        openSet.Enqueue(startNode, startNode.FCost);
         allNodes[start] = startNode;
+
         while (openSet.Count > 0)
         {
-            openSet.Sort((a, b) => a.FCost.CompareTo(b.FCost));
-            AStarNode currentNode = openSet[0];
-            openSet.RemoveAt(0);
-
+            AStarNode currentNode = openSet.Dequeue();
             closedSet.Add(currentNode.GridPosition);
 
-
-            if (currentNode.GridPosition == targetNode.GridPosition)
+            if (currentNode.GridPosition == target)
             {
                 return RetracePath(currentNode);
             }
@@ -48,28 +103,37 @@ public class PathFinder : MonoBehaviour
                 {
                     continue;
                 }
-                int moveCost = currentNode.GCost + 1; // Assuming uniform cost for each step
-                AStarNode neighborNode = null;
-                if (!allNodes.TryGetValue(neighborPos, out AStarNode neighborAStarNode))
+
+                int moveCost = currentNode.GCost + GetMoveCost(currentNode.GridPosition, neighborPos);
+
+                if (!allNodes.TryGetValue(neighborPos, out AStarNode neighborNode))
                 {
                     neighborNode = new AStarNode(neighborPos);
                     allNodes[neighborPos] = neighborNode;
                 }
+
                 if (moveCost < neighborNode.GCost || !openSet.Contains(neighborNode))
                 {
                     neighborNode.GCost = moveCost;
                     neighborNode.HCost = GetHeuristic(neighborPos, target);
                     neighborNode.Parent = currentNode;
+
                     if (!openSet.Contains(neighborNode))
                     {
-                        openSet.Add(neighborNode);
+                        openSet.Enqueue(neighborNode, neighborNode.FCost);
                     }
                 }
             }
-
         }
         return null;
     }
+
+    private int GetMoveCost(Vector2Int from, Vector2Int to)
+    {
+        return (from.x != to.x && from.y != to.y) ? 14 : 10; // Diagonal = 14, Straight = 10
+    }
+
+
     private List<AStarNode> RetracePath(AStarNode node)
     {
         List<AStarNode> path = new List<AStarNode>();
@@ -91,4 +155,9 @@ public class PathFinder : MonoBehaviour
 
 
 
+
+}
+
+internal class PriorityQueue<T1, T2>
+{
 }
