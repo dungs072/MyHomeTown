@@ -154,7 +154,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   widthSlots: 11
-  heightSlots: 5
+  heightSlots: 3
   canShowGridVisualize: 1
   canMove: 0
   meshRenderer: {fileID: 318088711494751154}

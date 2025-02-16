@@ -53,8 +53,10 @@ public class GridSystem : MonoBehaviour
     }
     public bool IsValidGridPosition(Vector2Int gridPos)
     {
-        return gridPos.x >= 0 && gridPos.x < totalHorizontalSlot &&
-            gridPos.y >= 0 && gridPos.y < totalVerticalSlot;
+        bool isOutOfRange = IsOutOfRange(gridPos.x, gridPos.y);
+        if (isOutOfRange) return false;
+        Node node = GetNode(gridPos.x, gridPos.y);
+        return !node.IsOccupied;
     }
 
     private void Awake()
@@ -112,7 +114,7 @@ public class GridSystem : MonoBehaviour
 
             if (node != null)
             {
-                if (node.IsOccupied)
+                if (node.IsOccupied || (node.GridX == 57 && node.GridY == 90))
                 {
                     Gizmos.color = occupiedColor;
                 }
@@ -169,16 +171,22 @@ public class GridSystem : MonoBehaviour
         int endY = Math.Min(totalVerticalSlot, indexY + halfYSlot);
 
 
-        for (int i = startX + 1; i < endX; i++)
+        for (int i = startX; i <= endX; i++)
         {
-            for (int j = startY + 1; j < endY; j++)
+            for (int j = startY; j <= endY; j++)
             {
+                if (IsOutOfRange(i, j)) return null;
                 Node node = grid[i, j];
                 nodes.Add(node);
             }
         }
         UnityEditor.SceneView.RepaintAll();
         return nodes;
+    }
+
+    public bool IsOutOfRange(int x, int y)
+    {
+        return x < 0 || x >= totalHorizontalSlot || y < 0 || y >= totalVerticalSlot;
     }
 
     public void SnapToGridPoint(Transform target)

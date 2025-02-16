@@ -9,9 +9,8 @@ using UnityEngine;
  */
 public class PathFinder : MonoBehaviour
 {
+    [SerializeField] private float moveSpeed = 10f;
     private GridSystem grid;
-
-    private const float MOVE_SPEED = 0.1f;
 
     void Start()
     {
@@ -30,17 +29,17 @@ public class PathFinder : MonoBehaviour
     {
         foreach (var node in nodes)
         {
-            Debug.Log(node.GridPosition);
             yield return StartCoroutine(PlayMoveTo(node));
         }
     }
     private IEnumerator PlayMoveTo(AStarNode node)
     {
         Vector2Int gridPosition = node.GridPosition;
+
         Vector3 worldPosition = grid.GetWorldPosition(gridPosition);
         while (!Utils.HasSamePosition(transform.position, worldPosition))
         {
-            transform.position = Vector3.MoveTowards(transform.position, worldPosition, MOVE_SPEED);
+            transform.position = Vector3.MoveTowards(transform.position, worldPosition, moveSpeed * Time.deltaTime);
             yield return null;
         }
     }
@@ -76,7 +75,6 @@ public class PathFinder : MonoBehaviour
         PriorityQueue<AStarNode> openSet = new PriorityQueue<AStarNode>();
         HashSet<Vector2Int> closedSet = new HashSet<Vector2Int>();
         Dictionary<Vector2Int, AStarNode> allNodes = new Dictionary<Vector2Int, AStarNode>();
-
         AStarNode startNode = new(start)
         {
             GCost = 0,
@@ -86,12 +84,20 @@ public class PathFinder : MonoBehaviour
         openSet.Enqueue(startNode, startNode.FCost);
         allNodes[start] = startNode;
 
+        AStarNode closestNode = startNode;
+
         while (openSet.Count > 0)
         {
             AStarNode currentNode = openSet.Dequeue();
             closedSet.Add(currentNode.GridPosition);
 
-            if (currentNode.GridPosition == target)
+            // Update closest node based on heuristic
+            if (GetHeuristic(currentNode.GridPosition, target) < GetHeuristic(closestNode.GridPosition, target))
+            {
+                closestNode = currentNode;
+            }
+
+            if (currentNode.GridPosition == target && grid.IsValidGridPosition(target))
             {
                 return RetracePath(currentNode);
             }
@@ -125,8 +131,11 @@ public class PathFinder : MonoBehaviour
                 }
             }
         }
-        return null;
+
+        // Return path to closest node if target is unreachable
+        return RetracePath(closestNode);
     }
+
 
     private int GetMoveCost(Vector2Int from, Vector2Int to)
     {
