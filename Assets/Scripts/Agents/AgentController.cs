@@ -21,7 +21,17 @@ public class AgentController : MonoBehaviour
     private IEnumerator Test()
     {
         yield return new WaitForSeconds(2f);
-        pathFinder.MoveToDestination(target.position);
+        var targetPosition = Vector3.zero;
+        if (target == null)
+        {
+            targetPosition = new Vector3(7.3f, 0, 17.4f);
+
+        }
+        else
+        {
+            targetPosition = target.position;
+        }
+        pathFinder.MoveToDestination(targetPosition);
     }
 
 

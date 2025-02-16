@@ -49,6 +49,7 @@ public class PathFinder : MonoBehaviour
         return FindPath(transform.position, target);
     }
 
+
     /// <summary>
     /// Find the path between two points in world position. 
     /// Please for best performance use the FindPath(Vector2Int, Vector2Int) method.

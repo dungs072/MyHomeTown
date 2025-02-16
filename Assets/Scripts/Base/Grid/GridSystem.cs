@@ -114,7 +114,7 @@ public class GridSystem : MonoBehaviour
 
             if (node != null)
             {
-                if (node.IsOccupied || (node.GridX == 57 && node.GridY == 90))
+                if (node.IsOccupied)
                 {
                     Gizmos.color = occupiedColor;
                 }
