@@ -1,4 +1,3 @@
-using ProjectDawn.Navigation;
 using ProjectDawn.Navigation.Hybrid;
 using UnityEngine;
 
@@ -25,6 +24,18 @@ public class AgentController : MonoBehaviour
         if (target == null) return;
         agent.SetDestination(target.position);
     }
+
+    public void SetDestination(Vector3 destination)
+    {
+        agent.SetDestinationDeferred(destination);
+    }
+
+
+
+    
+
+    
+
 
 
 
