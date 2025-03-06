@@ -1,38 +1,31 @@
-using System.Collections;
-using Unity.VisualScripting;
+using ProjectDawn.Navigation;
+using ProjectDawn.Navigation.Hybrid;
 using UnityEngine;
-using UnityEngine.AI;
 
-[RequireComponent(typeof(PathFinder))]
+
 public class AgentController : MonoBehaviour
 {
     [SerializeField] private Transform target;
-    private PathFinder pathFinder;
+    private AgentAuthoring agent;
+
+    public void SetTarget(Transform target)
+    {
+        this.target = target;
+        agent.SetDestination(target.position);
+    }
 
     private void Awake()
     {
-        pathFinder = GetComponent<PathFinder>();
+        agent = GetComponent<AgentAuthoring>();
     }
 
-    private void Start()
-    {
-        StartCoroutine(Test());
-    }
-    private IEnumerator Test()
-    {
-        yield return new WaitForSeconds(2f);
-        var targetPosition = Vector3.zero;
-        if (target == null)
-        {
-            targetPosition = new Vector3(7.3f, 0, 17.4f);
 
-        }
-        else
-        {
-            targetPosition = target.position;
-        }
-        pathFinder.MoveToDestination(targetPosition);
+    void Start()
+    {
+        if (target == null) return;
+        agent.SetDestination(target.position);
     }
+
 
 
 

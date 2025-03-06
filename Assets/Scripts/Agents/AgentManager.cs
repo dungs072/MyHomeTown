@@ -9,6 +9,9 @@ public class AgentManager : MonoBehaviour
     [Header("Agents")]
     [SerializeField] private AgentController agentPrefab;
     [SerializeField] private int maxAgents = 10;
+
+    [Header("Debugger")]
+    [SerializeField] private Transform target;
     private List<AgentController> agents;
 
 
@@ -29,6 +32,10 @@ public class AgentManager : MonoBehaviour
         {
             AgentController agent = GetAgent();
             agent.transform.position = GetRandomStartSpawnPoint();
+            if (target != null)
+            {
+                agent.SetTarget(target);
+            }
             count++;
         }
         yield return null;
