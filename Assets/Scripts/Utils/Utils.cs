@@ -7,5 +7,6 @@ public static class Utils
     {
         return Vector3.SqrMagnitude(position1 - position2) < SMALL_DISTANCE * SMALL_DISTANCE;
     }
+    
 
 }

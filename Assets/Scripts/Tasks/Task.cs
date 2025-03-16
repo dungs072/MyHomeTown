@@ -1,13 +1,12 @@
 using System.Collections.Generic;
-using UnityEngine;
-
 
 //! a task will have many steps to implement
 //! it has a list of step to handle and you have to use it like a queue data structure
-public class Task : MonoBehaviour
+public class Task
 {
     private List<Step> steps;
 
+    public List<Step> Steps => steps;
 
     public void PushBack(Step step)
     {

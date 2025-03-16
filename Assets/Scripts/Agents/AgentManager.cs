@@ -32,10 +32,10 @@ public class AgentManager : MonoBehaviour
         {
             AgentController agent = GetAgent();
             agent.transform.position = GetRandomStartSpawnPoint();
-            if (target != null)
-            {
-                agent.SetTarget(target);
-            }
+            // if (target != null)
+            // {
+            //     agent.SetTarget(target);
+            // }
             count++;
         }
         yield return null;
