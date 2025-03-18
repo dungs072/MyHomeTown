@@ -4,9 +4,19 @@ using System.Collections.Generic;
 //! it has a list of step to handle and you have to use it like a queue data structure
 public class Task
 {
+
+    private TaskData taskData;
     private List<Step> steps;
 
     public List<Step> Steps => steps;
+
+    public TaskData TaskData => taskData;
+
+    public Task(TaskData taskData)
+    {
+        this.taskData = taskData;
+        steps = new List<Step>();
+    }
 
     public void PushBack(Step step)
     {

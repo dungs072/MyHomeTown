@@ -31,7 +31,7 @@ public class TaskPerformer
         }
     }
 
-    void Awake()
+    public TaskPerformer()
     {
         stepPerformers = new List<StepPerformer>();
     }

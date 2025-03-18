@@ -9,6 +9,9 @@ public class Step
 
     public List<WorkContainer> WorkContainers { get; private set; }
 
+    public StepType StepType => Data.StepType;
+    public WorkContainerType WorkContainerType => Data.WorkContainerType;
+
     public Step(StepData data)
     {
         Data = data;
@@ -19,5 +22,11 @@ public class Step
     {
         WorkContainers = workContainers;
     }
+
+    public void AddWorkContainer(WorkContainer workContainer)
+    {
+        WorkContainers.Add(workContainer);
+    }
+
 
 }

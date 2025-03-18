@@ -3,9 +3,8 @@ using UnityEngine;
 
 public class WorkContainer : MonoBehaviour
 {
-    [SerializeField] private List<TaskType> taskTypes;
-
-    public List<TaskType> TaskTypes => taskTypes;
+    [SerializeField] private WorkContainerType workContainerType;
+    public WorkContainerType WorkContainerType => workContainerType;
 
     //TODO add more functions to handle work container
 }
