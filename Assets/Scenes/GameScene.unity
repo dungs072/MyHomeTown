@@ -806,7 +806,7 @@ MonoBehaviour:
   startPoint: {fileID: 928656526}
   radius: 11.36
   agentPrefab: {fileID: 8066138087326353846, guid: dff38a08e0967c14b957a7fd50d5f49e, type: 3}
-  maxAgents: 100
+  maxAgents: 15
   target: {fileID: 1822621592}
 --- !u!1 &1314670856
 GameObject:

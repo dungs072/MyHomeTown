@@ -44,13 +44,35 @@ public class TaskHandler : MonoBehaviour
             var stepPerformer = taskPerformer.GetFirstStepPerformer();
             if (stepPerformer == null) yield break;
             var step = stepPerformer.Step;
-            var workContainer = GetTheShortestWorkContainer(step);
-            if (workContainer == null) yield break;
+            var workContainer = GetTheShortestFreeWorkContainer(step);
+            while (workContainer == null)
+            {
+                Debug.Log("No free work container");
+                var waitingLinePos = GetWaitingPosition(step);
+                agent.SetDestination(waitingLinePos);
+                workContainer = GetTheShortestFreeWorkContainer(step);
+                yield return null;
+            }
+            var waitingLineWk = step.WorkContainers[0];
+            waitingLineWk.RemovePersonFromWaitingLine(gameObject);
             while (!stepPerformer.IsFinished)
             {
+                while (workContainer == null || !workContainer.IsFreeToUse(gameObject))
+                {
+                    var waitingLinePos = GetWaitingPosition(step);
+                    agent.SetDestination(waitingLinePos);
+                    workContainer = GetTheShortestFreeWorkContainer(step);
+                    yield return null;
+                }
+                waitingLineWk = step.WorkContainers[0];
+                waitingLineWk.RemovePersonFromWaitingLine(gameObject);
                 agent.SetDestination(workContainer.transform.position);
+
                 if (Utils.HasSamePosition(transform.position, workContainer.transform.position))
                 {
+                    workContainer.setUsingPerson(gameObject);
+                    yield return StartCoroutine(DoStep(step));
+                    workContainer.setUsingPerson(null);
                     stepPerformer.SetIsFinished(true);
                 }
                 yield return null;
@@ -60,10 +82,15 @@ public class TaskHandler : MonoBehaviour
 
         }
     }
-
-    private WorkContainer GetTheShortestWorkContainer(Step step)
+    private IEnumerator DoStep(Step step)
     {
-        var places = step.WorkContainers;
+        yield return new WaitForSeconds(step.Data.Duration);
+    }
+
+    private WorkContainer GetTheShortestFreeWorkContainer(Step step)
+    {
+        var places = step.WorkContainers.FindAll(place => place.UsingPerson == null);
+        if (places.Count == 0) return null;
 
         if (places.Count == 0) return null;
         WorkContainer shortestPlace = places[0];
@@ -79,6 +106,15 @@ public class TaskHandler : MonoBehaviour
             }
         }
         return shortestPlace;
+    }
+    //! only use this function when you assure that all the possible work containers are busy
+    private Vector3 GetWaitingPosition(Step step)
+    {
+        var workContainer = step.WorkContainers[0];
+        workContainer.AddPersonToWaitingLine(gameObject);
+        var transformWk = workContainer.transform;
+        var distance = 2;
+        return transformWk.position + distance * workContainer.GetIndexInWaitingLine(gameObject) * transformWk.forward;
     }
 
 

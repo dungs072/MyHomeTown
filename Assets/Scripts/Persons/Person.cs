@@ -24,7 +24,7 @@ public class Person : MonoBehaviour
         var specificTask = taskManager.GetTask(taskData);
         yield return new WaitForSeconds(5);
         taskHandler.AddTask(specificTask);
-
         yield return StartCoroutine(taskHandler.HandleFirstTask());
+        this.gameObject.SetActive(false);
     }
 }

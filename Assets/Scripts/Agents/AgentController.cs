@@ -29,12 +29,16 @@ public class AgentController : MonoBehaviour
     {
         agent.SetDestinationDeferred(destination);
     }
+    public void StopMoving()
+    {
+        agent.Stop();
+    }
 
 
 
-    
 
-    
+
+
 
 
 
