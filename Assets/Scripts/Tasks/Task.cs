@@ -1,30 +1,38 @@
 using System.Collections.Generic;
-using UnityEngine;
 
+//! a task will have many steps to implement
+//! it has a list of step to handle and you have to use it like a queue data structure
 public class Task
 {
-    private List<List<ActionHolder>> actionHoldersList;
-    private bool isTaskCompleted = false;
 
-    public bool IsTaskCompleted => isTaskCompleted;
+    private TaskData taskData;
+    private List<Step> steps;
 
-    public Task(List<List<ActionHolder>> list)
+    public List<Step> Steps => steps;
+
+    public TaskData TaskData => taskData;
+
+    public Task(TaskData taskData)
     {
-        actionHoldersList = list;
+        this.taskData = taskData;
+        steps = new List<Step>();
     }
 
-    public void SetTaskCompleted(bool isTaskCompleted)
+    public void PushBack(Step step)
     {
-        this.isTaskCompleted = isTaskCompleted;
-    }
-    public List<List<ActionHolder>> GetActionHolderList()
-    {
-        return actionHoldersList;
-    }
-    public Task(List<ActionHolder> actionHolders)
-    {
-        this.actionHoldersList.Add(actionHolders);
+        steps.Add(step);
     }
 
+    public void RemoveFirstStep()
+    {
+        if (steps.Count == 0) return;
+        steps.RemoveAt(0);
+    }
+
+    public Step GetFirstStep()
+    {
+        if (steps.Count == 0) return null;
+        return steps[0];
+    }
 
 }

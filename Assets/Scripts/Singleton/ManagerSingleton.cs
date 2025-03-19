@@ -2,17 +2,21 @@ using UnityEngine;
 
 public class ManagerSingleton : MonoBehaviour
 {
-    [SerializeField] private ActionManager actionManager;
+    [SerializeField] private GridSystem gridSystem;
+    [SerializeField] private TaskManager taskManager;
+    [SerializeField] private WorkContainerManager workContainerManager;
     private static ManagerSingleton instance;
     public static ManagerSingleton Instance => instance;
 
-    public ActionManager ActionManager => actionManager;
+    public GridSystem GridSystem => gridSystem;
+    public TaskManager TaskManager => taskManager;
+    public WorkContainerManager WorkContainerManager => workContainerManager;
     private void Awake()
     {
         if (instance == null)
         {
             instance = this;
-            DontDestroyOnLoad(gameObject);
+            // force to destroy the game object
         }
         else
         {

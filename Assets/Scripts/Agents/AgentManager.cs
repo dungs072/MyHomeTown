@@ -4,11 +4,14 @@ using UnityEngine;
 
 public class AgentManager : MonoBehaviour
 {
+    [SerializeField] private Transform startPoint;
+    [SerializeField] private float radius = 5f;
     [Header("Agents")]
     [SerializeField] private AgentController agentPrefab;
     [SerializeField] private int maxAgents = 10;
-    [Header("Path")]
-    [SerializeField] private PathNodes path;
+
+    [Header("Debugger")]
+    [SerializeField] private Transform target;
     private List<AgentController> agents;
 
 
@@ -25,29 +28,28 @@ public class AgentManager : MonoBehaviour
     private IEnumerator SpawnAgents()
     {
         int count = 0;
-        Vector3 startPath = path.GetPath()[0];
-        Vector3 startSpawnPosition = new Vector3(startPath.x, startPath.y + 2, startPath.z);
         while (count < maxAgents)
         {
             AgentController agent = GetAgent();
-            agent.transform.position = startSpawnPosition;
+            agent.transform.position = GetRandomStartSpawnPoint();
+            // if (target != null)
+            // {
+            //     agent.SetTarget(target);
+            // }
             count++;
-            yield return new WaitForSeconds(2f);
         }
+        yield return null;
 
 
     }
-
-    private void AssignPathToAgent(AgentController agent)
+    private Vector3 GetRandomStartSpawnPoint()
     {
-        agent.SetAndFollowPath(path.GetPath());
-    }
-    private void AssignPathToAgents(Vector3[] path)
-    {
-        for (int i = 0; i < agents.Count; i++)
-        {
-            agents[i].SetAndFollowPath(path);
-        }
+        Vector3 position = startPoint.position;
+        float x = Random.Range(-radius, radius);
+        float z = Random.Range(-radius, radius);
+        position.x += x;
+        position.z += z;
+        return position;
     }
 
 
@@ -58,8 +60,8 @@ public class AgentManager : MonoBehaviour
         if (agent == null)
         {
             agent = Instantiate(agentPrefab, transform);
-            agent.SetCanGoBack(true);
-            agent.SetCanUsePool(true);
+            // agent.SetCanGoBack(true);
+            // agent.SetCanUsePool(true);
             agents.Add(agent);
         }
         else
@@ -67,6 +69,12 @@ public class AgentManager : MonoBehaviour
             agent.gameObject.SetActive(true);
         }
         return agent;
+    }
+
+    void OnDrawGizmos()
+    {
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(startPoint.position, radius);
     }
 
 }
