@@ -34,54 +34,66 @@ public class TaskHandler : MonoBehaviour
             }
         }
     }
-
-    public IEnumerator HandleFirstTask()
+    //! this will run in sequence. So pls do not break it :))
+    public IEnumerator HandleAllTask()
     {
-        if (taskPerformers.Count == 0) yield break;
-        var taskPerformer = taskPerformers[0];
-        while (!taskPerformer.IsFinished)
+        for (int i = 0; i < taskPerformers.Count; i++)
         {
-            var stepPerformer = taskPerformer.GetFirstStepPerformer();
-            if (stepPerformer == null) yield break;
-            var step = stepPerformer.Step;
-            var workContainer = GetTheShortestFreeWorkContainer(step);
-            while (workContainer == null)
-            {
-                Debug.Log("No free work container");
-                var waitingLinePos = GetWaitingPosition(step);
-                agent.SetDestination(waitingLinePos);
-                workContainer = GetTheShortestFreeWorkContainer(step);
-                yield return null;
-            }
-            var waitingLineWk = step.WorkContainers[0];
-            waitingLineWk.RemovePersonFromWaitingLine(gameObject);
-            while (!stepPerformer.IsFinished)
-            {
-                while (workContainer == null || !workContainer.IsFreeToUse(gameObject))
-                {
-                    var waitingLinePos = GetWaitingPosition(step);
-                    agent.SetDestination(waitingLinePos);
-                    workContainer = GetTheShortestFreeWorkContainer(step);
-                    yield return null;
-                }
-                waitingLineWk = step.WorkContainers[0];
-                waitingLineWk.RemovePersonFromWaitingLine(gameObject);
-                agent.SetDestination(workContainer.transform.position);
-
-                if (Utils.HasSamePosition(transform.position, workContainer.transform.position))
-                {
-                    workContainer.setUsingPerson(gameObject);
-                    yield return StartCoroutine(DoStep(step));
-                    workContainer.setUsingPerson(null);
-                    stepPerformer.SetIsFinished(true);
-                }
-                yield return null;
-            }
-            yield return null;
-            taskPerformer.RemoveFirstStepPerformer();
-
+            var taskPerformer = taskPerformers[i];
+            yield return HandleTask(taskPerformer.Task);
         }
     }
+    private IEnumerator HandleTask(Task task)
+    {
+        var steps = task.Steps;
+        for (int i = 0; i < steps.Count; i++)
+        {
+            var step = steps[i];
+            yield return HandleStep(step);
+        }
+    }
+    private IEnumerator HandleStep(Step step)
+    {
+        var workContainer = GetTheShortestFreeWorkContainer(step);
+        while (workContainer == null)
+        {
+            var waitingPosition = GetWaitingPosition(step);
+            agent.SetDestination(waitingPosition);
+            workContainer = GetTheShortestFreeWorkContainer(step);
+            yield return null;
+        }
+        var defaultWorkContainer = step.WorkContainers[0];
+        defaultWorkContainer.TryRemovePersonFromWaitingLine(gameObject);
+        yield return MoveToWorkContainer(workContainer);
+        workContainer.setUsingPerson(gameObject);
+        yield return DoStep(step);
+        workContainer.setUsingPerson(null);
+
+    }
+    private IEnumerator MoveToWorkContainer(WorkContainer workContainer)
+    {
+        var targetPosition = workContainer.transform.position;
+        while (!Utils.HasSamePosition(agent.transform.position, targetPosition))
+        {
+            yield return TryWaitingInLine(workContainer);
+            Debug.Log("MoveToWorkContainer");
+            workContainer.TryRemovePersonFromWaitingLine(gameObject);
+            agent.SetDestination(targetPosition);
+            yield return null;
+        }
+    }
+    private IEnumerator TryWaitingInLine(WorkContainer workContainer)
+    {
+        while (!workContainer.IsFreeToUse(gameObject))
+        {
+            var waitingPosition = GetWaitingPosition(workContainer);
+            agent.SetDestination(waitingPosition);
+            yield return null;
+        }
+
+
+    }
+
     private IEnumerator DoStep(Step step)
     {
         yield return new WaitForSeconds(step.Data.Duration);
@@ -111,6 +123,10 @@ public class TaskHandler : MonoBehaviour
     private Vector3 GetWaitingPosition(Step step)
     {
         var workContainer = step.WorkContainers[0];
+        return GetWaitingPosition(workContainer);
+    }
+    private Vector3 GetWaitingPosition(WorkContainer workContainer)
+    {
         workContainer.AddPersonToWaitingLine(gameObject);
         var transformWk = workContainer.transform;
         var distance = 2;

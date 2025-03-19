@@ -36,7 +36,7 @@ public class WorkContainer : MonoBehaviour
         if (personsWaitingLine.Contains(person)) return;
         personsWaitingLine.Add(person);
     }
-    public void RemovePersonFromWaitingLine(GameObject person)
+    public void TryRemovePersonFromWaitingLine(GameObject person)
     {
         if (!personsWaitingLine.Contains(person)) return;
         personsWaitingLine.Remove(person);
