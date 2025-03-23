@@ -224,9 +224,13 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 1796726034791111856, guid: 091740e2c09739642a7f652e7a39fe29, type: 3}
+      propertyPath: workContainerType
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 5275234884936169397, guid: 091740e2c09739642a7f652e7a39fe29, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 7.3
+      value: 20.18
       objectReference: {fileID: 0}
     - target: {fileID: 5275234884936169397, guid: 091740e2c09739642a7f652e7a39fe29, type: 3}
       propertyPath: m_LocalPosition.y
@@ -234,7 +238,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5275234884936169397, guid: 091740e2c09739642a7f652e7a39fe29, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0.920002
+      value: 2.87
       objectReference: {fileID: 0}
     - target: {fileID: 5275234884936169397, guid: 091740e2c09739642a7f652e7a39fe29, type: 3}
       propertyPath: m_LocalRotation.w
@@ -806,7 +810,7 @@ MonoBehaviour:
   startPoint: {fileID: 928656526}
   radius: 11.36
   agentPrefab: {fileID: 8066138087326353846, guid: dff38a08e0967c14b957a7fd50d5f49e, type: 3}
-  maxAgents: 100
+  maxAgents: 50
   target: {fileID: 1822621592}
 --- !u!1 &1314670856
 GameObject:
@@ -1107,6 +1111,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tasksData:
   - {fileID: 11400000, guid: 2853df05ae4b3804a9331984122755bc, type: 2}
+  - {fileID: 11400000, guid: 917644f13146fba44a0ec2ede3dc223e, type: 2}
 --- !u!1001 &5616445730066587067
 PrefabInstance:
   m_ObjectHideFlags: 0

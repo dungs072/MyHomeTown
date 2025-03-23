@@ -9,11 +9,26 @@ public class TaskPerformer
     private Task task;
 
     private List<StepPerformer> stepPerformers;
-
-
-    private bool isFinished = false;
+    private int currentStepIndex = 0;
     public Task Task => task;
-    public bool IsFinished => isFinished;
+    public int CurrentStepIndex => currentStepIndex;
+
+    public StepPerformer GetCurrentStepPerformer()
+    {
+        return stepPerformers[currentStepIndex];
+    }
+    public void MoveToNextStep()
+    {
+        currentStepIndex++;
+    }
+    public void ResetTask()
+    {
+        currentStepIndex = 0;
+    }
+    public bool IsFinished()
+    {
+        return currentStepIndex >= stepPerformers.Count;
+    }
     public void SetTask(Task task)
     {
         this.task = task;
@@ -37,16 +52,6 @@ public class TaskPerformer
     }
 
 
-    public StepPerformer GetFirstStepPerformer()
-    {
-        if (stepPerformers.Count == 0) return null;
-        return stepPerformers[0];
-    }
 
-    public void RemoveFirstStepPerformer()
-    {
-        if (stepPerformers.Count == 0) return;
-        stepPerformers.RemoveAt(0);
-    }
 
 }

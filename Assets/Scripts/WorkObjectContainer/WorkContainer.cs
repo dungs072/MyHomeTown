@@ -4,25 +4,56 @@ using UnityEngine;
 
 public class WorkContainer : MonoBehaviour
 {
+    
     [SerializeField] private WorkContainerType workContainerType;
     public WorkContainerType WorkContainerType => workContainerType;
 
-    private GameObject usingPerson;
-    public GameObject UsingPerson => usingPerson;
 
-    private List<GameObject> personsWaitingLine;
-    public List<GameObject> PersonsWaitingLine => personsWaitingLine;
+    private TaskHandler usingPerson;
+    public TaskHandler UsingPerson => usingPerson;
+
+    private List<TaskHandler> personsWaitingLine;
+    public List<TaskHandler> PersonsWaitingLine => personsWaitingLine;
 
     void Awake()
     {
-        personsWaitingLine = new List<GameObject>();
+        personsWaitingLine = new List<TaskHandler>();
     }
 
-    public void setUsingPerson(GameObject person)
+    public void SetUsingPerson(TaskHandler person)
     {
         usingPerson = person;
+        if (person == null)
+        {
+            TriggerPersonLeft();
+        }
+        else
+        {
+
+            TryRemovePersonFromWaitingLine(person);
+            TriggerWaitingInLine();
+        }
+
+
     }
-    public bool IsFreeToUse(GameObject person)
+    private void TriggerPersonLeft()
+    {
+        foreach (var person in personsWaitingLine)
+        {
+            StartCoroutine(person.HandleCurrentTask());
+        }
+    }
+    private void TriggerWaitingInLine()
+    {
+        foreach (var person in personsWaitingLine)
+        {
+            var index = GetIndexInWaitingLine(person);
+            var distance = 2;
+            var waitingPos = transform.position + distance * index * transform.forward;
+            person.TriggerWaitingInLine(waitingPos);
+        }
+    }
+    public bool IsFreeToUse(TaskHandler person)
     {
         if (usingPerson == person)
         {
@@ -31,21 +62,17 @@ public class WorkContainer : MonoBehaviour
         return usingPerson == null;
     }
 
-    public void AddPersonToWaitingLine(GameObject person)
+    public void AddPersonToWaitingLine(TaskHandler person)
     {
         if (personsWaitingLine.Contains(person)) return;
         personsWaitingLine.Add(person);
     }
-    public void TryRemovePersonFromWaitingLine(GameObject person)
+    public void TryRemovePersonFromWaitingLine(TaskHandler person)
     {
         if (!personsWaitingLine.Contains(person)) return;
         personsWaitingLine.Remove(person);
     }
-    public int GetWaitingLinePersonsCount()
-    {
-        return personsWaitingLine.Count;
-    }
-    public int GetIndexInWaitingLine(GameObject person)
+    public int GetIndexInWaitingLine(TaskHandler person)
     {
         return personsWaitingLine.IndexOf(person) + 1;
     }
