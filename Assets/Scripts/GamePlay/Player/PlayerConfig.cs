@@ -1,7 +1,7 @@
 public class PlayerConfig
 {
-    public const float MOVEMENT_SPEED = 5F;
-    public const float ZOOM_SPEED = 30f;
+    public const float MOVEMENT_SPEED = 30F;
+    public const float ZOOM_SPEED = 60f;
 
 
 
