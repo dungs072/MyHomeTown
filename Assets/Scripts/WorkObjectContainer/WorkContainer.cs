@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class WorkContainer : MonoBehaviour
 {
-    
+
     [SerializeField] private WorkContainerType workContainerType;
     public WorkContainerType WorkContainerType => workContainerType;
 
@@ -61,6 +61,10 @@ public class WorkContainer : MonoBehaviour
         }
         return usingPerson == null;
     }
+    public bool IsFreeToUse()
+    {
+        return usingPerson == null;
+    }
 
     public void AddPersonToWaitingLine(TaskHandler person)
     {
@@ -75,6 +79,10 @@ public class WorkContainer : MonoBehaviour
     public int GetIndexInWaitingLine(TaskHandler person)
     {
         return personsWaitingLine.IndexOf(person) + 1;
+    }
+    public int CountPersonInWaitingLine()
+    {
+        return personsWaitingLine.Count;
     }
 
 

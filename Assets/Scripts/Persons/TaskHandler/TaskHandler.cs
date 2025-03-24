@@ -75,8 +75,6 @@ public class TaskHandler : MonoBehaviour
             currentTaskIndex++;
             StartCoroutine(HandleAllAssignedTask());
         }
-
-
     }
     public void TriggerWaitingInLine(Vector3 waitingPos)
     {
@@ -101,8 +99,21 @@ public class TaskHandler : MonoBehaviour
 
     private WorkContainer GetTheShortestFreeWorkContainer(Step step)
     {
-        var places = step.WorkContainers;
-        if (places.Count == 0) return null;
+        var places = step.WorkContainers.FindAll(wc => wc.IsFreeToUse());
+        if (places.Count == 0)
+        {
+            var lowPersons = int.MaxValue;
+            foreach (var wc in step.WorkContainers)
+            {
+                var totalPerson = wc.CountPersonInWaitingLine();
+                if (totalPerson < lowPersons)
+                {
+                    lowPersons = totalPerson;
+                    places.Clear();
+                    places.Add(wc);
+                }
+            }
+        }
 
         if (places.Count == 0) return null;
         WorkContainer shortestPlace = places[0];
@@ -119,6 +130,8 @@ public class TaskHandler : MonoBehaviour
         }
         return shortestPlace;
     }
+
+    //! Pls override this function for your own waiting in line shape you want
     private Vector3 GetWaitingPosition(WorkContainer workContainer)
     {
 
