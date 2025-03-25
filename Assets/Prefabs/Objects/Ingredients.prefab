@@ -118,6 +118,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5275234884936169397}
   - component: {fileID: 1796726034791111856}
+  - component: {fileID: 8402337095299375531}
   m_Layer: 0
   m_Name: Ingredients
   m_TagString: Untagged
@@ -154,3 +155,22 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   workContainerType: 0
+--- !u!114 &8402337095299375531
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 202695153414628383}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ab3b3c2e0767cea469a081c4d2b381e3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  widthSlots: 10
+  heightSlots: 3
+  canShowGridVisualize: 1
+  canMove: 1
+  meshRenderer: {fileID: 318088711494751154}
+  overlapMaterial: {fileID: 2100000, guid: 501d020476bc4ab409da21e184e3b775, type: 2}
+  unOverlapMaterial: {fileID: 2100000, guid: 178ca4ef31097e742b5a7c059098a530, type: 2}
