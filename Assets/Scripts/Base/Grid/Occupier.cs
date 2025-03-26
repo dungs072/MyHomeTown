@@ -39,7 +39,7 @@ public class Occupier : MonoBehaviour
 
     private void Update()
     {
-        if (canMove) return;
+        if (!canMove) return;
         singleton.GridSystem.SnapToGridPoint(transform);
         if (Utils.HasSamePosition(previousPosition, transform.position)) return;
         previousPosition = transform.position;
