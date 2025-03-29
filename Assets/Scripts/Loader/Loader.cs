@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -5,6 +6,7 @@ using UnityEngine;
 // add this in the loading scene
 public class Loader : MonoBehaviour
 {
+    public static event Action OnAssetLoaded;
     public static Loader Instance => instance;
     public List<PropertyBase> PropList => propList;
 
@@ -13,8 +15,6 @@ public class Loader : MonoBehaviour
     private static Loader instance;
     void Awake()
     {
-
-        LoadPropAssets();
         if (instance == null)
         {
             instance = this;
@@ -23,6 +23,8 @@ public class Loader : MonoBehaviour
         {
             Destroy(gameObject);
         }
+
+        LoadPropAssets();
     }
     public void LoadPropAssets()
     {
@@ -39,5 +41,6 @@ public class Loader : MonoBehaviour
             propList.Add(prop);
             Debug.Log("Loaded Prefab: " + prefab.name);
         }
+        OnAssetLoaded?.Invoke();
     }
 }

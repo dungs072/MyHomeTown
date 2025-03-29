@@ -130,6 +130,11 @@ public class CameraController : MonoBehaviour
         }
 
         // Move the camera
+        Vector3 forward = playerCamera.transform.up;
+        Vector3 right = playerCamera.transform.right;
+        forward.y = 0;
+        moveDirection = forward * moveDirection.z +
+                        right * moveDirection.x;
         playerCamera.transform.position += moveDirection * movementSpeed * Time.deltaTime;
     }
     private void UpdateCameraZoom()

@@ -3,8 +3,11 @@ using UnityEngine;
 
 public class Person : MonoBehaviour
 {
+    [SerializeField] private MeshRenderer meshRenderer;
     private TaskHandler taskHandler;
     private ManagerSingleton singleton;
+
+
     void Awake()
     {
         singleton = ManagerSingleton.Instance;
@@ -15,6 +18,13 @@ public class Person : MonoBehaviour
     void Start()
     {
         StartCoroutine(DoTask());
+        SetRandomColor();
+    }
+
+    private void SetRandomColor()
+    {
+        Color randomColor = new Color(Random.value, Random.value, Random.value, 1.0f);
+        meshRenderer.material.color = randomColor;
     }
 
     private IEnumerator DoTask()
