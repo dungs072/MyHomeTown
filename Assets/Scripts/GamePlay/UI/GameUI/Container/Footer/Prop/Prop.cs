@@ -1,9 +1,11 @@
 using System;
+using System.Collections;
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class Prop : MonoBehaviour
+public class Prop : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
 {
     [SerializeField] private Image background;
 
@@ -11,7 +13,12 @@ public class Prop : MonoBehaviour
 
     private Button buttonComponent;
     private string propName;
+    private Action OnStartCreatePropAction;
+    private Action OnCreatingPropAction;
+    private Action OnFinishCreatePropAction;
+
     public string PropName => propName;
+
     void Awake()
     {
         buttonComponent = GetComponent<Button>();
@@ -31,8 +38,34 @@ public class Prop : MonoBehaviour
         background.sprite = sprite;
     }
 
-    public void RegisterButtonClickEvent(Action action)
+    public void RegisterButtonClickEvent(Action start, Action creating, Action finish)
     {
-        buttonComponent.onClick.AddListener(() => action?.Invoke());
+        OnStartCreatePropAction = start;
+        OnCreatingPropAction = creating;
+        OnFinishCreatePropAction = finish;
     }
+
+
+    public void OnPointerDown(PointerEventData eventData)
+    {
+        OnStartCreatePropAction?.Invoke();
+        StartCoroutine(handlePointerDrag());
+    }
+    public IEnumerator handlePointerDrag()
+    {
+        while (true)
+        {
+            OnCreatingPropAction?.Invoke();
+            yield return null;
+        }
+
+    }
+
+    public void OnPointerUp(PointerEventData eventData)
+    {
+        StopAllCoroutines();
+        OnFinishCreatePropAction?.Invoke();
+    }
+
+
 }

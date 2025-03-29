@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -31,9 +32,18 @@ public class Footer : MonoBehaviour
     public void RegisterEventForPropUI(Prop prop)
     {
         var productName = prop.PropName;
-        prop.RegisterButtonClickEvent(() =>
+        void startCreateProp()
         {
-            ManagerSingleton.Instance.PropertyFactory.CreateProduct(productName);
-        });
+            ManagerSingleton.Instance.PropertyFactory.GetFreeProduct(productName);
+        }
+        void creatingProp()
+        {
+            ManagerSingleton.Instance.PropertyFactory.HandleOnCreatingProperty();
+        }
+        void finishCreateProp()
+        {
+            ManagerSingleton.Instance.PropertyFactory.HandleOnFinishCreatingProperty();
+        }
+        prop.RegisterButtonClickEvent(startCreateProp, creatingProp, finishCreateProp);
     }
 }
