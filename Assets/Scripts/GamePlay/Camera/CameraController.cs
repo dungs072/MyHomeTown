@@ -12,6 +12,7 @@ public class CameraController : MonoBehaviour
     private float zoomInput;
 
     private float movementSpeed;
+    private MapWorld mapWorld;
     void Awake()
     {
         playerInput = GetComponent<PlayerInput>();
@@ -29,7 +30,10 @@ public class CameraController : MonoBehaviour
     {
         PlayerInput.OnCameraAngleChanged -= OnCameraAngleChanged;
     }
-
+    void Start()
+    {
+        mapWorld = ManagerSingleton.Instance.MapWorld;
+    }
 
     public void UpdateCameraController()
     {
@@ -94,7 +98,8 @@ public class CameraController : MonoBehaviour
         Vector3 moveDirection = forward * CameraMoveInput.y +
                                  playerCamera.transform.right * CameraMoveInput.x;
 
-        playerCamera.transform.position += moveDirection * movementSpeed * Time.deltaTime;
+        var position = playerCamera.transform.position + moveDirection * movementSpeed * Time.deltaTime;
+        UpdateCameraPosition(position);
     }
 
 
@@ -151,10 +156,21 @@ public class CameraController : MonoBehaviour
 
         float zoomDelta = zoomInput * CameraConfig.ZOOM_SPEED * Time.deltaTime;
 
-        playerCamera.transform.position += playerCamera.transform.forward * zoomDelta;
+        var position = playerCamera.transform.position + playerCamera.transform.forward * zoomDelta;
+        UpdateCameraPosition(position);
+    }
 
-
-
+    private void UpdateCameraPosition(Vector3 position)
+    {
+        if (position.x < mapWorld.LeftBound || position.x > mapWorld.RightBound)
+        {
+            position.x = Mathf.Clamp(position.x, mapWorld.LeftBound, mapWorld.RightBound);
+        }
+        if (position.z < mapWorld.BottomBound || position.z > mapWorld.TopBound)
+        {
+            position.z = Mathf.Clamp(position.z, mapWorld.BottomBound, mapWorld.TopBound);
+        }
+        playerCamera.transform.position = position;
     }
 
     private void UpdateCameraRotation()

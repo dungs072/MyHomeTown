@@ -1,5 +1,6 @@
 using UnityEngine;
 
+[RequireComponent(typeof(MapWorld))]
 public class ManagerSingleton : MonoBehaviour
 {
     [SerializeField] private GridSystem gridSystem;
@@ -20,6 +21,11 @@ public class ManagerSingleton : MonoBehaviour
     public PropertyFactory PropertyFactory => propertyFactory;
     // UI
     public GameUI GameUI => gameUI;
+
+    // MapWorld
+    public MapWorld MapWorld => mapWorld;
+
+    private MapWorld mapWorld;
     private void Awake()
     {
         if (instance == null)
@@ -31,5 +37,12 @@ public class ManagerSingleton : MonoBehaviour
         {
             Destroy(gameObject);
         }
+
+        InitComponents();
+    }
+
+    private void InitComponents()
+    {
+        mapWorld = GetComponent<MapWorld>();
     }
 }

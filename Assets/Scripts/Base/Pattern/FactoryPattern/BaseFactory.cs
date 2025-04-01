@@ -55,6 +55,7 @@ public class BaseFactory : MonoBehaviour
             {
                 if (!product.isActiveAndEnabled)
                 {
+                    product.gameObject.SetActive(true);
                     return product;
                 }
             }

@@ -29,6 +29,11 @@ public class PropertyFactory : BaseFactory
     {
         var product = base.GetFreeProduct(productName);
         currentCreatingProduct = product as PropertyBase;
+        if (currentCreatingProduct.TryGetComponent(out Occupier occupier))
+        {
+            occupier.StartMove();
+        }
+
         return currentCreatingProduct;
     }
 
@@ -39,6 +44,7 @@ public class PropertyFactory : BaseFactory
         if (Physics.Raycast(ray, out RaycastHit hit))
         {
             Vector3 worldPosition = hit.point;
+
             currentCreatingProduct.transform.position = new Vector3(worldPosition.x, 0, worldPosition.z);
         }
 
@@ -46,6 +52,16 @@ public class PropertyFactory : BaseFactory
 
     public void HandleOnFinishCreatingProperty()
     {
+        if (currentCreatingProduct.TryGetComponent(out Occupier occupier))
+        {
+            occupier.StopMove();
+            if (occupier.IsOverlap)
+            {
+                currentCreatingProduct.gameObject.SetActive(false);
+                return;
+            }
+        }
+
         if (currentCreatingProduct != null)
         {
             currentCreatingProduct.gameObject.SetActive(true);

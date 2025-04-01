@@ -21,6 +21,10 @@ public class GridSystem : MonoBehaviour
 
     private Vector3 startPosition;
 
+    public int TotalHorizontalSlot => totalHorizontalSlot;
+    public int TotalVerticalSlot => totalVerticalSlot;
+    public float Size => size;
+
     public Vector2Int GetGridPosition(Node node)
     {
         int x = node.GridX;

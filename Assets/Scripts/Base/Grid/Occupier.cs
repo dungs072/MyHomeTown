@@ -25,7 +25,17 @@ public class Occupier : MonoBehaviour
 
     private ManagerSingleton singleton;
 
-    private Vector3 previousPosition;
+    private bool isOverlap = false;
+
+    public bool IsOverlap => isOverlap;
+
+    //! for debug in the editor.
+
+    private void OnValidate()
+    {
+        if (!canShowGridVisualize) return;
+        CreateGrid();
+    }
 
     private void Awake()
     {
@@ -37,21 +47,42 @@ public class Occupier : MonoBehaviour
         StartCoroutine(HandleOccupiedSlots());
     }
 
-    private void Update()
-    {
-        if (!canMove) return;
-        singleton.GridSystem.SnapToGridPoint(transform);
-        if (Utils.HasSamePosition(previousPosition, transform.position)) return;
-        previousPosition = transform.position;
-        StartCoroutine(HandleOccupiedSlots());
-    }
-    //! for debug in the editor.
+    // private void Update()
+    // {
+    //     if (!canMove) return;
+    //     singleton.GridSystem.SnapToGridPoint(transform);
+    //     if (Utils.HasSamePosition(previousPosition, transform.position)) return;
+    //     previousPosition = transform.position;
+    //     StartCoroutine(HandleOccupiedSlots());
+    // }
 
-    private void OnValidate()
+    private IEnumerator HandleMovingOnGrid()
     {
-        if (!canShowGridVisualize) return;
-        CreateGrid();
+        while (canMove)
+        {
+            var gridSystem = ManagerSingleton.Instance.GridSystem;
+            gridSystem.SnapToGridPoint(transform);
+            if (gridSystem == null) yield break;
+            ClearOccupiedNodes();
+            List<Node> occupyingNodes = gridSystem.FindOccupyingNodes(widthSlots, heightSlots, this);
+            TryToOccupyingNodes(occupyingNodes);
+            yield return null;
+        }
     }
+
+    public void StartMove()
+    {
+        canMove = true;
+        StartCoroutine(HandleMovingOnGrid());
+    }
+    public void StopMove()
+    {
+        canMove = false;
+        StopCoroutine(HandleMovingOnGrid());
+        ClearOccupiedNodes();
+    }
+
+
     private IEnumerator HandleOccupiedSlots()
     {
         yield return new WaitForSeconds(0.1f);
@@ -59,12 +90,13 @@ public class Occupier : MonoBehaviour
         if (gridSystem == null) yield break;
         ClearOccupiedNodes();
         List<Node> occupyingNodes = gridSystem.FindOccupyingNodes(widthSlots, heightSlots, this);
-        CheckOccupyingNodes(occupyingNodes);
+        TryToOccupyingNodes(occupyingNodes);
     }
-    private void CheckOccupyingNodes(List<Node> occupyingNodes)
+    private void TryToOccupyingNodes(List<Node> occupyingNodes)
     {
         if (occupyingNodes == null)
         {
+            isOverlap = true;
             SetOverlapDebugMaterial(true);
             return;
         }
@@ -73,6 +105,7 @@ public class Occupier : MonoBehaviour
             var node = occupyingNodes[i];
             if (node.Owner != null)
             {
+                isOverlap = true;
                 SetOverlapDebugMaterial(true);
                 return;
             }
@@ -83,6 +116,7 @@ public class Occupier : MonoBehaviour
             node.SetOwner(gameObject);
             occupiedNodes.Add(node);
         }
+        isOverlap = false;
         SetOverlapDebugMaterial(false);
 
     }
