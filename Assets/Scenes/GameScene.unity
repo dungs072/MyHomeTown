@@ -974,7 +974,7 @@ GameObject:
   - component: {fileID: 718872025}
   - component: {fileID: 718872024}
   - component: {fileID: 718872023}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Floor
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1510,6 +1510,7 @@ GameObject:
   - component: {fileID: 1713420475}
   - component: {fileID: 1713420474}
   - component: {fileID: 1713420473}
+  - component: {fileID: 1713420477}
   - component: {fileID: 1713420476}
   m_Layer: 0
   m_Name: Player
@@ -1567,6 +1568,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 77ba805f6a1bd974f901ce443b29a59d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1713420477
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1713420472}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: caee667ab97916245b3c05e2f903f87f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!4 &1822621592 stripped

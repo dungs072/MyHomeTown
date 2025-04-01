@@ -171,10 +171,11 @@ MonoBehaviour:
   widthSlots: 10
   heightSlots: 2
   canShowGridVisualize: 0
-  canMove: 1
+  isMoving: 0
   meshRenderer: {fileID: 318088711494751154}
   overlapMaterial: {fileID: 2100000, guid: 501d020476bc4ab409da21e184e3b775, type: 2}
   unOverlapMaterial: {fileID: 2100000, guid: 178ca4ef31097e742b5a7c059098a530, type: 2}
+  normalMaterial: {fileID: 2100000, guid: d7a2a12646a015348943bf2f1d2b0b0b, type: 2}
 --- !u!114 &-1674716450820195410
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -24,6 +24,10 @@ public class Loader : MonoBehaviour
             Destroy(gameObject);
         }
 
+
+    }
+    void Start()
+    {
         LoadPropAssets();
     }
     public void LoadPropAssets()

@@ -41,7 +41,7 @@ public class PropertyFactory : BaseFactory
     public void HandleOnCreatingProperty()
     {
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        if (Physics.Raycast(ray, out RaycastHit hit))
+        if (Physics.Raycast(ray, out RaycastHit hit, 1000, LayerMask.GetMask(LayerConstant.PLACABLE_LAYER)))
         {
             Vector3 worldPosition = hit.point;
 
@@ -59,6 +59,10 @@ public class PropertyFactory : BaseFactory
             {
                 currentCreatingProduct.gameObject.SetActive(false);
                 return;
+            }
+            else
+            {
+                occupier.SetOccupiedSlots();
             }
         }
 

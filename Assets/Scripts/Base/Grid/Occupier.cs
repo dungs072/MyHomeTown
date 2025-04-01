@@ -3,6 +3,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum OccupierState
+{
+    Overlap,
+    UnOverlap,
+    Normal
+}
+
 public class Occupier : MonoBehaviour
 {
     [Range(1, 100)]
@@ -12,12 +19,13 @@ public class Occupier : MonoBehaviour
     [SerializeField] private int heightSlots = 1;
 
     [SerializeField] private bool canShowGridVisualize = false;
-    [SerializeField] private bool canMove = true;
+    [SerializeField] private bool isMoving = true;
 
     [Header("Debug only")]
     [SerializeField] private MeshRenderer meshRenderer;
     [SerializeField] private Material overlapMaterial;
     [SerializeField] private Material unOverlapMaterial;
+    [SerializeField] private Material normalMaterial;
 
     private List<Node> occupiedNodes;
     //! use this to visualize the grid in the editor.
@@ -25,9 +33,9 @@ public class Occupier : MonoBehaviour
 
     private ManagerSingleton singleton;
 
-    private bool isOverlap = false;
+    private OccupierState currentOccupierState = OccupierState.Normal;
 
-    public bool IsOverlap => isOverlap;
+    public bool IsOverlap => currentOccupierState == OccupierState.Overlap;
 
     //! for debug in the editor.
 
@@ -44,7 +52,7 @@ public class Occupier : MonoBehaviour
     private void Start()
     {
         singleton = ManagerSingleton.Instance;
-        StartCoroutine(HandleOccupiedSlots());
+        SetOccupiedSlots();
     }
 
     // private void Update()
@@ -58,7 +66,7 @@ public class Occupier : MonoBehaviour
 
     private IEnumerator HandleMovingOnGrid()
     {
-        while (canMove)
+        while (isMoving)
         {
             var gridSystem = ManagerSingleton.Instance.GridSystem;
             gridSystem.SnapToGridPoint(transform);
@@ -72,22 +80,21 @@ public class Occupier : MonoBehaviour
 
     public void StartMove()
     {
-        canMove = true;
+        isMoving = true;
         StartCoroutine(HandleMovingOnGrid());
     }
     public void StopMove()
     {
-        canMove = false;
+        isMoving = false;
         StopCoroutine(HandleMovingOnGrid());
         ClearOccupiedNodes();
     }
 
 
-    private IEnumerator HandleOccupiedSlots()
+    public void SetOccupiedSlots()
     {
-        yield return new WaitForSeconds(0.1f);
         var gridSystem = singleton.GridSystem;
-        if (gridSystem == null) yield break;
+        if (gridSystem == null) return;
         ClearOccupiedNodes();
         List<Node> occupyingNodes = gridSystem.FindOccupyingNodes(widthSlots, heightSlots, this);
         TryToOccupyingNodes(occupyingNodes);
@@ -96,8 +103,7 @@ public class Occupier : MonoBehaviour
     {
         if (occupyingNodes == null)
         {
-            isOverlap = true;
-            SetOverlapDebugMaterial(true);
+            SetCurrentOccupierState(OccupierState.Overlap);
             return;
         }
         for (int i = 0; i < occupyingNodes.Count; i++)
@@ -105,8 +111,7 @@ public class Occupier : MonoBehaviour
             var node = occupyingNodes[i];
             if (node.Owner != null)
             {
-                isOverlap = true;
-                SetOverlapDebugMaterial(true);
+                SetCurrentOccupierState(OccupierState.Overlap);
                 return;
             }
         }
@@ -116,8 +121,8 @@ public class Occupier : MonoBehaviour
             node.SetOwner(gameObject);
             occupiedNodes.Add(node);
         }
-        isOverlap = false;
-        SetOverlapDebugMaterial(false);
+        var state = isMoving ? OccupierState.UnOverlap : OccupierState.Normal;
+        SetCurrentOccupierState(state);
 
     }
     private void ClearOccupiedNodes()
@@ -178,9 +183,25 @@ public class Occupier : MonoBehaviour
     }
 
 
-    public void SetOverlapDebugMaterial(bool isOverlap)
+    public void SetCurrentOccupierState(OccupierState state)
+    {
+        currentOccupierState = state;
+        UpdateMaterial();
+    }
+    private void UpdateMaterial()
     {
         if (meshRenderer == null) return;
-        meshRenderer.material = isOverlap ? overlapMaterial : unOverlapMaterial;
+        if (currentOccupierState == OccupierState.Normal)
+        {
+            meshRenderer.material = normalMaterial;
+        }
+        else if (currentOccupierState == OccupierState.Overlap)
+        {
+            meshRenderer.material = overlapMaterial;
+        }
+        else if (currentOccupierState == OccupierState.UnOverlap)
+        {
+            meshRenderer.material = unOverlapMaterial;
+        }
     }
 }
