@@ -1,11 +1,22 @@
 using UnityEngine;
 
-public class PlayerWorldSelection : MonoBehaviour
+public class PlayerWorldSelection : CoreBehavior
 {
     private PropertyBase selectedProperty;
-    public void UpdateSelection()
-    {
 
+    protected override void OnEnableBehavior()
+    {
+        base.OnEnableBehavior();
+        PlayerInput.OnSelectionObject += OnSelectionObject;
+    }
+    protected override void OnDisableBehavior()
+    {
+        base.OnDisableBehavior();
+        PlayerInput.OnSelectionObject -= OnSelectionObject;
+    }
+
+    private void OnSelectionObject()
+    {
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         if (Physics.Raycast(ray, out RaycastHit hit))
         {

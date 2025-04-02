@@ -1,7 +1,7 @@
 using NUnit.Framework;
 using UnityEngine;
 
-public class CameraController : MonoBehaviour
+public class CameraController : CoreBehavior
 {
 
     private PlayerInput playerInput;
@@ -22,12 +22,14 @@ public class CameraController : MonoBehaviour
         movementSpeed = CameraConfig.MIN_MOVEMENT_SPEED;
     }
 
-    void OnEnable()
+    protected override void OnEnableBehavior()
     {
+        base.OnEnableBehavior();
         PlayerInput.OnCameraAngleChanged += OnCameraAngleChanged;
     }
-    void OnDisable()
+    protected override void OnDisableBehavior()
     {
+        base.OnDisableBehavior();
         PlayerInput.OnCameraAngleChanged -= OnCameraAngleChanged;
     }
     void Start()
@@ -35,7 +37,7 @@ public class CameraController : MonoBehaviour
         mapWorld = ManagerSingleton.Instance.MapWorld;
     }
 
-    public void UpdateCameraController()
+    public override void UpdateBehavior(float dt)
     {
         movementSpeed = GetMovementSpeed();
         UpdateInputOverTime();

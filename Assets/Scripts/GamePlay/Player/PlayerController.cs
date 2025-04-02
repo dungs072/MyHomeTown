@@ -1,7 +1,7 @@
 using UnityEngine;
 [RequireComponent(typeof(CameraController))]
 [RequireComponent(typeof(PlayerWorldSelection))]
-public class PlayerController : MonoBehaviour
+public class PlayerController : CoreBehavior
 {
     private CameraController cameraController;
     private PlayerWorldSelection playerWorldSelection;
@@ -12,10 +12,4 @@ public class PlayerController : MonoBehaviour
         playerWorldSelection = GetComponent<PlayerWorldSelection>();
     }
 
-
-    void Update()
-    {
-        cameraController.UpdateCameraController();
-        playerWorldSelection.UpdateSelection();
-    }
 }
