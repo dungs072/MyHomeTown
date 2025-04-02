@@ -3,6 +3,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum OccupierState
+{
+    Overlap,
+    UnOverlap,
+    Normal
+}
+
 public class Occupier : MonoBehaviour
 {
     [Range(1, 100)]
@@ -12,12 +19,13 @@ public class Occupier : MonoBehaviour
     [SerializeField] private int heightSlots = 1;
 
     [SerializeField] private bool canShowGridVisualize = false;
-    [SerializeField] private bool canMove = true;
+    [SerializeField] private bool isMoving = true;
 
     [Header("Debug only")]
     [SerializeField] private MeshRenderer meshRenderer;
     [SerializeField] private Material overlapMaterial;
     [SerializeField] private Material unOverlapMaterial;
+    [SerializeField] private Material normalMaterial;
 
     private List<Node> occupiedNodes;
     //! use this to visualize the grid in the editor.
@@ -25,7 +33,17 @@ public class Occupier : MonoBehaviour
 
     private ManagerSingleton singleton;
 
-    private Vector3 previousPosition;
+    private OccupierState currentOccupierState = OccupierState.Normal;
+
+    public bool IsOverlap => currentOccupierState == OccupierState.Overlap;
+
+    //! for debug in the editor.
+
+    private void OnValidate()
+    {
+        if (!canShowGridVisualize) return;
+        CreateGrid();
+    }
 
     private void Awake()
     {
@@ -34,38 +52,58 @@ public class Occupier : MonoBehaviour
     private void Start()
     {
         singleton = ManagerSingleton.Instance;
-        StartCoroutine(HandleOccupiedSlots());
+        SetOccupiedSlots();
     }
 
-    private void Update()
-    {
-        if (canMove) return;
-        singleton.GridSystem.SnapToGridPoint(transform);
-        if (Utils.HasSamePosition(previousPosition, transform.position)) return;
-        previousPosition = transform.position;
-        StartCoroutine(HandleOccupiedSlots());
-    }
-    //! for debug in the editor.
+    // private void Update()
+    // {
+    //     if (!canMove) return;
+    //     singleton.GridSystem.SnapToGridPoint(transform);
+    //     if (Utils.HasSamePosition(previousPosition, transform.position)) return;
+    //     previousPosition = transform.position;
+    //     StartCoroutine(HandleOccupiedSlots());
+    // }
 
-    private void OnValidate()
+    private IEnumerator HandleMovingOnGrid()
     {
-        if (!canShowGridVisualize) return;
-        CreateGrid();
+        while (isMoving)
+        {
+            var gridSystem = ManagerSingleton.Instance.GridSystem;
+            gridSystem.SnapToGridPoint(transform);
+            if (gridSystem == null) yield break;
+            ClearOccupiedNodes();
+            List<Node> occupyingNodes = gridSystem.FindOccupyingNodes(widthSlots, heightSlots, this);
+            TryToOccupyingNodes(occupyingNodes);
+            yield return null;
+        }
     }
-    private IEnumerator HandleOccupiedSlots()
+
+    public void StartMove()
     {
-        yield return new WaitForSeconds(0.1f);
+        isMoving = true;
+        StartCoroutine(HandleMovingOnGrid());
+    }
+    public void StopMove()
+    {
+        isMoving = false;
+        StopCoroutine(HandleMovingOnGrid());
+        ClearOccupiedNodes();
+    }
+
+
+    public void SetOccupiedSlots()
+    {
         var gridSystem = singleton.GridSystem;
-        if (gridSystem == null) yield break;
+        if (gridSystem == null) return;
         ClearOccupiedNodes();
         List<Node> occupyingNodes = gridSystem.FindOccupyingNodes(widthSlots, heightSlots, this);
-        CheckOccupyingNodes(occupyingNodes);
+        TryToOccupyingNodes(occupyingNodes);
     }
-    private void CheckOccupyingNodes(List<Node> occupyingNodes)
+    private void TryToOccupyingNodes(List<Node> occupyingNodes)
     {
         if (occupyingNodes == null)
         {
-            SetOverlapDebugMaterial(true);
+            SetCurrentOccupierState(OccupierState.Overlap);
             return;
         }
         for (int i = 0; i < occupyingNodes.Count; i++)
@@ -73,7 +111,7 @@ public class Occupier : MonoBehaviour
             var node = occupyingNodes[i];
             if (node.Owner != null)
             {
-                SetOverlapDebugMaterial(true);
+                SetCurrentOccupierState(OccupierState.Overlap);
                 return;
             }
         }
@@ -83,7 +121,8 @@ public class Occupier : MonoBehaviour
             node.SetOwner(gameObject);
             occupiedNodes.Add(node);
         }
-        SetOverlapDebugMaterial(false);
+        var state = isMoving ? OccupierState.UnOverlap : OccupierState.Normal;
+        SetCurrentOccupierState(state);
 
     }
     private void ClearOccupiedNodes()
@@ -144,9 +183,25 @@ public class Occupier : MonoBehaviour
     }
 
 
-    public void SetOverlapDebugMaterial(bool isOverlap)
+    public void SetCurrentOccupierState(OccupierState state)
+    {
+        currentOccupierState = state;
+        UpdateMaterial();
+    }
+    private void UpdateMaterial()
     {
         if (meshRenderer == null) return;
-        meshRenderer.material = isOverlap ? overlapMaterial : unOverlapMaterial;
+        if (currentOccupierState == OccupierState.Normal)
+        {
+            meshRenderer.material = normalMaterial;
+        }
+        else if (currentOccupierState == OccupierState.Overlap)
+        {
+            meshRenderer.material = overlapMaterial;
+        }
+        else if (currentOccupierState == OccupierState.UnOverlap)
+        {
+            meshRenderer.material = unOverlapMaterial;
+        }
     }
 }

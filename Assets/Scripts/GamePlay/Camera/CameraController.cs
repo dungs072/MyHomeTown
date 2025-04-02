@@ -1,7 +1,7 @@
 using NUnit.Framework;
 using UnityEngine;
 
-public class CameraController : MonoBehaviour
+public class CameraController : CoreBehavior
 {
 
     private PlayerInput playerInput;
@@ -12,6 +12,7 @@ public class CameraController : MonoBehaviour
     private float zoomInput;
 
     private float movementSpeed;
+    private MapWorld mapWorld;
     void Awake()
     {
         playerInput = GetComponent<PlayerInput>();
@@ -21,17 +22,22 @@ public class CameraController : MonoBehaviour
         movementSpeed = CameraConfig.MIN_MOVEMENT_SPEED;
     }
 
-    void OnEnable()
+    protected override void OnEnableBehavior()
     {
+        base.OnEnableBehavior();
         PlayerInput.OnCameraAngleChanged += OnCameraAngleChanged;
     }
-    void OnDisable()
+    protected override void OnDisableBehavior()
     {
+        base.OnDisableBehavior();
         PlayerInput.OnCameraAngleChanged -= OnCameraAngleChanged;
     }
+    void Start()
+    {
+        mapWorld = ManagerSingleton.Instance.MapWorld;
+    }
 
-
-    public void UpdateCameraController()
+    public override void UpdateBehavior(float dt)
     {
         movementSpeed = GetMovementSpeed();
         UpdateInputOverTime();
@@ -94,7 +100,8 @@ public class CameraController : MonoBehaviour
         Vector3 moveDirection = forward * CameraMoveInput.y +
                                  playerCamera.transform.right * CameraMoveInput.x;
 
-        playerCamera.transform.position += moveDirection * movementSpeed * Time.deltaTime;
+        var position = playerCamera.transform.position + moveDirection * movementSpeed * Time.deltaTime;
+        UpdateCameraPosition(position);
     }
 
 
@@ -130,6 +137,11 @@ public class CameraController : MonoBehaviour
         }
 
         // Move the camera
+        Vector3 forward = playerCamera.transform.up;
+        Vector3 right = playerCamera.transform.right;
+        forward.y = 0;
+        moveDirection = forward * moveDirection.z +
+                        right * moveDirection.x;
         playerCamera.transform.position += moveDirection * movementSpeed * Time.deltaTime;
     }
     private void UpdateCameraZoom()
@@ -146,10 +158,21 @@ public class CameraController : MonoBehaviour
 
         float zoomDelta = zoomInput * CameraConfig.ZOOM_SPEED * Time.deltaTime;
 
-        playerCamera.transform.position += playerCamera.transform.forward * zoomDelta;
+        var position = playerCamera.transform.position + playerCamera.transform.forward * zoomDelta;
+        UpdateCameraPosition(position);
+    }
 
-
-
+    private void UpdateCameraPosition(Vector3 position)
+    {
+        if (position.x < mapWorld.LeftBound || position.x > mapWorld.RightBound)
+        {
+            position.x = Mathf.Clamp(position.x, mapWorld.LeftBound, mapWorld.RightBound);
+        }
+        if (position.z < mapWorld.BottomBound || position.z > mapWorld.TopBound)
+        {
+            position.z = Mathf.Clamp(position.z, mapWorld.BottomBound, mapWorld.TopBound);
+        }
+        playerCamera.transform.position = position;
     }
 
     private void UpdateCameraRotation()

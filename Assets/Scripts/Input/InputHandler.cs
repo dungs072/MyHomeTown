@@ -62,6 +62,15 @@ public partial class @InputHandler: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""SelectionObject"",
+                    ""type"": ""Button"",
+                    ""id"": ""05f4d671-495b-47a3-8e4d-3eabd7863a59"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -207,6 +216,17 @@ public partial class @InputHandler: IInputActionCollection2, IDisposable
                     ""action"": ""Look"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""73bc47e0-a307-4a34-b426-a6ca1032b7a4"",
+                    ""path"": ""<Mouse>/press"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SelectionObject"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -236,6 +256,7 @@ public partial class @InputHandler: IInputActionCollection2, IDisposable
         m_Player_RotateCamera = m_Player.FindAction("RotateCamera", throwIfNotFound: true);
         m_Player_ZoomCamera = m_Player.FindAction("ZoomCamera", throwIfNotFound: true);
         m_Player_Look = m_Player.FindAction("Look", throwIfNotFound: true);
+        m_Player_SelectionObject = m_Player.FindAction("SelectionObject", throwIfNotFound: true);
     }
 
     ~@InputHandler()
@@ -306,6 +327,7 @@ public partial class @InputHandler: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_RotateCamera;
     private readonly InputAction m_Player_ZoomCamera;
     private readonly InputAction m_Player_Look;
+    private readonly InputAction m_Player_SelectionObject;
     public struct PlayerActions
     {
         private @InputHandler m_Wrapper;
@@ -314,6 +336,7 @@ public partial class @InputHandler: IInputActionCollection2, IDisposable
         public InputAction @RotateCamera => m_Wrapper.m_Player_RotateCamera;
         public InputAction @ZoomCamera => m_Wrapper.m_Player_ZoomCamera;
         public InputAction @Look => m_Wrapper.m_Player_Look;
+        public InputAction @SelectionObject => m_Wrapper.m_Player_SelectionObject;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -335,6 +358,9 @@ public partial class @InputHandler: IInputActionCollection2, IDisposable
             @Look.started += instance.OnLook;
             @Look.performed += instance.OnLook;
             @Look.canceled += instance.OnLook;
+            @SelectionObject.started += instance.OnSelectionObject;
+            @SelectionObject.performed += instance.OnSelectionObject;
+            @SelectionObject.canceled += instance.OnSelectionObject;
         }
 
         private void UnregisterCallbacks(IPlayerActions instance)
@@ -351,6 +377,9 @@ public partial class @InputHandler: IInputActionCollection2, IDisposable
             @Look.started -= instance.OnLook;
             @Look.performed -= instance.OnLook;
             @Look.canceled -= instance.OnLook;
+            @SelectionObject.started -= instance.OnSelectionObject;
+            @SelectionObject.performed -= instance.OnSelectionObject;
+            @SelectionObject.canceled -= instance.OnSelectionObject;
         }
 
         public void RemoveCallbacks(IPlayerActions instance)
@@ -383,5 +412,6 @@ public partial class @InputHandler: IInputActionCollection2, IDisposable
         void OnRotateCamera(InputAction.CallbackContext context);
         void OnZoomCamera(InputAction.CallbackContext context);
         void OnLook(InputAction.CallbackContext context);
+        void OnSelectionObject(InputAction.CallbackContext context);
     }
 }

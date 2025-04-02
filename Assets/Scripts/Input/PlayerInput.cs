@@ -3,6 +3,7 @@ using UnityEngine;
 public class PlayerInput : MonoBehaviour
 {
     public static event Action<int> OnCameraAngleChanged;
+    public static event Action OnSelectionObject;
 
     private InputHandler inputHandler;
     private Vector2 cameraMoveInput;
@@ -34,6 +35,9 @@ public class PlayerInput : MonoBehaviour
         inputHandler.Player.RotateCamera.performed += ctx => isRotatingCamera = true;
         inputHandler.Player.RotateCamera.canceled += ctx => isRotatingCamera = false;
 
+        inputHandler.Player.SelectionObject.performed += ctx => SelectObject();
+        inputHandler.Player.SelectionObject.canceled += ctx => SelectObject();
+
     }
 
     private void OnEnable() => inputHandler.Enable();
@@ -43,5 +47,9 @@ public class PlayerInput : MonoBehaviour
     {
         currentAngleCamIndex = (currentAngleCamIndex + 1) % CameraConfig.CameraZAngles.Length;
         OnCameraAngleChanged?.Invoke(currentAngleCamIndex);
+    }
+    private void SelectObject()
+    {
+        OnSelectionObject?.Invoke();
     }
 }

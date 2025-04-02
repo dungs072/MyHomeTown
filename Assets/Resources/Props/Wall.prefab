@@ -28,8 +28,8 @@ Transform:
   m_GameObject: {fileID: 39638432962838154}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.57, z: 0}
-  m_LocalScale: {x: 8, y: 1, z: 2}
+  m_LocalPosition: {x: 0, y: 3, z: 0}
+  m_LocalScale: {x: 10, y: 6, z: 2}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 5275234884936169397}
@@ -119,8 +119,9 @@ GameObject:
   - component: {fileID: 5275234884936169397}
   - component: {fileID: 1796726034791111856}
   - component: {fileID: 8402337095299375531}
+  - component: {fileID: -1674716450820195410}
   m_Layer: 0
-  m_Name: Ingredients
+  m_Name: Wall
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -168,9 +169,23 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   widthSlots: 10
-  heightSlots: 3
-  canShowGridVisualize: 1
-  canMove: 1
+  heightSlots: 2
+  canShowGridVisualize: 0
+  isMoving: 0
   meshRenderer: {fileID: 318088711494751154}
   overlapMaterial: {fileID: 2100000, guid: 501d020476bc4ab409da21e184e3b775, type: 2}
   unOverlapMaterial: {fileID: 2100000, guid: 178ca4ef31097e742b5a7c059098a530, type: 2}
+  normalMaterial: {fileID: 2100000, guid: d7a2a12646a015348943bf2f1d2b0b0b, type: 2}
+--- !u!114 &-1674716450820195410
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 202695153414628383}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4304290b3e77bec4685279bfdefd637c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  propKey: 1

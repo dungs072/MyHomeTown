@@ -1,18 +1,15 @@
 using UnityEngine;
 [RequireComponent(typeof(CameraController))]
-public class PlayerController : MonoBehaviour
+[RequireComponent(typeof(PlayerWorldSelection))]
+public class PlayerController : CoreBehavior
 {
     private CameraController cameraController;
-
+    private PlayerWorldSelection playerWorldSelection;
 
     void Awake()
     {
         cameraController = GetComponent<CameraController>();
+        playerWorldSelection = GetComponent<PlayerWorldSelection>();
     }
 
-
-    void Update()
-    {
-        cameraController.UpdateCameraController();
-    }
 }
