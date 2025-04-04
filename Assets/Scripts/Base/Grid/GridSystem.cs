@@ -140,62 +140,57 @@ public class GridSystem : MonoBehaviour
     }
 
     // horizontal is x, vertical is y
-    public List<Node> FindOccupyingNodes(int xSlot, int ySlot, Occupier occupier)
+    public List<Node> FindOccupyingNodes(int width, int height, Occupier occupier)
     {
-        List<Node> nodes = new List<Node>();
-        Vector3 occupierPosition = occupier.transform.position;
+        List<Node> occupiedNodes = new List<Node>();
         float smallestDistance = float.MaxValue;
-        Node nearestNode = null;
-        int indexX = -1;
-        int indexY = -1;
+        Vector3 occupierPosition = occupier.transform.position;
+        float offsetX = (width / 2f) * size;
+        float offsetY = (height / 2f) * size;
+        Vector3 bottomLeft = occupierPosition + new Vector3(-offsetX, 0, -offsetY);
+        if (IsOutRealGridWorldSize(bottomLeft))
+        {
+            return occupiedNodes;
+        }
+        int targetX = -1;
+        int targetY = -1;
         for (int i = 0; i < totalHorizontalSlot; i++)
         {
             for (int j = 0; j < totalVerticalSlot; j++)
             {
                 Node node = grid[i, j];
-                float distance = Vector3.Distance(node.Position, occupierPosition);
+                float distance = Vector3.Distance(node.Position, bottomLeft);
                 if (distance >= smallestDistance) continue;
                 smallestDistance = distance;
-                nearestNode = node;
-                indexX = i;
-                indexY = j;
-
+                targetX = i;
+                targetY = j;
             }
         }
-
-        if (nearestNode == null) return null;
-        // swap misunderstand coordinates
-        int halfXSlot = xSlot / 2;
-        int halfYSlot = ySlot / 2;
-
-        int startX = Math.Max(0, indexX - halfXSlot);
-        int startY = Math.Max(0, indexY - halfYSlot);
-
-        int endX = Math.Min(totalHorizontalSlot, indexX + halfXSlot);
-        int endY = Math.Min(totalVerticalSlot, indexY + halfYSlot);
-
-
-        for (int i = startX; i <= endX; i++)
+        for (int i = targetX; i < targetX + width; i++)
         {
-            for (int j = startY; j <= endY; j++)
+            for (int j = targetY; j < targetY + height; j++)
             {
-                if (IsOutOfRange(i, j)) return null;
                 Node node = grid[i, j];
-                nodes.Add(node);
+                occupiedNodes.Add(node);
             }
         }
-        UnityEditor.SceneView.RepaintAll();
-        return nodes;
+
+        return occupiedNodes;
     }
 
     public bool IsOutOfRange(int x, int y)
     {
         return x < 0 || x >= totalHorizontalSlot || y < 0 || y >= totalVerticalSlot;
     }
-
-    public void SnapToGridPoint(Transform target)
+    public bool IsOutRealGridWorldSize(Vector3 position)
     {
-        var targetPosition = target.position;
+        float halfWidth = (totalHorizontalSlot / 2f) * size;
+        float halfHeight = (totalVerticalSlot / 2f) * size;
+        return position.x < -halfWidth || position.x > halfWidth || position.z < -halfHeight || position.z > halfHeight;
+    }
+
+    public void SnapToGridPoint(Transform target, Vector3 targetPosition)
+    {
 
         float smallestDistance = float.MaxValue;
         Node nearestNode = null;

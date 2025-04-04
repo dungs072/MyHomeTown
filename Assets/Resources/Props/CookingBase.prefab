@@ -169,8 +169,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ab3b3c2e0767cea469a081c4d2b381e3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  widthSlots: 10
-  heightSlots: 3
+  widthSlots: 8
+  heightSlots: 2
   canShowGridVisualize: 0
   isMoving: 0
   meshRenderer: {fileID: 318088711494751154}

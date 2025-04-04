@@ -52,41 +52,35 @@ public class Occupier : MonoBehaviour
     private void Start()
     {
         singleton = ManagerSingleton.Instance;
+        var gridSystem = singleton.GridSystem;
+        gridSystem.SnapToGridPoint(transform, transform.position);
         SetOccupiedSlots();
     }
 
-    // private void Update()
-    // {
-    //     if (!canMove) return;
-    //     singleton.GridSystem.SnapToGridPoint(transform);
-    //     if (Utils.HasSamePosition(previousPosition, transform.position)) return;
-    //     previousPosition = transform.position;
-    //     StartCoroutine(HandleOccupiedSlots());
-    // }
-
-    private IEnumerator HandleMovingOnGrid()
+    public void SwapWidthAndHeight()
     {
-        while (isMoving)
-        {
-            var gridSystem = ManagerSingleton.Instance.GridSystem;
-            gridSystem.SnapToGridPoint(transform);
-            if (gridSystem == null) yield break;
-            ClearOccupiedNodes();
-            List<Node> occupyingNodes = gridSystem.FindOccupyingNodes(widthSlots, heightSlots, this);
-            TryToOccupyingNodes(occupyingNodes);
-            yield return null;
-        }
+        int temp = widthSlots;
+        widthSlots = heightSlots;
+        heightSlots = temp;
+    }
+
+    public void HandleMovingOnGrid(Vector3 targetPosition)
+    {
+        var gridSystem = ManagerSingleton.Instance.GridSystem;
+        gridSystem.SnapToGridPoint(transform, targetPosition);
+        if (gridSystem == null) return;
+        ClearOccupiedNodes();
+        List<Node> occupyingNodes = gridSystem.FindOccupyingNodes(widthSlots, heightSlots, this);
+        TryToOccupyingNodes(occupyingNodes);
     }
 
     public void StartMove()
     {
         isMoving = true;
-        StartCoroutine(HandleMovingOnGrid());
     }
     public void StopMove()
     {
         isMoving = false;
-        StopCoroutine(HandleMovingOnGrid());
         ClearOccupiedNodes();
     }
 

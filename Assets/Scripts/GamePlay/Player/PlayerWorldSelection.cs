@@ -25,7 +25,7 @@ public class PlayerWorldSelection : CoreBehavior
                 TurnOffSelectedProperty();
                 return;
             }
-            property.TogglePropUI(true);
+            property.SetPropState(PropState.Selected);
             selectedProperty = property;
         }
         else
@@ -37,7 +37,7 @@ public class PlayerWorldSelection : CoreBehavior
     private void TurnOffSelectedProperty()
     {
         if (selectedProperty == null) return;
-        selectedProperty.TogglePropUI(false);
+        selectedProperty.SetPropState(PropState.Free);
         selectedProperty = null;
     }
 }

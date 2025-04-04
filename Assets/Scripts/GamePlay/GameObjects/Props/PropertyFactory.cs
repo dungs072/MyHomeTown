@@ -33,6 +33,10 @@ public class PropertyFactory : BaseFactory
         {
             occupier.StartMove();
         }
+        if (currentCreatingProduct.TryGetComponent(out PropertyBase property))
+        {
+            property.SetPropState(PropState.Selected);
+        }
 
         return currentCreatingProduct;
     }
@@ -45,13 +49,20 @@ public class PropertyFactory : BaseFactory
         {
             Vector3 worldPosition = hit.point;
 
-            currentCreatingProduct.transform.position = new Vector3(worldPosition.x, 0, worldPosition.z);
+            if (currentCreatingProduct.TryGetComponent(out Occupier occupier))
+            {
+                occupier.HandleMovingOnGrid(worldPosition);
+            }
         }
 
     }
 
     public void HandleOnFinishCreatingProperty()
     {
+        if (currentCreatingProduct.TryGetComponent(out PropertyBase property))
+        {
+            property.SetPropState(PropState.Free);
+        }
         if (currentCreatingProduct.TryGetComponent(out Occupier occupier))
         {
             occupier.StopMove();
