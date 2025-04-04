@@ -4,6 +4,7 @@ public class PlayerInput : MonoBehaviour
 {
     public static event Action<int> OnCameraAngleChanged;
     public static event Action OnSelectionObject;
+    public static event Action OnRotateObject;
 
     private InputHandler inputHandler;
     private Vector2 cameraMoveInput;
@@ -38,6 +39,9 @@ public class PlayerInput : MonoBehaviour
         inputHandler.Player.SelectionObject.performed += ctx => SelectObject();
         inputHandler.Player.SelectionObject.canceled += ctx => SelectObject();
 
+        inputHandler.Player.RotateObject.performed += ctx => RotateObject();
+        inputHandler.Player.RotateObject.canceled -= ctx => RotateObject();
+
     }
 
     private void OnEnable() => inputHandler.Enable();
@@ -51,5 +55,10 @@ public class PlayerInput : MonoBehaviour
     private void SelectObject()
     {
         OnSelectionObject?.Invoke();
+    }
+
+    private void RotateObject()
+    {
+        OnRotateObject?.Invoke();
     }
 }
