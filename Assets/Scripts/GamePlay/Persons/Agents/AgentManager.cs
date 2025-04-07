@@ -39,8 +39,6 @@ public class AgentManager : MonoBehaviour
             count++;
         }
         yield return null;
-
-
     }
     private Vector3 GetRandomStartSpawnPoint()
     {
@@ -69,6 +67,18 @@ public class AgentManager : MonoBehaviour
             agent.gameObject.SetActive(true);
         }
         return agent;
+    }
+
+    public bool IsAllAgentsInPool()
+    {
+        foreach (var agent in agents)
+        {
+            if (agent.gameObject.activeSelf)
+            {
+                return false;
+            }
+        }
+        return true;
     }
 
     void OnDrawGizmos()

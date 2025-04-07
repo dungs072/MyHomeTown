@@ -15,7 +15,7 @@ public class Person : MonoBehaviour
 
     }
 
-    void Start()
+    void OnEnable()
     {
         StartCoroutine(DoTask());
         SetRandomColor();
@@ -31,12 +31,11 @@ public class Person : MonoBehaviour
     {
         var taskManager = singleton.TaskManager;
         var taskData = taskManager.TasksData[0];
-        var taskData1 = taskManager.TasksData[1];
         var specificTask = taskManager.GetTask(taskData);
-        var specificTask1 = taskManager.GetTask(taskData1);
         yield return new WaitForSeconds(5);
         taskHandler.AddTask(specificTask);
-        taskHandler.AddTask(specificTask1);
         yield return StartCoroutine(taskHandler.HandleAllAssignedTask());
+        gameObject.SetActive(false);
+        taskHandler.RemoveTask(specificTask);
     }
 }

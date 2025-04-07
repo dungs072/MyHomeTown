@@ -100,7 +100,7 @@ GameObject:
   - component: {fileID: 8402337095299375531}
   - component: {fileID: -1674716450820195410}
   m_Layer: 0
-  m_Name: CookingBase
+  m_Name: PuttingStation
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -156,7 +156,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fd4adf93f80dc9a41998f878d35c1404, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  workContainerType: 2
+  workContainerType: 5
 --- !u!114 &8402337095299375531
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -189,7 +189,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4304290b3e77bec4685279bfdefd637c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  propKey: 0
+  propKey: 4
   propUI: {fileID: 5986040522881651115}
 --- !u!1 &933549975946536470
 GameObject:

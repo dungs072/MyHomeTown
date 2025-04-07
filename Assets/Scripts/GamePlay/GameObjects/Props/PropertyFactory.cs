@@ -76,6 +76,11 @@ public class PropertyFactory : BaseFactory
                 occupier.SetOccupiedSlots();
             }
         }
+        if (currentCreatingProduct.TryGetComponent(out WorkContainer workContainer))
+        {
+            var workContainerManager = ManagerSingleton.Instance.WorkContainerManager;
+            workContainerManager.AddWorkContainer(workContainer);
+        }
 
         if (currentCreatingProduct != null)
         {

@@ -26,6 +26,14 @@ public class CenterSystem : MonoBehaviour
             Destroy(gameObject);
         }
     }
+    private void Start()
+    {
+        foreach (var coreBehavior in coreBehaviors)
+        {
+            if (!coreBehavior.IsExisting) continue;
+            coreBehavior.OnStart();
+        }
+    }
     private void Update()
     {
         var dt = Time.deltaTime;
@@ -38,7 +46,19 @@ public class CenterSystem : MonoBehaviour
     public void AddCoreBehavior(CoreBehavior coreBehavior)
     {
         if (coreBehaviors.Contains(coreBehavior)) return;
-        coreBehaviors.Add(coreBehavior);
+        if (coreBehaviors.Count == 0)
+        {
+            coreBehaviors.Add(coreBehavior);
+            return;
+        }
+        for (int i = 0; i < coreBehaviors.Count; i++)
+        {
+            if (coreBehaviors[i].Priority > coreBehavior.Priority)
+            {
+                coreBehaviors.Insert(i, coreBehavior);
+                return;
+            }
+        }
     }
     public void RemoveCoreBehavior(CoreBehavior coreBehavior)
     {

@@ -3,6 +3,8 @@ using UnityEngine;
 
 public class CameraController : CoreBehavior
 {
+    public override int Priority => 1;
+    public override bool IsExisting => true;
 
     private PlayerInput playerInput;
     private Camera playerCamera;
@@ -22,14 +24,12 @@ public class CameraController : CoreBehavior
         movementSpeed = CameraConfig.MIN_MOVEMENT_SPEED;
     }
 
-    protected override void OnEnableBehavior()
+    protected override void HandleEnableBehavior()
     {
-        base.OnEnableBehavior();
         PlayerInput.OnCameraAngleChanged += OnCameraAngleChanged;
     }
-    protected override void OnDisableBehavior()
+    protected override void HandleDisableBehavior()
     {
-        base.OnDisableBehavior();
         PlayerInput.OnCameraAngleChanged -= OnCameraAngleChanged;
     }
     void Start()

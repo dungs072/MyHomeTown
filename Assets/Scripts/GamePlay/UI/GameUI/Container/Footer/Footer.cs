@@ -2,15 +2,17 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Footer : MonoBehaviour
+public class Footer : CoreBehavior
 {
+    public override int Priority => 1;
+    public override bool IsExisting => true;
     [SerializeField] private GameObject propHolder;
     [SerializeField] private Prop prop;
 
     private List<Prop> props = new List<Prop>();
 
     private PropertyFactory propertyFactory;
-    void Awake()
+    public override void OnStart()
     {
         InitComponents();
     }

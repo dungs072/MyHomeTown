@@ -4,14 +4,12 @@ public class PlayerWorldSelection : CoreBehavior
 {
     private PropertyBase selectedProperty;
 
-    protected override void OnEnableBehavior()
+    protected override void HandleEnableBehavior()
     {
-        base.OnEnableBehavior();
         PlayerInput.OnSelectionObject += OnSelectionObject;
     }
-    protected override void OnDisableBehavior()
+    protected override void HandleDisableBehavior()
     {
-        base.OnDisableBehavior();
         PlayerInput.OnSelectionObject -= OnSelectionObject;
     }
 

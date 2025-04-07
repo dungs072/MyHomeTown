@@ -1,8 +1,13 @@
 using UnityEngine;
-
+/// <summary>
+/// Singleton class to manage all the game systems and components.
+/// Make sure this script run first when game scene started to game mechanism work properly.
+/// </summary>
 [RequireComponent(typeof(MapWorld))]
-public class ManagerSingleton : MonoBehaviour
+public class ManagerSingleton : CoreBehavior
 {
+    public override int Priority => 0;
+    public override bool IsExisting => true;
     [SerializeField] private GridSystem gridSystem;
     [SerializeField] private TaskManager taskManager;
     [SerializeField] private WorkContainerManager workContainerManager;
@@ -26,7 +31,7 @@ public class ManagerSingleton : MonoBehaviour
     public MapWorld MapWorld => mapWorld;
 
     private MapWorld mapWorld;
-    private void Awake()
+    public override void OnStart()
     {
         if (instance == null)
         {
@@ -40,7 +45,6 @@ public class ManagerSingleton : MonoBehaviour
 
         InitComponents();
     }
-
     private void InitComponents()
     {
         mapWorld = GetComponent<MapWorld>();
