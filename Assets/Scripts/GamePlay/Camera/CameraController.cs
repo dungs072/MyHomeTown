@@ -1,11 +1,8 @@
 using NUnit.Framework;
 using UnityEngine;
 
-public class CameraController : CoreBehavior
+public class CameraController : MonoBehaviour
 {
-    public override int Priority => 1;
-    public override bool IsExisting => true;
-
     private PlayerInput playerInput;
     private Camera playerCamera;
 
@@ -23,21 +20,22 @@ public class CameraController : CoreBehavior
         zoomInput = 0;
         movementSpeed = CameraConfig.MIN_MOVEMENT_SPEED;
     }
-
-    protected override void HandleEnableBehavior()
+    void OnEnable()
     {
         PlayerInput.OnCameraAngleChanged += OnCameraAngleChanged;
     }
-    protected override void HandleDisableBehavior()
+    void OnDisable()
     {
+
         PlayerInput.OnCameraAngleChanged -= OnCameraAngleChanged;
     }
+
     void Start()
     {
         mapWorld = ManagerSingleton.Instance.MapWorld;
     }
 
-    public override void UpdateBehavior(float dt)
+    void Update()
     {
         movementSpeed = GetMovementSpeed();
         UpdateInputOverTime();
@@ -45,6 +43,7 @@ public class CameraController : CoreBehavior
         UpdateCameraZoom();
         UpdateCameraRotation();
     }
+
     private float GetMovementSpeed()
     {
         //! start height will start at 0

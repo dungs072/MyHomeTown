@@ -31,8 +31,8 @@ public class Person : MonoBehaviour
     {
         var taskManager = singleton.TaskManager;
         var taskData = taskManager.TasksData[0];
-        var specificTask = taskManager.GetTask(taskData);
         yield return new WaitForSeconds(5);
+        var specificTask = taskManager.GetTask(taskData);
         taskHandler.AddTask(specificTask);
         yield return StartCoroutine(taskHandler.HandleAllAssignedTask());
         gameObject.SetActive(false);

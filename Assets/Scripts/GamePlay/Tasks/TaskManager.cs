@@ -1,28 +1,29 @@
 using System.Collections.Generic;
 using UnityEngine;
 // remove all task and step pls. Update new logic with none of task or step there
-public class TaskManager : CoreBehavior
+public class TaskManager : MonoBehaviour
 {
+    [Header("Tasks")]
     [SerializeField] private List<TaskData> tasksData;
 
     private Dictionary<TaskData, Task> tasks;
     private ManagerSingleton singleton;
 
     public List<TaskData> TasksData => tasksData;
-
-    protected override void HandleEnableBehavior()
+    void Awake()
     {
         tasks = new Dictionary<TaskData, Task>();
         WorkContainerManager.OnWorkContainerAdded += HandleAddWorkContainer;
         WorkContainerManager.OnWorkContainerRemoved += HandleRemoveWorkContainer;
+
     }
 
-    protected override void HandleDisableBehavior()
+    void OnDestroy()
     {
         WorkContainerManager.OnWorkContainerAdded -= HandleAddWorkContainer;
         WorkContainerManager.OnWorkContainerRemoved -= HandleRemoveWorkContainer;
     }
-    public override void OnStart()
+    void Start()
     {
         singleton = ManagerSingleton.Instance;
         //? just transform from the data to real tasks
@@ -54,6 +55,7 @@ public class TaskManager : CoreBehavior
     {
         foreach (var taskData in tasksData)
         {
+            Debug.Log(taskData.TaskName);
             var task = new Task(taskData);
             foreach (var stepData in taskData.Steps)
             {
@@ -104,6 +106,7 @@ public class TaskManager : CoreBehavior
 
     public Task GetTask(TaskData taskData)
     {
+        Debug.Log(tasks.Count);
         if (tasks.ContainsKey(taskData))
         {
             return tasks[taskData];

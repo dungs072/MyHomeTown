@@ -4,10 +4,8 @@ using UnityEngine;
 /// Make sure this script run first when game scene started to game mechanism work properly.
 /// </summary>
 [RequireComponent(typeof(MapWorld))]
-public class ManagerSingleton : CoreBehavior
+public class ManagerSingleton : MonoBehaviour
 {
-    public override int Priority => 0;
-    public override bool IsExisting => true;
     [SerializeField] private GridSystem gridSystem;
     [SerializeField] private TaskManager taskManager;
     [SerializeField] private WorkContainerManager workContainerManager;
@@ -31,7 +29,7 @@ public class ManagerSingleton : CoreBehavior
     public MapWorld MapWorld => mapWorld;
 
     private MapWorld mapWorld;
-    public override void OnStart()
+    void Start()
     {
         if (instance == null)
         {
