@@ -13,7 +13,7 @@ public class ManagerSingleton : MonoBehaviour
     [Header("Factory")]
     [SerializeField] private PropertyFactory propertyFactory;
     [Header("UI")]
-    [SerializeField] private GameUI gameUI;
+    [SerializeField] private GamePlayScreen gameUI;
     private static ManagerSingleton instance;
     public static ManagerSingleton Instance => instance;
 
@@ -23,7 +23,7 @@ public class ManagerSingleton : MonoBehaviour
     // Factory
     public PropertyFactory PropertyFactory => propertyFactory;
     // UI
-    public GameUI GameUI => gameUI;
+    public GamePlayScreen GameUI => gameUI;
 
     // MapWorld
     public MapWorld MapWorld => mapWorld;

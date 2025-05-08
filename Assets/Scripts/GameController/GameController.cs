@@ -7,6 +7,12 @@ public class GameController : MonoBehaviour
     public static GameController Instance { get; private set; }
     void Awake()
     {
+        InitSingleton();
+        InitCustomGameEngineComponents();
+    }
+
+    private void InitSingleton()
+    {
         if (Instance == null)
         {
             Instance = this;
@@ -16,6 +22,11 @@ public class GameController : MonoBehaviour
         {
             Destroy(gameObject);
         }
+    }
+
+    private void InitCustomGameEngineComponents()
+    {
+        ScreenManager.Instance.Init();
     }
 
     void Start()

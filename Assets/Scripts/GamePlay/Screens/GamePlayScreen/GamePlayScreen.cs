@@ -1,12 +1,12 @@
 using UnityEngine;
 
-public class GameUI : MonoBehaviour
+public class GamePlayScreen : BaseScreen
 {
     [SerializeField] private Container container;
 
     public Container Container => container;
 
-
+    // Singletons
     private Loader loader;
 
 
