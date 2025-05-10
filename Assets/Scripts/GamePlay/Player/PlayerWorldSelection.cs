@@ -1,17 +1,18 @@
 using UnityEngine;
 
-public class PlayerWorldSelection : CoreBehavior
+public class PlayerWorldSelection : MonoBehaviour
 {
     private PropertyBase selectedProperty;
 
-    protected override void OnEnableBehavior()
+    void OnEnable()
     {
-        base.OnEnableBehavior();
         PlayerInput.OnSelectionObject += OnSelectionObject;
+
     }
-    protected override void OnDisableBehavior()
+
+
+    void OnDisable()
     {
-        base.OnDisableBehavior();
         PlayerInput.OnSelectionObject -= OnSelectionObject;
     }
 

@@ -1,9 +1,8 @@
 using NUnit.Framework;
 using UnityEngine;
 
-public class CameraController : CoreBehavior
+public class CameraController : MonoBehaviour
 {
-
     private PlayerInput playerInput;
     private Camera playerCamera;
 
@@ -21,23 +20,22 @@ public class CameraController : CoreBehavior
         zoomInput = 0;
         movementSpeed = CameraConfig.MIN_MOVEMENT_SPEED;
     }
-
-    protected override void OnEnableBehavior()
+    void OnEnable()
     {
-        base.OnEnableBehavior();
         PlayerInput.OnCameraAngleChanged += OnCameraAngleChanged;
     }
-    protected override void OnDisableBehavior()
+    void OnDisable()
     {
-        base.OnDisableBehavior();
+
         PlayerInput.OnCameraAngleChanged -= OnCameraAngleChanged;
     }
+
     void Start()
     {
         mapWorld = ManagerSingleton.Instance.MapWorld;
     }
 
-    public override void UpdateBehavior(float dt)
+    void Update()
     {
         movementSpeed = GetMovementSpeed();
         UpdateInputOverTime();
@@ -45,6 +43,7 @@ public class CameraController : CoreBehavior
         UpdateCameraZoom();
         UpdateCameraRotation();
     }
+
     private float GetMovementSpeed()
     {
         //! start height will start at 0

@@ -3,16 +3,25 @@ using UnityEngine;
 // remove all task and step pls. Update new logic with none of task or step there
 public class TaskManager : MonoBehaviour
 {
+    [Header("Tasks")]
     [SerializeField] private List<TaskData> tasksData;
 
     private Dictionary<TaskData, Task> tasks;
     private ManagerSingleton singleton;
 
     public List<TaskData> TasksData => tasksData;
-
     void Awake()
     {
         tasks = new Dictionary<TaskData, Task>();
+        WorkContainerManager.OnWorkContainerAdded += HandleAddWorkContainer;
+        WorkContainerManager.OnWorkContainerRemoved += HandleRemoveWorkContainer;
+
+    }
+
+    void OnDestroy()
+    {
+        WorkContainerManager.OnWorkContainerAdded -= HandleAddWorkContainer;
+        WorkContainerManager.OnWorkContainerRemoved -= HandleRemoveWorkContainer;
     }
     void Start()
     {
@@ -30,10 +39,23 @@ public class TaskManager : MonoBehaviour
             AddWorkContainer(workContainer);
         }
     }
+
+    private void HandleAddWorkContainer(WorkContainer workContainer)
+    {
+        AddWorkContainer(workContainer);
+    }
+
+    private void HandleRemoveWorkContainer(WorkContainer workContainer)
+    {
+        //TODO : remove work container from the task
+    }
+
+
     private void TransformTasks()
     {
         foreach (var taskData in tasksData)
         {
+            Debug.Log(taskData.TaskName);
             var task = new Task(taskData);
             foreach (var stepData in taskData.Steps)
             {

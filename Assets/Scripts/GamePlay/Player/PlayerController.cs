@@ -1,7 +1,7 @@
 using UnityEngine;
 [RequireComponent(typeof(CameraController))]
 [RequireComponent(typeof(PlayerWorldSelection))]
-public class PlayerController : CoreBehavior
+public class PlayerController : MonoBehaviour
 {
     private CameraController cameraController;
     private PlayerWorldSelection playerWorldSelection;

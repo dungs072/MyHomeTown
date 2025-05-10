@@ -1,5 +1,8 @@
 using UnityEngine;
-
+/// <summary>
+/// Singleton class to manage all the game systems and components.
+/// Make sure this script run first when game scene started to game mechanism work properly.
+/// </summary>
 [RequireComponent(typeof(MapWorld))]
 public class ManagerSingleton : MonoBehaviour
 {
@@ -10,7 +13,7 @@ public class ManagerSingleton : MonoBehaviour
     [Header("Factory")]
     [SerializeField] private PropertyFactory propertyFactory;
     [Header("UI")]
-    [SerializeField] private GameUI gameUI;
+    [SerializeField] private GamePlayScreen gameUI;
     private static ManagerSingleton instance;
     public static ManagerSingleton Instance => instance;
 
@@ -20,13 +23,13 @@ public class ManagerSingleton : MonoBehaviour
     // Factory
     public PropertyFactory PropertyFactory => propertyFactory;
     // UI
-    public GameUI GameUI => gameUI;
+    public GamePlayScreen GameUI => gameUI;
 
     // MapWorld
     public MapWorld MapWorld => mapWorld;
 
     private MapWorld mapWorld;
-    private void Awake()
+    void Start()
     {
         if (instance == null)
         {
@@ -40,7 +43,6 @@ public class ManagerSingleton : MonoBehaviour
 
         InitComponents();
     }
-
     private void InitComponents()
     {
         mapWorld = GetComponent<MapWorld>();

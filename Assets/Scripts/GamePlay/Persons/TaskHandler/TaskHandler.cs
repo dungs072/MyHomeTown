@@ -44,7 +44,6 @@ public class TaskHandler : MonoBehaviour
         if (currentTaskIndex >= taskPerformers.Count)
         {
             StopAllCoroutines();
-            gameObject.SetActive(false);
             yield break;
         }
         yield return StartCoroutine(HandleCurrentTask());
@@ -56,6 +55,10 @@ public class TaskHandler : MonoBehaviour
         {
             var stepPerformer = taskPerformer.GetCurrentStepPerformer();
             var workContainer = GetTheShortestFreeWorkContainer(stepPerformer.Step);
+            if (workContainer == null)
+            {
+                yield break;
+            }
             workContainer.AddPersonToWaitingLine(this);
             if (!workContainer.IsFreeToUse(this))
             {
