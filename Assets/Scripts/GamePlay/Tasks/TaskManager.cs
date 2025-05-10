@@ -106,7 +106,6 @@ public class TaskManager : MonoBehaviour
 
     public Task GetTask(TaskData taskData)
     {
-        Debug.Log(tasks.Count);
         if (tasks.ContainsKey(taskData))
         {
             return tasks[taskData];

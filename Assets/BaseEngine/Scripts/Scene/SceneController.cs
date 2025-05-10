@@ -25,8 +25,6 @@ public static class SceneController
         AsyncOperation asyncOp = SceneManager.LoadSceneAsync(sceneName, mode);
         while (!asyncOp.isDone)
         {
-            // Optionally report progress
-            Debug.Log($"Loading progress: {asyncOp.progress}");
             yield return null;
         }
     }

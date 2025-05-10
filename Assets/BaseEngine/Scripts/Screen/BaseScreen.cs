@@ -10,7 +10,7 @@ public class BaseScreen : MonoBehaviour
 {
     public static Action<BaseScreen> OnScreenCreated;
     public static Action<BaseScreen> OnScreenDestroyed;
-    protected Canvas canvas;
+    protected Transform screenHolder;
     private string screenName = string.Empty;
 
     public string ScreenName => screenName;
@@ -30,38 +30,36 @@ public class BaseScreen : MonoBehaviour
         screenName = gameObject.name;
         if (transform.parent)
         {
-            canvas = transform.parent.GetComponent<Canvas>();
-            if (!canvas)
+            screenHolder = transform.parent;
+            if (!screenHolder)
             {
-                Debug.LogError("Canvas not found in the parent of the screen object.");
+                Debug.LogError("Screen holder not found in the parent of the screen object.");
                 return;
             }
             return;
         }
 
-        var canvasObj = GameObject.Find("Canvas");
-        if (canvasObj != null)
+        screenHolder = GameObject.FindGameObjectWithTag("ScreenHolder").transform;
+        if (!screenHolder)
         {
-            canvas = canvasObj.GetComponent<Canvas>();
+            Debug.LogError("Screen holder not found in the scene. Please make sure to set the screen holder in the scene.");
+            return;
         }
-        else
-        {
-            Debug.LogError("Canvas not found in the scene.");
-        }
-
-        gameObject.transform.SetParent(canvas.transform, true);
+        transform.SetParent(screenHolder, true);
     }
 
 
-    public virtual void OpenScreen()
+    public virtual IEnumerator OpenScreenAsync()
     {
         // Just override this method in the derived class to implement the screen opening logic.
         gameObject.SetActive(true);
+        yield return new WaitForEndOfFrame();
     }
-    public virtual void CloseScreen()
+    public virtual IEnumerator CloseScreenAsync()
     {
         // Just override this method in the derived class to implement the screen closing logic.
         gameObject.SetActive(false);
+        yield return new WaitForEndOfFrame();
     }
 
 }

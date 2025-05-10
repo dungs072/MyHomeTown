@@ -5,6 +5,7 @@ using UnityEngine.SceneManagement;
 public class GameController : MonoBehaviour
 {
     public static GameController Instance { get; private set; }
+    private ScreenManager screenManager;
     void Awake()
     {
         InitSingleton();
@@ -26,7 +27,7 @@ public class GameController : MonoBehaviour
 
     private void InitCustomGameEngineComponents()
     {
-        ScreenManager.Instance.Init();
+        screenManager = ScreenManager.Instance;
     }
 
     void Start()
@@ -38,6 +39,7 @@ public class GameController : MonoBehaviour
         yield return OpenDashboardScene();
         yield return new WaitForSeconds(1f);
         yield return OpenGameScene();
+        yield return OpenGameScreen();
     }
     public IEnumerator OpenDashboardScene()
     {
@@ -49,6 +51,12 @@ public class GameController : MonoBehaviour
     {
         string sceneName = SceneUtils.GetSceneName(SceneKey.GameScene);
         yield return SceneController.LoadSceneAsync(sceneName, LoadSceneMode.Single);
+    }
+
+    public IEnumerator OpenGameScreen()
+    {
+        string screenName = ScreenName.GamePlayScreen.ToString();
+        yield return ScreenManager.OpenScreenAsync(screenName);
     }
 
 

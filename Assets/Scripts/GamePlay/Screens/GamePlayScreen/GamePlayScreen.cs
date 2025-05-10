@@ -2,37 +2,23 @@ using UnityEngine;
 
 public class GamePlayScreen : BaseScreen
 {
-    [SerializeField] private Container container;
+    [SerializeField] private GamePlayContainer container;
 
-    public Container Container => container;
-
-    // Singletons
-    private Loader loader;
+    public GamePlayContainer Container => container;
 
 
-    void Awake()
-    {
-        Loader.OnAssetLoaded += OnAssetLoaded;
-    }
-
-
-    void OnDestroy()
-    {
-        Loader.OnAssetLoaded -= OnAssetLoaded;
-    }
 
     void Start()
     {
-        loader = Loader.Instance;
+        CreatePropsUI();
     }
 
-    private void OnAssetLoaded()
+
+    private void CreatePropsUI()
     {
-        if (loader == null)
-        {
-            loader = Loader.Instance;
-        }
-        foreach (var prop in loader.PropList)
+        var loader = GameLoader.GameLoaderInstance;
+        var props = loader.GetPropPrefabs();
+        foreach (var prop in props)
         {
             var propComponent = prop.GetComponent<PropertyBase>();
             if (propComponent == null)

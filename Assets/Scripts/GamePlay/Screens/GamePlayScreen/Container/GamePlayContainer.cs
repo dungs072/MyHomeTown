@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class Container : MonoBehaviour
+public class GamePlayContainer : MonoBehaviour
 {
     [SerializeField] private Footer footer;
 
