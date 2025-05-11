@@ -17,7 +17,6 @@ public class GameLoader : Loader
     }
 
 
-
     public List<PropertyBase> GetPropPrefabs()
     {
         var prefabs = loadedAddressableAssets[propLabel].prefabs;

@@ -14,7 +14,37 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_GroupName: Default Local Group
   m_GUID: 4b7bfeb9b3ec8044bab59244ff971309
-  m_SerializeEntries: []
+  m_SerializeEntries:
+  - m_GUID: 091740e2c09739642a7f652e7a39fe29
+    m_Address: Assets/Prefabs/GameObjects/Props/CookingBase.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - PropPrefabs
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 18bdf2ea961d5844c8e9e9b58ee1c92d
+    m_Address: Assets/Prefabs/GameObjects/Props/FoodStorage.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - PropPrefabs
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 468a49f0e8c6c154ab2b56cef095a4c3
+    m_Address: Assets/Prefabs/GameObjects/Props/TestMeal.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - PropPrefabs
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6e3942e8a2562124fbf812eab1566376
+    m_Address: Assets/Prefabs/GameObjects/Props/Wall.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - PropPrefabs
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: deb083bf231b6e24295cb8b292a02fb9
+    m_Address: Assets/Prefabs/GameObjects/Props/PuttingStation.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - PropPrefabs
+    FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: d28a1e61057ca124090dd77ff0df04fe, type: 2}
   m_SchemaSet:
