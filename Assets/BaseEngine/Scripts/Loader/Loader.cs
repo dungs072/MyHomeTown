@@ -4,10 +4,14 @@ using System.Collections.Generic;
 using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
+using UnityEngine.ResourceManagement.AsyncOperations;
 namespace BaseEngine
 {
     // This class is responsible for loading assets and managing the loading process.
     // It should be attached to a GameObject in the scene.
+
+    // resource
     public class TLoadedPrefab
     {
         public GameObject prefab;
@@ -20,16 +24,27 @@ namespace BaseEngine
         public List<GameObject> prefabs;
         public Action OnLoaded;
     }
+
+    // addressable
+    public class TLoadedLabelAsset
+    {
+        public List<GameObject> prefabs;
+        public Action OnLoaded;
+    }
     public class Loader : MonoBehaviour
     {
         public static Loader Instance => instance;
+        private static Loader instance;
+
+        // for resource
         protected List<string> loadedPrefabAssets = new();
         protected List<string> loadedPrefabAssetsInFolder = new();
         protected Dictionary<string, TLoadedPrefab> loadedPrefabs = new();
         protected Dictionary<string, TLoadedPrefabInFolder> loadedPrefabsInFolder = new();
-        public bool IsPrefabsLoaded { get; private set; } = false;
-        public bool IsPrefabsInFolderLoaded { get; private set; } = false;
-        private static Loader instance;
+
+        // for addressable
+        protected List<string> loadedAddressableLabels = new();
+        protected Dictionary<string, TLoadedLabelAsset> loadedAddressableAssets = new();
 
         void Awake()
         {
@@ -45,11 +60,23 @@ namespace BaseEngine
         }
         private void InitLoader()
         {
+            InitLoadInResource();
+            InitLoadInAddressable();
+        }
+        private void InitLoadInResource()
+        {
             AddPrefabPath();
             AddPrefabPathInFolder();
             StartCoroutine(LoadAllPrefabsAsync());
             StartCoroutine(LoadAllPrefabsInFolderAsync());
         }
+        private void InitLoadInAddressable()
+        {
+            AddAddressableLabels();
+            LoadAllAddressableAssetsAsync();
+        }
+
+        #region Resource
 
         protected virtual void AddPrefabPath()
         {
@@ -69,7 +96,6 @@ namespace BaseEngine
 
         protected IEnumerator LoadAllPrefabsAsync()
         {
-            IsPrefabsLoaded = false;
             var requests = new List<ResourceRequest>();
             // Start all load requests in parallel
             foreach (var prefabPath in loadedPrefabAssets)
@@ -104,7 +130,6 @@ namespace BaseEngine
                     Debug.LogError("Failed to load prefab.");
                 }
             }
-            IsPrefabsLoaded = true;
         }
 
         protected IEnumerator LoadAllPrefabsInFolderAsync()
@@ -140,6 +165,84 @@ namespace BaseEngine
             Debug.LogError($"Prefabs in folder not found: {folderPath}");
             return null;
         }
+        #endregion
+
+        #region Addressable
+        protected virtual void AddAddressableLabels()
+        {
+            // Add the paths of the addressable assets you want to load here
+            // loadedAddressableLabels.Add("Props/Prop1");
+            // loadedAddressableLabels.Add("Props/Prop2");
+            // loadedAddressableLabels.Add("Props/Prop3");
+        }
+        protected void LoadAllAddressableAssetsAsync()
+        {
+            for (int i = 0; i < loadedAddressableLabels.Count; i++)
+            {
+                var label = loadedAddressableLabels[i];
+                Addressables.LoadAssetsAsync<GameObject>(label, OnPrefabLoaded).Completed += handle =>
+                {
+                    OnAllPrefabsLoaded(handle, label);
+                };
+                var loadedAddressableAsset = new TLoadedLabelAsset
+                {
+                    prefabs = new List<GameObject>(),
+                };
+                loadedAddressableAssets.Add(label, loadedAddressableAsset);
+            }
+        }
+
+        protected virtual void OnPrefabLoaded(GameObject prefab)
+        {
+            // just override this function
+        }
+
+        protected virtual void OnAllPrefabsLoaded(AsyncOperationHandle<IList<GameObject>> handle, string label)
+        {
+            if (handle.Status == AsyncOperationStatus.Succeeded)
+            {
+                var loadedAddressableAsset = loadedAddressableAssets[label];
+                loadedAddressableAsset.prefabs.AddRange(handle.Result);
+                loadedAddressableAsset.OnLoaded?.Invoke();
+                Debug.Log($"Loaded addressable asset: {label}");
+            }
+            else
+            {
+                Debug.LogError($"Failed to load addressable asset: {label}");
+            }
+        }
+
+        private void RegisterAddressableLoaded(string label, Action onLoaded)
+        {
+            if (loadedAddressableAssets.TryGetValue(label, out var loadedAddressableAsset))
+            {
+                loadedAddressableAsset.OnLoaded += onLoaded;
+            }
+            else
+            {
+                Debug.LogError($"Label {label} not found in loaded addressable assets.");
+            }
+        }
+        /// <summary>
+        /// Get the prefabs of the specified label. If the prefabs are not loaded yet, register a callback to load them.
+        /// </summary>
+        /// <param name="onLoaded"></param>
+        /// <returns></returns>
+        public void HandleWhenPropPrefabsLoaded(string label, Action onLoaded)
+        {
+            var prefabs = loadedAddressableAssets[label].prefabs;
+            if (prefabs == null || prefabs.Count == 0)
+            {
+                RegisterAddressableLoaded(label, onLoaded);
+            }
+            else
+            {
+                onLoaded?.Invoke();
+            }
+        }
+
+
+        #endregion
     }
 }
 

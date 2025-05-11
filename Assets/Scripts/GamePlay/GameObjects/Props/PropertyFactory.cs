@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class PropertyFactory : BaseFactory
@@ -11,11 +12,18 @@ public class PropertyFactory : BaseFactory
     private void RegisterPrefabs()
     {
         var loader = GameLoader.GameLoaderInstance;
-        var props = loader.GetPropPrefabs();
-        for (int i = 0; i < props.Count; i++)
+        loader.HandleWhenPropPrefabsLoaded(() =>
         {
-            string productName = props[i].ProductName;
-            RegisterProduct(productName, props[i]);
+            RegisterProducts();
+        });
+    }
+    private void RegisterProducts()
+    {
+        var loader = GameLoader.GameLoaderInstance;
+        var propPrefabs = loader.GetPropPrefabs();
+        foreach (var prop in propPrefabs)
+        {
+            RegisterProduct(prop.ProductName, prop);
         }
     }
 
