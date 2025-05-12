@@ -24,8 +24,10 @@ public class ScreenManager : MonoBehaviour
 
     public IEnumerator PreloadScreens(List<string> screenNames)
     {
+        Debug.Log($"Preloading screens: {string.Join(", ", screenNames)}");
         foreach (var screenName in screenNames)
         {
+            Debug.Log($"Preloading screen: {screenName}");
             if (screens.ContainsKey(screenName))
             {
                 var screen = screens[screenName];

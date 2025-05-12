@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class GamePlayScreen : BaseScreen
@@ -5,9 +6,6 @@ public class GamePlayScreen : BaseScreen
     [SerializeField] private GamePlayContainer container;
 
     public GamePlayContainer Container => container;
-
-
-
     void Start()
     {
         CreatePropsUI();
@@ -15,6 +13,15 @@ public class GamePlayScreen : BaseScreen
 
 
     private void CreatePropsUI()
+    {
+        var loader = GameLoader.GameLoaderInstance;
+        loader.HandleWhenPropPrefabsLoaded(() =>
+        {
+            HandleCreatePropsUI();
+        });
+
+    }
+    private void HandleCreatePropsUI()
     {
         var loader = GameLoader.GameLoaderInstance;
         var props = loader.GetPropPrefabs();
