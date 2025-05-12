@@ -1,14 +1,30 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using System.Collections;
-public static class SceneController
+public class SceneController : MonoBehaviour
 {
-    public static void LoadScene(string sceneName, LoadSceneMode mode = LoadSceneMode.Single)
+    public static SceneController Instance { get; private set; }
+    private string currentSceneName;
+    private void Awake()
     {
+        if (Instance == null)
+        {
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+        else if (Instance != this)
+        {
+            Destroy(gameObject);
+        }
+
+    }
+    public void LoadScene(string sceneName, LoadSceneMode mode = LoadSceneMode.Single)
+    {
+        currentSceneName = sceneName;
         SceneManager.LoadScene(sceneName, mode);
     }
 
-    public static void LoadScene(int sceneIndex, LoadSceneMode mode = LoadSceneMode.Single)
+    public void LoadScene(int sceneIndex, LoadSceneMode mode = LoadSceneMode.Single)
     {
         SceneManager.LoadScene(sceneIndex, mode);
     }
@@ -20,12 +36,14 @@ public static class SceneController
     }
 
 
-    public static IEnumerator LoadSceneAsync(string sceneName, LoadSceneMode mode = LoadSceneMode.Single)
+    public IEnumerator LoadSceneAsync(string sceneName, LoadSceneMode mode = LoadSceneMode.Single)
     {
         AsyncOperation asyncOp = SceneManager.LoadSceneAsync(sceneName, mode);
         while (!asyncOp.isDone)
         {
+            Debug.Log($"Loading scene {sceneName}: {asyncOp.progress * 100}%");
             yield return null;
         }
+        currentSceneName = sceneName;
     }
 }

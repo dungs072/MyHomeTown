@@ -22,33 +22,16 @@ public class BaseScreen : MonoBehaviour
     void OnDestroy()
     {
         OnScreenDestroyed?.Invoke(this);
+        DestroyScreen();
     }
-
-
-    private void InitScreen()
+    public virtual void InitScreen()
     {
-        screenName = gameObject.name;
-        if (transform.parent)
-        {
-            screenHolder = transform.parent;
-            if (!screenHolder)
-            {
-                Debug.LogError("Screen holder not found in the parent of the screen object.");
-                return;
-            }
-            return;
-        }
 
-        screenHolder = GameObject.FindGameObjectWithTag("ScreenHolder").transform;
-        if (!screenHolder)
-        {
-            Debug.LogError("Screen holder not found in the scene. Please make sure to set the screen holder in the scene.");
-            return;
-        }
-        transform.SetParent(screenHolder, true);
     }
+    public virtual void DestroyScreen()
+    {
 
-
+    }
     public virtual IEnumerator OpenScreenAsync()
     {
         // Just override this method in the derived class to implement the screen opening logic.
