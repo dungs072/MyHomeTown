@@ -55,7 +55,6 @@ public class TaskManager : MonoBehaviour
     {
         foreach (var taskData in tasksData)
         {
-            Debug.Log(taskData.TaskName);
             var task = new Task(taskData);
             foreach (var stepData in taskData.Steps)
             {

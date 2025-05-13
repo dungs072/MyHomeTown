@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using BaseEngine;
 using UnityEngine;
 
 public class ScreenCreator : MonoBehaviour
@@ -20,6 +21,6 @@ public class ScreenCreator : MonoBehaviour
         {
             screenNameStr.Add(screenName.ToString());
         }
-        StartCoroutine(screenManager.PreloadScreens(screenNameStr));
+        screenManager.PreloadScreensAsync(screenNameStr);
     }
 }

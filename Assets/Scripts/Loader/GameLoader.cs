@@ -13,7 +13,7 @@ public class GameLoader : Loader
     }
     public void HandleWhenPropPrefabsLoaded(Action onLoaded)
     {
-        HandleWhenPropPrefabsLoaded(propLabel, onLoaded);
+        HandleWhenPrefabsLoaded(propLabel, onLoaded);
     }
 
 
