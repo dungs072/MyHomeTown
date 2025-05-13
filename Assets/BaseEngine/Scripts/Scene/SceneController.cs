@@ -41,7 +41,6 @@ public class SceneController : MonoBehaviour
         AsyncOperation asyncOp = SceneManager.LoadSceneAsync(sceneName, mode);
         while (!asyncOp.isDone)
         {
-            Debug.Log($"Loading scene {sceneName}: {asyncOp.progress * 100}%");
             yield return null;
         }
         currentSceneName = sceneName;

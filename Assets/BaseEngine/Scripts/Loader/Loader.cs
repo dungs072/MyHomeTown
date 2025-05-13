@@ -2,10 +2,10 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
+
 namespace BaseEngine
 {
     // This class is responsible for loading assets and managing the loading process.
@@ -45,7 +45,7 @@ namespace BaseEngine
         // for addressable
         protected List<string> loadedAddressableLabels = new();
         protected Dictionary<string, TLoadedLabelAsset> loadedAddressableAssets = new();
-
+        private System.Threading.Tasks.Task loadTask;
         void Awake()
         {
             if (instance == null)
@@ -73,7 +73,7 @@ namespace BaseEngine
         private void InitLoadInAddressable()
         {
             AddAddressableLabels();
-            LoadAllAddressableAssetsAsync();
+            StartCoroutine(LoadAllAddressableAssetsCoroutine());
         }
 
         #region Resource
@@ -175,20 +175,43 @@ namespace BaseEngine
             // loadedAddressableLabels.Add("Props/Prop2");
             // loadedAddressableLabels.Add("Props/Prop3");
         }
-        protected void LoadAllAddressableAssetsAsync()
+        protected IEnumerator LoadAllAddressableAssetsCoroutine()
         {
-            for (int i = 0; i < loadedAddressableLabels.Count; i++)
+            loadTask = LoadAllAddressableAssetsAsync();
+            yield return new WaitUntil(() => loadTask.IsCompleted);
+            if (loadTask.IsFaulted)
             {
-                var label = loadedAddressableLabels[i];
-                Addressables.LoadAssetsAsync<GameObject>(label, OnPrefabLoaded).Completed += handle =>
-                {
-                    OnAllPrefabsLoaded(handle, label);
-                };
-                var loadedAddressableAsset = new TLoadedLabelAsset
+                Debug.LogException(loadTask.Exception);
+            }
+        }
+
+        protected async System.Threading.Tasks.Task LoadAllAddressableAssetsAsync()
+        {
+            var loadTasks = new List<System.Threading.Tasks.Task>();
+
+            foreach (var label in loadedAddressableLabels)
+            {
+                loadedAddressableAssets[label] = new TLoadedLabelAsset
                 {
                     prefabs = new List<GameObject>(),
                 };
-                loadedAddressableAssets.Add(label, loadedAddressableAsset);
+
+                loadTasks.Add(LoadLabelAssetsAsync(label));
+            }
+            await System.Threading.Tasks.Task.WhenAll(loadTasks);
+        }
+        private async System.Threading.Tasks.Task LoadLabelAssetsAsync(string label)
+        {
+            var handle = Addressables.LoadAssetsAsync<GameObject>(label, OnPrefabLoaded);
+            IList<GameObject> result = await handle.Task;
+
+            if (handle.Status == AsyncOperationStatus.Succeeded)
+            {
+                OnAllPrefabsLoaded(handle, label);
+            }
+            else
+            {
+                Debug.LogError($"Failed to load label: {label}");
             }
         }
 
@@ -228,7 +251,7 @@ namespace BaseEngine
         /// </summary>
         /// <param name="onLoaded"></param>
         /// <returns></returns>
-        public void HandleWhenPropPrefabsLoaded(string label, Action onLoaded)
+        public void HandleWhenPrefabsLoaded(string label, Action onLoaded)
         {
             var prefabs = loadedAddressableAssets[label].prefabs;
             if (prefabs == null || prefabs.Count == 0)

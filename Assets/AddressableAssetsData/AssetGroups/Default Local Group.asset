@@ -33,11 +33,21 @@ MonoBehaviour:
     m_SerializedLabels:
     - PropPrefabs
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6c46a53ac5c3d834cb3924dd66fd28ac
+    m_Address: DashboardScreen
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 6e3942e8a2562124fbf812eab1566376
     m_Address: Assets/Prefabs/GameObjects/Props/Wall.prefab
     m_ReadOnly: 0
     m_SerializedLabels:
     - PropPrefabs
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 76806ef50a4a5e242a553ee033be85c3
+    m_Address: GamePlayScreen
+    m_ReadOnly: 0
+    m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: deb083bf231b6e24295cb8b292a02fb9
     m_Address: Assets/Prefabs/GameObjects/Props/PuttingStation.prefab

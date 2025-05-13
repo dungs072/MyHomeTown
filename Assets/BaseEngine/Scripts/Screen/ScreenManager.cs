@@ -1,128 +1,145 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
-using JetBrains.Annotations;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
+using UnityEngine.ResourceManagement.AsyncOperations;
 
-public class ScreenManager : MonoBehaviour
+namespace BaseEngine
 {
-    private Dictionary<string, BaseScreen> screens = new Dictionary<string, BaseScreen>();
-    public static ScreenManager Instance { get; private set; }
-
-    private Transform screenHolder;
-    void Awake()
+    public class TScreenLoader
     {
-        if (Instance == null)
+        public GameObject screenPrefab;
+        public BaseScreen screen;
+        public AsyncOperationHandle<GameObject> handle;
+    }
+    public class ScreenManager : MonoBehaviour
+    {
+        private Dictionary<string, TScreenLoader> screens = new();
+        public static ScreenManager Instance { get; private set; }
+
+        private Transform screenHolder;
+        void Awake()
         {
-            Instance = this;
+            if (Instance == null)
+            {
+                Instance = this;
+            }
+
         }
-    }
-    public void SetScreenHolder(Transform holder)
-    {
-        screenHolder = holder;
-    }
-
-    public IEnumerator PreloadScreens(List<string> screenNames)
-    {
-        Debug.Log($"Preloading screens: {string.Join(", ", screenNames)}");
-        foreach (var screenName in screenNames)
+        public void SetScreenHolder(Transform holder)
         {
-            Debug.Log($"Preloading screen: {screenName}");
+            screenHolder = holder;
+        }
+        public void PreloadScreensAsync(List<string> screenNames)
+        {
+            foreach (var screenName in screenNames)
+            {
+                if (screens.ContainsKey(screenName))
+                {
+                    var loadedScreen = screens[screenName];
+                    if (loadedScreen.screenPrefab != null)
+                    {
+                        Debug.LogWarning($"Screen {screenName} is already loaded.");
+                    }
+                    else
+                    {
+                        Debug.LogWarning($"Screen {screenName} is already loading.");
+                    }
+                    continue;
+                }
+                var templateHandle = Addressables.LoadAssetAsync<GameObject>(screenName);
+                templateHandle.Completed += (AsyncOperationHandle<GameObject> obj) =>
+                {
+                    OnScreenLoaded(obj, screenName);
+                };
+                var screenLoader = new TScreenLoader()
+                {
+                    handle = templateHandle,
+                };
+                screens.Add(screenName, screenLoader);
+            }
+        }
+        private void OnScreenLoaded(AsyncOperationHandle<GameObject> handle, string screenName)
+        {
+            if (handle.Status == AsyncOperationStatus.Succeeded)
+            {
+                GameObject screenPrefab = handle.Result;
+                var screenLoader = screens[screenName];
+                if (screenLoader == null)
+                {
+                    Debug.LogError($"ScreenLoader not found for screen: {screenName}");
+                    return;
+                }
+                screenLoader.screenPrefab = screenPrefab;
+                GameObject screenInstance = Instantiate(screenPrefab, screenHolder);
+                if (screenInstance.TryGetComponent(out BaseScreen baseScreen))
+                {
+                    screenLoader.screen = baseScreen;
+                    baseScreen.gameObject.SetActive(false);
+                    Debug.Log($"Loaded screen: {screenName}");
+                }
+                else
+                {
+                    Debug.LogError($"BaseScreen component not found on prefab: {screenName}");
+                    Destroy(screenInstance);
+                }
+            }
+            else
+            {
+                Debug.LogError("Failed to load screen: " + screenName + ". " + handle.OperationException);
+            }
+        }
+
+        public IEnumerator LoadScreenAsync(string screenName)
+        {
             if (screens.ContainsKey(screenName))
             {
-                var screen = screens[screenName];
-                screen.transform.SetParent(screenHolder, true);
-                Debug.LogWarning($"Screen {screenName} is already preloaded.");
-                continue;
+                var loadedScreenData = screens[screenName];
+                yield return loadedScreenData.handle;
+                yield break;
             }
-            string path = $"Screens/{screenName}";
-            GameObject screenPrefab = Resources.Load<GameObject>(path);
-            if (screenPrefab == null)
+            var handle = Addressables.LoadAssetAsync<GameObject>(screenName);
+            var screenLoader = new TScreenLoader()
             {
-                Debug.LogError($"Screen prefab not found at path: {path}");
-                continue;
-            }
-
-            GameObject screenInstance = Instantiate(screenPrefab, screenHolder);
-            BaseScreen baseScreen = screenInstance.GetComponent<BaseScreen>();
-            if (baseScreen == null)
+                handle = handle,
+            };
+            screens.Add(screenName, screenLoader);
+            yield return handle;
+            OnScreenLoaded(handle, screenName);
+        }
+        public static IEnumerator OpenScreenAsync(string screenName)
+        {
+            if (Instance == null)
             {
-                Debug.LogError($"BaseScreen component not found on prefab: {path}");
-                Destroy(screenInstance);
-                continue;
+                Debug.LogError("ScreenManager instance is not initialized.");
+                yield break;
             }
+            var screenLoader = Instance.screens[screenName];
 
-            screens.Add(screenName, baseScreen);
-            baseScreen.gameObject.SetActive(false);
-            yield return new WaitForEndOfFrame();
+            if (screenLoader == null || screenLoader.screen == null)
+            {
+                yield return Instance.LoadScreenAsync(screenName);
+            }
+            var screen = screenLoader.screen;
+            yield return screen.OpenScreenAsync();
         }
+        public static IEnumerator CloseScreenAsync(string screenName)
+        {
+            if (Instance == null)
+            {
+                Debug.LogError("ScreenManager instance is not initialized.");
+                yield break;
+            }
+            if (!Instance.screens.ContainsKey(screenName))
+            {
+                Debug.LogError($"Screen {screenName} is not preloaded.");
+                yield break;
+            }
+            var screenLoader = Instance.screens[screenName];
+            var screen = screenLoader.screen;
+            yield return screen.CloseScreenAsync();
+        }
+
+
     }
-
-
-    private IEnumerator PreloadScreen(string screenName)
-    {
-        if (screens.ContainsKey(screenName))
-        {
-            Debug.LogWarning($"Screen {screenName} is already preloaded.");
-            yield break;
-        }
-        string path = $"Screens/{screenName}";
-        var request = Resources.LoadAsync<GameObject>(path);
-        yield return request;
-        if (!request.isDone)
-        {
-            Debug.LogError($"Failed to load screen prefab at path: {path}");
-            yield break;
-        }
-        GameObject screenPrefab = request.asset as GameObject;
-        if (screenPrefab == null)
-        {
-            Debug.LogError($"Screen prefab not found at path: {path}");
-            yield break;
-        }
-
-        GameObject screenInstance = Instantiate(screenPrefab, screenHolder);
-        BaseScreen baseScreen = screenInstance.GetComponent<BaseScreen>();
-        if (baseScreen == null)
-        {
-            Debug.LogError($"BaseScreen component not found on prefab: {path}");
-            Destroy(screenInstance);
-            yield break;
-        }
-        screens.Add(screenName.ToString(), baseScreen);
-        baseScreen.gameObject.SetActive(false);
-    }
-
-
-    public static IEnumerator OpenScreenAsync(string screenName)
-    {
-        if (Instance == null)
-        {
-            Debug.LogError("ScreenManager instance is not initialized.");
-            yield break;
-        }
-        if (!Instance.screens.ContainsKey(screenName))
-        {
-            yield return Instance.PreloadScreen(screenName);
-        }
-        BaseScreen screen = Instance.screens[screenName];
-        yield return screen.OpenScreenAsync();
-    }
-    public static IEnumerator CloseScreenAsync(string screenName)
-    {
-        if (Instance == null)
-        {
-            Debug.LogError("ScreenManager instance is not initialized.");
-            yield break;
-        }
-        if (!Instance.screens.ContainsKey(screenName))
-        {
-            Debug.LogError($"Screen {screenName} is not preloaded.");
-            yield break;
-        }
-        BaseScreen screen = Instance.screens[screenName];
-        yield return screen.CloseScreenAsync();
-    }
-
-
 }
