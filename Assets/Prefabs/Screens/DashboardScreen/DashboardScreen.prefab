@@ -347,6 +347,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2679911083140656920, guid: 12e232a54f22515469bc052763a549fe, type: 3}
+      propertyPath: buttonState
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6031967757520109528, guid: 12e232a54f22515469bc052763a549fe, type: 3}
       propertyPath: m_Name
       value: PlayButton
