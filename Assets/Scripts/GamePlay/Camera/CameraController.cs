@@ -35,7 +35,7 @@ public class CameraController : MonoBehaviour
         mapWorld = ManagerSingleton.Instance.MapWorld;
     }
 
-    void Update()
+    void LateUpdate()
     {
         movementSpeed = GetMovementSpeed();
         UpdateInputOverTime();

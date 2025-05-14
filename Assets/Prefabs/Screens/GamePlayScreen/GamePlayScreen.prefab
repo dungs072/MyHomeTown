@@ -226,7 +226,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   propHolder: {fileID: 4604798207484402596}
-  prop: {fileID: 4780790498609839456, guid: dbed5ec3b98b2a64397dbdc3e5a6b2fa, type: 3}
+  prop: {fileID: 3768901957168854478, guid: 50ccb874547e2df4fa913f757a004127, type: 3}
 --- !u!222 &1207022458783562201
 CanvasRenderer:
   m_ObjectHideFlags: 0
