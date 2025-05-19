@@ -1,50 +1,53 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-
-public class Footer : MonoBehaviour
+namespace GamePlayContainerElements
 {
-    [SerializeField] private GameObject propHolder;
-    [SerializeField] private Prop prop;
-
-    private List<Prop> props = new List<Prop>();
-
-    private PropertyFactory propertyFactory;
-
-    void Start()
+    public class Footer : MonoBehaviour
     {
-        InitComponents();
-    }
-    private void InitComponents()
-    {
-        if (!propertyFactory) return;
-        propertyFactory = ManagerSingleton.Instance.PropertyFactory;
-    }
-    public void CreateProp(string name, Sprite sprite)
-    {
-        Prop newProp = Instantiate(prop, propHolder.transform);
-        props.Add(newProp);
-        newProp.SetName(name);
-        RegisterEventForPropUI(newProp);
-        if (!sprite) return;
-        newProp.SetBackground(sprite);
-    }
+        [SerializeField] private GameObject propHolder;
+        [SerializeField] private Prop prop;
 
-    public void RegisterEventForPropUI(Prop prop)
-    {
-        var productName = prop.PropName;
-        void startCreateProp()
+        private List<Prop> props = new List<Prop>();
+
+        private PropertyFactory propertyFactory;
+
+        void Start()
         {
-            ManagerSingleton.Instance.PropertyFactory.GetFreeProduct(productName);
+            InitComponents();
         }
-        void creatingProp()
+        private void InitComponents()
         {
-            ManagerSingleton.Instance.PropertyFactory.HandleOnCreatingProperty();
+            if (!propertyFactory) return;
+            propertyFactory = ManagerSingleton.Instance.PropertyFactory;
         }
-        void finishCreateProp()
+        public void CreateProp(string name, Sprite sprite)
         {
-            ManagerSingleton.Instance.PropertyFactory.HandleOnFinishCreatingProperty();
+            Prop newProp = Instantiate(prop, propHolder.transform);
+            props.Add(newProp);
+            newProp.SetName(name);
+            RegisterEventForPropUI(newProp);
+            if (!sprite) return;
+            newProp.SetBackground(sprite);
         }
-        prop.RegisterButtonClickEvent(startCreateProp, creatingProp, finishCreateProp);
+
+        public void RegisterEventForPropUI(Prop prop)
+        {
+            var productName = prop.PropName;
+            void startCreateProp()
+            {
+                ManagerSingleton.Instance.PropertyFactory.GetFreeProduct(productName);
+            }
+            void creatingProp()
+            {
+                ManagerSingleton.Instance.PropertyFactory.HandleOnCreatingProperty();
+            }
+            void finishCreateProp()
+            {
+                ManagerSingleton.Instance.PropertyFactory.HandleOnFinishCreatingProperty();
+            }
+            prop.RegisterButtonClickEvent(startCreateProp, creatingProp, finishCreateProp);
+        }
     }
+
 }

@@ -28,10 +28,12 @@ public class DashboardScreen : BaseScreen
     }
     private void RegisterButtonActions()
     {
-        container.AddActionToPlayGameButton(HandlePlayGameButtonClicked);
-        container.AddActionToSettingsButton(HandleSettingsButtonClicked);
-        container.AddActionToExitButton(HandleExitButtonClicked);
+        var middle = container.Middle;
+        middle.AddActionToPlayGameButton(HandlePlayGameButtonClicked);
+        middle.AddActionToSettingsButton(HandleSettingsButtonClicked);
+        middle.AddActionToExitButton(HandleExitButtonClicked);
     }
+    #region Button Events
 
     private void HandlePlayGameButtonClicked()
     {
@@ -46,6 +48,7 @@ public class DashboardScreen : BaseScreen
     {
         Application.Quit();
     }
+    #endregion
 
 
 }
