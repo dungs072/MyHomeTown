@@ -7,6 +7,19 @@ public class GamePlayScreen : BaseScreen
     [SerializeField] private GamePlayContainer container;
 
     public GamePlayContainer Container => container;
+
+    void Awake()
+    {
+        RegisterButtonEvents();
+    }
+    private void RegisterButtonEvents()
+    {
+        var header = container.Header;
+        header.RegisterSettingButtonEvent(() =>
+        {
+            HandleSettingButtonClicked();
+        });
+    }
     void Start()
     {
         CreatePropsUI();
@@ -38,4 +51,11 @@ public class GamePlayScreen : BaseScreen
             container.Footer.CreateProp(propName, null);
         }
     }
+
+    #region Button Events
+    public void HandleSettingButtonClicked()
+    {
+        // Handle settings button click
+    }
+    #endregion
 }

@@ -8,6 +8,9 @@ public class GameController : MonoBehaviour
     public static GameController Instance { get; private set; }
     private ScreenManager screenManager;
     private SceneController sceneController;
+    private GameStorage gameStorage;
+
+    public GameStorage GameStorage => gameStorage;
     void Awake()
     {
         InitSingleton();
@@ -31,6 +34,7 @@ public class GameController : MonoBehaviour
     {
         screenManager = ScreenManager.Instance;
         sceneController = SceneController.Instance;
+        gameStorage = new GameStorage();
     }
 
     void Start()

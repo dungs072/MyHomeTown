@@ -835,6 +835,7 @@ GameObject:
   - component: {fileID: 1636103399}
   - component: {fileID: 1636103398}
   - component: {fileID: 1636103400}
+  - component: {fileID: 1636103401}
   m_Layer: 0
   m_Name: GamePlay
   m_TagString: Untagged
@@ -896,6 +897,18 @@ MonoBehaviour:
   rightBound: 50
   topBound: 50
   bottomBound: -50
+--- !u!114 &1636103401
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1636103397}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7dda42f4012d2ef4a81fb83384859041, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1713420472
 GameObject:
   m_ObjectHideFlags: 0
