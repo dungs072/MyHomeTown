@@ -70,6 +70,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 723419581842771774, guid: 615ce295dc971294ea8406ceaf8389bb, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1729246502551784575, guid: 615ce295dc971294ea8406ceaf8389bb, type: 3}
       propertyPath: m_SizeDelta.y
       value: 200

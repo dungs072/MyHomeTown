@@ -5,7 +5,8 @@ using UnityEngine.SceneManagement;
 
 public class GameController : MonoBehaviour
 {
-    public static GameController Instance { get; private set; }
+    [SerializeField] private GameObject blockInputContainer;
+    public static GameController GameInstance { get; private set; }
     private ScreenManager screenManager;
     private SceneController sceneController;
     private GameStorage gameStorage;
@@ -19,12 +20,12 @@ public class GameController : MonoBehaviour
 
     private void InitSingleton()
     {
-        if (Instance == null)
+        if (GameInstance == null)
         {
-            Instance = this;
+            GameInstance = this;
             DontDestroyOnLoad(gameObject);
         }
-        else if (Instance != this)
+        else if (GameInstance != this)
         {
             Destroy(gameObject);
         }
@@ -43,8 +44,10 @@ public class GameController : MonoBehaviour
     }
     private IEnumerator InitGameAsync()
     {
+        BlockInput(true);
         yield return OpenDashboardScene();
         yield return OpenDashboardScreen();
+        BlockInput(false);
     }
 
     public void PlayGame()
@@ -53,8 +56,22 @@ public class GameController : MonoBehaviour
     }
     private IEnumerator PlayGameAsync()
     {
+        BlockInput(true);
         yield return OpenGameScene();
         yield return OpenGameScreen();
+        BlockInput(false);
+    }
+    public void ExitDashboard()
+    {
+        StartCoroutine(ExitDashboardAsync());
+    }
+    private IEnumerator ExitDashboardAsync()
+    {
+        BlockInput(true);
+        yield return CloseSettingScreen();
+        yield return OpenDashboardScene();
+        yield return OpenDashboardScreen();
+        BlockInput(false);
     }
 
     #region Scene
@@ -82,8 +99,23 @@ public class GameController : MonoBehaviour
         string screenName = ScreenName.GamePlayScreen.ToString();
         yield return ScreenManager.OpenScreenAsync(screenName);
     }
+    public IEnumerator CloseSettingScreen()
+    {
+        string screenName = ScreenName.SettingScreen.ToString();
+        yield return ScreenManager.CloseScreenAsync(screenName);
+    }
     #endregion
-
+    #region Input
+    public void BlockInput(bool block)
+    {
+        if (!blockInputContainer)
+        {
+            Debug.LogError("BlockInputContainer is not assigned in the inspector.");
+            return;
+        }
+        blockInputContainer.SetActive(block);
+    }
+    #endregion
 
 
 

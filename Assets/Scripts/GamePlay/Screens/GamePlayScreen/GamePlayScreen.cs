@@ -1,7 +1,6 @@
-using System.Collections.Generic;
 using BaseEngine;
 using UnityEngine;
-
+using static ManagerSingleton;
 public class GamePlayScreen : BaseScreen
 {
     [SerializeField] private GamePlayContainer container;
@@ -55,7 +54,8 @@ public class GamePlayScreen : BaseScreen
     #region Button Events
     public void HandleSettingButtonClicked()
     {
-        // Handle settings button click
+        var gamePlay = EmpireInstance.GamePlay;
+        gamePlay.HandleOpenSettingScreen();
     }
     #endregion
 }

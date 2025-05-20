@@ -55,6 +55,11 @@ MonoBehaviour:
     m_SerializedLabels:
     - PropPrefabs
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: fb84110a9469d944a960ce280e797926
+    m_Address: SettingScreen
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: d28a1e61057ca124090dd77ff0df04fe, type: 2}
   m_SchemaSet:

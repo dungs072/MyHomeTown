@@ -80,7 +80,7 @@ public class PropertyFactory : BaseFactory
         }
         if (currentCreatingProduct.TryGetComponent(out WorkContainer workContainer))
         {
-            var workContainerManager = ManagerSingleton.Instance.WorkContainerManager;
+            var workContainerManager = ManagerSingleton.EmpireInstance.WorkContainerManager;
             workContainerManager.AddWorkContainer(workContainer);
         }
 

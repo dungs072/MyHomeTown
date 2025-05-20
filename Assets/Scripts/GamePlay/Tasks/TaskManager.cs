@@ -25,7 +25,7 @@ public class TaskManager : MonoBehaviour
     }
     void Start()
     {
-        singleton = ManagerSingleton.Instance;
+        singleton = ManagerSingleton.EmpireInstance;
         //? just transform from the data to real tasks
         TransformTasks();
         AddExistingWorkContainers();
