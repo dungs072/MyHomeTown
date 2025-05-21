@@ -32,7 +32,7 @@ public class CameraController : MonoBehaviour
 
     void Start()
     {
-        mapWorld = ManagerSingleton.Instance.MapWorld;
+        mapWorld = ManagerSingleton.EmpireInstance.MapWorld;
     }
 
     void LateUpdate()

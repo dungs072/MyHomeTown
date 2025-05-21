@@ -19,7 +19,7 @@ namespace GamePlayContainerElements
         private void InitComponents()
         {
             if (!propertyFactory) return;
-            propertyFactory = ManagerSingleton.Instance.PropertyFactory;
+            propertyFactory = ManagerSingleton.EmpireInstance.PropertyFactory;
         }
         public void CreateProp(string name, Sprite sprite)
         {
@@ -36,15 +36,15 @@ namespace GamePlayContainerElements
             var productName = prop.PropName;
             void startCreateProp()
             {
-                ManagerSingleton.Instance.PropertyFactory.GetFreeProduct(productName);
+                ManagerSingleton.EmpireInstance.PropertyFactory.GetFreeProduct(productName);
             }
             void creatingProp()
             {
-                ManagerSingleton.Instance.PropertyFactory.HandleOnCreatingProperty();
+                ManagerSingleton.EmpireInstance.PropertyFactory.HandleOnCreatingProperty();
             }
             void finishCreateProp()
             {
-                ManagerSingleton.Instance.PropertyFactory.HandleOnFinishCreatingProperty();
+                ManagerSingleton.EmpireInstance.PropertyFactory.HandleOnFinishCreatingProperty();
             }
             prop.RegisterButtonClickEvent(startCreateProp, creatingProp, finishCreateProp);
         }

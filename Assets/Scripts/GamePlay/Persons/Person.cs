@@ -10,7 +10,7 @@ public class Person : MonoBehaviour
 
     void Awake()
     {
-        singleton = ManagerSingleton.Instance;
+        singleton = ManagerSingleton.EmpireInstance;
         taskHandler = GetComponent<TaskHandler>();
 
     }

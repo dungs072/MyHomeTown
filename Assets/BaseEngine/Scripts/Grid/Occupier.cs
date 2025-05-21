@@ -51,7 +51,7 @@ public class Occupier : MonoBehaviour
     }
     private void Start()
     {
-        singleton = ManagerSingleton.Instance;
+        singleton = ManagerSingleton.EmpireInstance;
         var gridSystem = singleton.GridSystem;
         gridSystem.SnapToGridPoint(transform, transform.position);
         SetOccupiedSlots();
@@ -66,7 +66,7 @@ public class Occupier : MonoBehaviour
 
     public void HandleMovingOnGrid(Vector3 targetPosition)
     {
-        var gridSystem = ManagerSingleton.Instance.GridSystem;
+        var gridSystem = ManagerSingleton.EmpireInstance.GridSystem;
         gridSystem.SnapToGridPoint(transform, targetPosition);
         if (gridSystem == null) return;
         ClearOccupiedNodes();

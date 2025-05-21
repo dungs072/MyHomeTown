@@ -8,7 +8,6 @@ public class AgentManager : MonoBehaviour
     [SerializeField] private float radius = 5f;
     [Header("Agents")]
     [SerializeField] private AgentController agentPrefab;
-    [SerializeField] private int maxAgents = 10;
 
     [Header("Debugger")]
     [SerializeField] private Transform target;
@@ -20,15 +19,10 @@ public class AgentManager : MonoBehaviour
         agents = new List<AgentController>();
     }
 
-    private void Start()
-    {
-        StartCoroutine(SpawnAgents());
-    }
-
-    private IEnumerator SpawnAgents()
+    public IEnumerator SpawnAgents(int amount)
     {
         int count = 0;
-        while (count < maxAgents)
+        while (count < amount)
         {
             AgentController agent = GetAgent();
             agent.transform.position = GetRandomStartSpawnPoint();

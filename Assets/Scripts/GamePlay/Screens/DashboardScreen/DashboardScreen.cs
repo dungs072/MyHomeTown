@@ -1,12 +1,10 @@
 using System.Collections;
 using BaseEngine;
 using UnityEngine;
-
+using static GameController;
 public class DashboardScreen : BaseScreen
 {
     [SerializeField] private DashboardContainer container;
-
-    private GameController gameController;
     public override IEnumerator OpenScreenAsync()
     {
         yield return base.OpenScreenAsync();
@@ -15,11 +13,6 @@ public class DashboardScreen : BaseScreen
     public override IEnumerator CloseScreenAsync()
     {
         return base.CloseScreenAsync();
-    }
-
-    public override void InitScreen()
-    {
-        gameController = GameController.Instance;
     }
 
     void Start()
@@ -37,7 +30,7 @@ public class DashboardScreen : BaseScreen
 
     private void HandlePlayGameButtonClicked()
     {
-        gameController.PlayGame();
+        GameInstance.PlayGame();
     }
 
     private void HandleSettingsButtonClicked()
