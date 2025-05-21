@@ -14,6 +14,7 @@ namespace BaseEngine
     }
     public class ScreenManager : MonoBehaviour
     {
+        private Stack<BaseScreen> screenStack = new();
         private Dictionary<string, TScreenLoader> screens = new();
         public static ScreenManager Instance { get; private set; }
 
@@ -131,6 +132,7 @@ namespace BaseEngine
                 yield return Instance.LoadScreenAsync(screenName);
             }
             var screen = screenLoader.screen;
+            Instance.screenStack.Push(screen);
             yield return screen.OpenScreenAsync();
         }
         public static IEnumerator CloseScreenAsync(string screenName)
@@ -147,7 +149,17 @@ namespace BaseEngine
             }
             var screenLoader = Instance.screens[screenName];
             var screen = screenLoader.screen;
+            Instance.screenStack.Pop();
             yield return screen.CloseScreenAsync();
+        }
+
+        public BaseScreen GetCurrentScreen()
+        {
+            if (screenStack.Count > 0)
+            {
+                return screenStack.Peek();
+            }
+            return null;
         }
 
 

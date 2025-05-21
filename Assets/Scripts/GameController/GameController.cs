@@ -17,6 +17,14 @@ public class GameController : MonoBehaviour
     private GameStorage gameStorage;
 
     public GameStorage GameStorage => gameStorage;
+
+    public T GetSpecificScene<T>() where T : class
+    {
+        var baseScene = sceneController.CurrentScene;
+        if (!baseScene) return null;
+        return baseScene as T;
+    }
+
     void Awake()
     {
         InitSingleton();

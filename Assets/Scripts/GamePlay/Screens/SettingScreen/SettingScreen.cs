@@ -33,8 +33,8 @@ public class SettingScreen : BaseScreen
 
     private void HandleContinueButtonClicked()
     {
-        var gamePlay = EmpireInstance.GamePlay;
-        gamePlay.HandleContinueGame();
+        var gameScene = GameInstance.GetSpecificScene<GamePlayScene>();
+        gameScene.HandleContinueGame();
     }
     private void HandleOptionsButtonClicked()
     {
