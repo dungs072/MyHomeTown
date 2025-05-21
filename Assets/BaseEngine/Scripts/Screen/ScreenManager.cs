@@ -36,15 +36,7 @@ namespace BaseEngine
             {
                 if (screens.ContainsKey(screenName))
                 {
-                    var loadedScreen = screens[screenName];
-                    if (loadedScreen.screenPrefab != null)
-                    {
-                        Debug.LogWarning($"Screen {screenName} is already loaded.");
-                    }
-                    else
-                    {
-                        Debug.LogWarning($"Screen {screenName} is already loading.");
-                    }
+                    HandleScreenKeyExists(screenName);
                     continue;
                 }
                 var templateHandle = Addressables.LoadAssetAsync<GameObject>(screenName);
@@ -57,6 +49,24 @@ namespace BaseEngine
                     handle = templateHandle,
                 };
                 screens.Add(screenName, screenLoader);
+            }
+        }
+        private void HandleScreenKeyExists(string screenName)
+        {
+            var loadedScreen = screens[screenName];
+            if (loadedScreen.screen != null)
+            {
+                Debug.LogWarning($"Screen {screenName} is already loaded.");
+            }
+            else
+            {
+                var screenInstance = Instantiate(loadedScreen.screenPrefab, screenHolder);
+                if (screenInstance.TryGetComponent(out BaseScreen baseScreen))
+                {
+                    loadedScreen.screen = baseScreen;
+                    baseScreen.gameObject.SetActive(false);
+                    Debug.Log($"Loaded screen (existing prefab): {screenName}");
+                }
             }
         }
         private void OnScreenLoaded(AsyncOperationHandle<GameObject> handle, string screenName)

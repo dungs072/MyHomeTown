@@ -1,11 +1,16 @@
 using System.Collections;
 using BaseEngine;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class GameController : MonoBehaviour
 {
+    [Header("Main")]
     [SerializeField] private GameObject blockInputContainer;
+    [Header("Debugger")]
+    [SerializeField] private Image blockInputImage;
     public static GameController GameInstance { get; private set; }
     private ScreenManager screenManager;
     private SceneController sceneController;
@@ -16,6 +21,8 @@ public class GameController : MonoBehaviour
     {
         InitSingleton();
         InitCustomGameEngineComponents();
+        // debugger
+        UpdateBlockInputContainer();
     }
 
     private void InitSingleton()
@@ -117,6 +124,16 @@ public class GameController : MonoBehaviour
     }
     #endregion
 
+
+    #region Debugger
+    private void UpdateBlockInputContainer()
+    {
+        var alphaTarget = GameConfig.IsDebugMode ? 0.27f : 0;
+        var color = blockInputImage.color;
+        color.a = alphaTarget;
+        blockInputImage.color = color;
+    }
+    #endregion
 
 
 }
