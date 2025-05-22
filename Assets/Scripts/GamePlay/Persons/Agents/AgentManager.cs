@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class AgentManager : MonoBehaviour
 {
-    [SerializeField] private Transform startPoint;
+    [SerializeField] private List<Transform> spawnPoints;
     [SerializeField] private float radius = 5f;
     [Header("Agents")]
     [SerializeField] private AgentController agentPrefab;
@@ -36,6 +36,8 @@ public class AgentManager : MonoBehaviour
     }
     private Vector3 GetRandomStartSpawnPoint()
     {
+        int randomIndex = Random.Range(0, spawnPoints.Count);
+        Transform startPoint = spawnPoints[randomIndex];
         Vector3 position = startPoint.position;
         float x = Random.Range(-radius, radius);
         float z = Random.Range(-radius, radius);
@@ -77,8 +79,11 @@ public class AgentManager : MonoBehaviour
 
     void OnDrawGizmos()
     {
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(startPoint.position, radius);
+        foreach (var startPoint in spawnPoints)
+        {
+            Gizmos.color = Color.green;
+            Gizmos.DrawWireSphere(startPoint.position, radius);
+        }
     }
 
 }
