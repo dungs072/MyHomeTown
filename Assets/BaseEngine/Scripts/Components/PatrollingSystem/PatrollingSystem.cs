@@ -11,9 +11,9 @@ public class PatrollingSystem : MonoBehaviour
         pathDictionary = new Dictionary<string, PatrollingPath>();
         foreach (var path in patrollingPaths)
         {
-            if (path != null && !string.IsNullOrEmpty(path.name))
+            if (path != null && !string.IsNullOrEmpty(path.PathName))
             {
-                pathDictionary[path.name] = path;
+                pathDictionary[path.PathName] = path;
             }
         }
     }

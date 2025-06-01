@@ -6,7 +6,9 @@ using UnityEngine;
 [RequireComponent(typeof(MapWorld))]
 public class ManagerSingleton : MonoBehaviour
 {
+    [Header("Systems")]
     [SerializeField] private GridSystem gridSystem;
+    [SerializeField] private PatrollingSystem patrollingSystem;
     [Header("Manager")]
     [SerializeField] private TaskManager taskManager;
     [SerializeField] private WorkContainerManager workContainerManager;
@@ -17,6 +19,7 @@ public class ManagerSingleton : MonoBehaviour
     public static ManagerSingleton EmpireInstance => instance;
 
     public GridSystem GridSystem => gridSystem;
+    public PatrollingSystem PatrollingSystem => patrollingSystem;
     // managers
     public TaskManager TaskManager => taskManager;
     public WorkContainerManager WorkContainerManager => workContainerManager;

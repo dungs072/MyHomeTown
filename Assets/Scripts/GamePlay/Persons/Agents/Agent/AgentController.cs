@@ -1,3 +1,4 @@
+using System.Collections;
 using ProjectDawn.Navigation.Hybrid;
 using UnityEngine;
 
@@ -33,6 +34,24 @@ public class AgentController : MonoBehaviour
     {
         agent.Stop();
     }
+    /// <summary>
+    /// Move to specific position with coroutine. When the coroutine finished, 
+    /// the agent is reached the destination
+    /// </summary>
+    /// <param name="targetPos"></param>
+    /// <returns></returns>
 
+    public IEnumerator MoveToPosition(Vector3 destination)
+    {
+        agent.SetDestination(destination);
+        yield return new WaitUntil(() => IsReachedDestination(destination));
+    }
+
+
+    public bool IsReachedDestination(Vector3 destination)
+    {
+        float SMALLEST_SQRT_DISTANCE = 0.1f;
+        return Vector3.SqrMagnitude(agent.transform.position - destination) < SMALLEST_SQRT_DISTANCE;
+    }
 
 }

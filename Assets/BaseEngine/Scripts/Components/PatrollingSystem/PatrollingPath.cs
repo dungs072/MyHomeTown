@@ -8,11 +8,16 @@ public class PatrollingPath : MonoBehaviour
     [SerializeField] private Transform[] waypoints;
     [SerializeField] private string pathName = "DefaultPath";
     public string PathName => pathName;
+    public Transform[] Waypoints => waypoints;
 
     void OnDrawGizmos()
     {
         if (waypoints == null || waypoints.Length < 2) return;
-
+        if (waypoints.Length == 0)
+        {
+            Debug.LogWarning("No waypoints assigned to the patrolling path.");
+            return;
+        }
         int segments = waypoints.Length - 1;
 
         for (int i = 0; i < waypoints.Length; i++)
