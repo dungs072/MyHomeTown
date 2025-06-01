@@ -1,17 +1,37 @@
+using UnityEditor;
 using UnityEngine;
 
+[ExecuteInEditMode]
 public class PatrollingPath : MonoBehaviour
 {
     [Header("Add them in order")]
     [SerializeField] private Transform[] waypoints;
     [SerializeField] private string pathName = "DefaultPath";
     public string PathName => pathName;
+
     void OnDrawGizmos()
     {
-        foreach (var waypoint in waypoints)
+        if (waypoints == null || waypoints.Length < 2) return;
+
+        int segments = waypoints.Length - 1;
+
+        for (int i = 0; i < waypoints.Length; i++)
         {
-            Gizmos.color = Color.red;
-            Gizmos.DrawSphere(waypoint.position, 0.5f);
+            if (waypoints[i] == null) continue;
+
+            float t = (float)i / (segments - 1);
+            Gizmos.color = Color.Lerp(Color.red, Color.green, t);
+            Gizmos.DrawSphere(waypoints[i].position, 0.5f);
+
+            if (i < segments && waypoints[i + 1] != null)
+            {
+                Vector3 from = waypoints[i].position;
+                Vector3 to = waypoints[i + 1].position;
+
+                float lineT = (float)i / (segments - 1);
+                Gizmos.color = Color.Lerp(Color.red, Color.green, lineT);
+                Gizmos.DrawLine(from, to);
+            }
         }
     }
 }
