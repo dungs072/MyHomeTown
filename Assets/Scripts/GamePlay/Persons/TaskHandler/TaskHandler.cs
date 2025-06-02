@@ -46,7 +46,7 @@ public class TaskHandler : MonoBehaviour
             StopAllCoroutines();
             yield break;
         }
-        yield return StartCoroutine(HandleCurrentTask());
+        yield return HandleCurrentTask();
     }
     public IEnumerator HandleCurrentTask()
     {
@@ -60,24 +60,22 @@ public class TaskHandler : MonoBehaviour
                 yield break;
             }
             workContainer.AddPersonToWaitingLine(this);
-            if (!workContainer.IsFreeToUse(this))
-            {
-                var position = GetWaitingPosition(workContainer);
-                TriggerWaitingInLine(position);
-                yield break;
-            }
-            yield return StartCoroutine(MoveToWorkContainer(workContainer));
+            //! fix there
+            var position = GetWaitingPosition(workContainer);
+            TriggerWaitingInLine(position);
+            yield return new WaitUntil(() => workContainer.IsFreeToUse());
+            yield return MoveToWorkContainer(workContainer);
             workContainer.SetUsingPerson(this);
-            yield return StartCoroutine(DoStep(stepPerformer.Step));
+            yield return DoStep(stepPerformer.Step);
             workContainer.SetUsingPerson(null);
             taskPerformer.MoveToNextStep();
         }
 
-        if (taskPerformer.IsFinished())
-        {
-            currentTaskIndex++;
-            StartCoroutine(HandleAllAssignedTask());
-        }
+        // if (taskPerformer.IsFinished())
+        // {
+        //     currentTaskIndex++;
+        //     //yield return HandleAllAssignedTask();
+        // }
     }
     public void TriggerWaitingInLine(Vector3 waitingPos)
     {
@@ -88,11 +86,8 @@ public class TaskHandler : MonoBehaviour
     private IEnumerator MoveToWorkContainer(WorkContainer workContainer)
     {
         var targetPosition = workContainer.transform.position;
-        while (!Utils.HasSamePosition(agent.transform.position, targetPosition))
-        {
-            agent.SetDestination(targetPosition);
-            yield return null;
-        }
+        agent.SetDestination(targetPosition);
+        yield return new WaitUntil(() => Utils.HasSamePosition(agent.transform.position, targetPosition));
     }
 
     private IEnumerator DoStep(Step step)

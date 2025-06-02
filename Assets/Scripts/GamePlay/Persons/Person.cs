@@ -12,11 +12,12 @@ public class Person : MonoBehaviour
     void Awake()
     {
         singleton = ManagerSingleton.EmpireInstance;
+        Debug.Log(singleton);
         taskHandler = GetComponent<TaskHandler>();
         agentController = GetComponent<AgentController>();
     }
 
-    void OnEnable()
+    void Start()
     {
         StartCoroutine(BehaveLikeNormalPerson());
         SetRandomColor();
@@ -32,6 +33,7 @@ public class Person : MonoBehaviour
     {
         yield return new WaitForSeconds(1f);
         yield return FollowPath();
+        Debug.Log("Reached the end of the path, now doing task.");
         yield return DoTask();
     }
 
@@ -43,10 +45,6 @@ public class Person : MonoBehaviour
         {
             Debug.LogWarning("Patrolling path not found!");
             yield break;
-        }
-        else
-        {
-            Debug.Log($"Following path: {patrollingPath.PathName}");
         }
         var points = patrollingPath.Waypoints;
         for (int i = 0; i < points.Length; i++)
@@ -60,11 +58,11 @@ public class Person : MonoBehaviour
     {
         var taskManager = singleton.TaskManager;
         var taskData = taskManager.TasksData[0];
-        yield return new WaitForSeconds(5);
         var specificTask = taskManager.GetTask(taskData);
         taskHandler.AddTask(specificTask);
-        yield return StartCoroutine(taskHandler.HandleAllAssignedTask());
-        gameObject.SetActive(false);
+        yield return taskHandler.HandleAllAssignedTask();
         taskHandler.RemoveTask(specificTask);
+        //gameObject.SetActive(false);
+        Destroy(gameObject);
     }
 }

@@ -50,7 +50,7 @@ public class AgentController : MonoBehaviour
 
     public bool IsReachedDestination(Vector3 destination)
     {
-        float SMALLEST_SQRT_DISTANCE = 0.1f;
+        float SMALLEST_SQRT_DISTANCE = 1f;
         return Vector3.SqrMagnitude(agent.transform.position - destination) < SMALLEST_SQRT_DISTANCE;
     }
 
