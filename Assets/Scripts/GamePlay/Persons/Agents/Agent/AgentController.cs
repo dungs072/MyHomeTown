@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using ProjectDawn.Navigation.Hybrid;
 using UnityEngine;
@@ -41,10 +42,19 @@ public class AgentController : MonoBehaviour
     /// <param name="targetPos"></param>
     /// <returns></returns>
 
-    public IEnumerator MoveToPosition(Vector3 destination)
+    public IEnumerator MoveToPosition(Vector3 destination, Func<bool> shouldStopMoving = null, Action moveFinished = null)
+
     {
         agent.SetDestination(destination);
-        yield return new WaitUntil(() => IsReachedDestination(destination));
+        while (!IsReachedDestination(destination))
+        {
+            if (shouldStopMoving != null && shouldStopMoving())
+            {
+                yield break;
+            }
+            yield return null;
+        }
+        moveFinished?.Invoke();
     }
 
 

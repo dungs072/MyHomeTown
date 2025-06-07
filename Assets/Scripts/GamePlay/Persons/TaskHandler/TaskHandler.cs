@@ -1,8 +1,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting.Antlr3.Runtime.Tree;
+using Unity.VisualScripting;
 using UnityEngine;
+using static ManagerSingleton;
 //! This will handle all the tasks that are assigned to a person    
 //! Must use yield return StartCoroutine(YourFunction()) to make sure the coroutine is running in sequence
 [RequireComponent(typeof(AgentController))]
@@ -54,40 +55,82 @@ public class TaskHandler : MonoBehaviour
         while (!taskPerformer.IsFinished())
         {
             var stepPerformer = taskPerformer.GetCurrentStepPerformer();
-            var workContainer = GetTheShortestFreeWorkContainer(stepPerformer.Step);
-            if (workContainer == null)
+            var step = stepPerformer.Step;
+            var selectedWK = GetSuitableWorkContainer(step);
+            if (!selectedWK)
             {
+                //! Should trigger event here to notify that no suitable work container found
                 yield break;
             }
-            workContainer.AddPersonToWaitingLine(this);
-            //! fix there
-            var position = GetWaitingPosition(workContainer);
-            TriggerWaitingInLine(position);
-            yield return new WaitUntil(() => workContainer.IsFreeToUse());
-            yield return MoveToWorkContainer(workContainer);
-            workContainer.SetUsingPerson(this);
-            yield return DoStep(stepPerformer.Step);
-            workContainer.SetUsingPerson(null);
-            taskPerformer.MoveToNextStep();
+            selectedWK.AddPersonToWaitingLine(this);
+            yield return MoveToWorkContainer(selectedWK);
+            //! is that you
+
+            if (selectedWK.IsFreeToUse(this))
+            {
+                yield return handleDoTask(selectedWK, step);
+                taskPerformer.MoveToNextStep();
+            }
+            else
+            {
+                yield return MoveToWaitingLine(selectedWK);
+                yield return new WaitUntil(() => selectedWK.IsFreeToUse());
+                //! must check there if the wk is not free or disappeared
+            }
         }
+        Debug.Log($"Task {taskPerformer.Task} is finished.");
 
-        // if (taskPerformer.IsFinished())
-        // {
-        //     currentTaskIndex++;
-        //     //yield return HandleAllAssignedTask();
-        // }
     }
-    public void TriggerWaitingInLine(Vector3 waitingPos)
+    private IEnumerator handleDoTask(WorkContainer selectedWK, Step step)
     {
-        agent.SetDestination(waitingPos);
-        StopAllCoroutines();
+        selectedWK.TryRemovePersonFromWaitingLine(this);
+        yield return DoStep(step);
+        selectedWK.SetUsingPerson(null);
     }
+    private IEnumerator MoveToWaitingLine(WorkContainer wk)
+    {
+        var waitingPos = GetWaitingPosition(wk);
+        yield return agent.MoveToPosition(waitingPos);
+    }
+    private IEnumerator MoveToWorkContainer(WorkContainer wk)
+    {
+        Func<bool> shouldStopWhenMoving = () =>
+        {
+            return !wk.IsFreeToUse();
+        };
+        Action moveFinished = () =>
+        {
+            wk.SetUsingPerson(this);
+        };
+        yield return agent.MoveToPosition(wk.transform.position, shouldStopWhenMoving, moveFinished);
 
-    private IEnumerator MoveToWorkContainer(WorkContainer workContainer)
+    }
+    private WorkContainer GetSuitableWorkContainer(Step step)
     {
-        var targetPosition = workContainer.transform.position;
-        agent.SetDestination(targetPosition);
-        yield return new WaitUntil(() => Utils.HasSamePosition(agent.transform.position, targetPosition));
+        var suitableWorkContainer = GetShortestWorkContainer(step.WorkContainerType, true);
+        //! case when no suitable work container found
+        if (suitableWorkContainer == null)
+        {
+            suitableWorkContainer = GetShortestWorkContainer(step.WorkContainerType, false);
+
+        }
+        return suitableWorkContainer;
+    }
+    private WorkContainer GetShortestWorkContainer(WorkContainerType type, bool shouldBeFree = true)
+    {
+        var workContainers = EmpireInstance.WorkContainerManager.WorkContainers;
+        var sameTypePlaces = workContainers.FindAll(wc => wc.WorkContainerType == type);
+        WorkContainer suitableWorkContainer = null;
+        float minDistance = float.MaxValue;
+        foreach (var workContainer in sameTypePlaces)
+        {
+            if (!workContainer.IsFreeToUse(this) && shouldBeFree) continue;
+            var sqrtDistance = Vector3.SqrMagnitude(agent.transform.position - workContainer.transform.position);
+            if (sqrtDistance >= minDistance) continue;
+            minDistance = sqrtDistance;
+            suitableWorkContainer = workContainer;
+        }
+        return suitableWorkContainer;
     }
 
     private IEnumerator DoStep(Step step)
@@ -95,39 +138,6 @@ public class TaskHandler : MonoBehaviour
         yield return new WaitForSeconds(step.Data.Duration);
     }
 
-    private WorkContainer GetTheShortestFreeWorkContainer(Step step)
-    {
-        var places = step.WorkContainers.FindAll(wc => wc.IsFreeToUse());
-        if (places.Count == 0)
-        {
-            var lowPersons = int.MaxValue;
-            foreach (var wc in step.WorkContainers)
-            {
-                var totalPerson = wc.CountPersonInWaitingLine();
-                if (totalPerson < lowPersons)
-                {
-                    lowPersons = totalPerson;
-                    places.Clear();
-                    places.Add(wc);
-                }
-            }
-        }
-
-        if (places.Count == 0) return null;
-        WorkContainer shortestPlace = places[0];
-        float shortestDistance = float.MaxValue;
-        for (int i = 0; i < places.Count; i++)
-        {
-            var place = places[i];
-            var distance = Vector3.SqrMagnitude(place.transform.position - agent.transform.position);
-            if (distance < shortestDistance)
-            {
-                shortestDistance = distance;
-                shortestPlace = place;
-            }
-        }
-        return shortestPlace;
-    }
 
     //! Pls override this function for your own waiting in line shape you want
     private Vector3 GetWaitingPosition(WorkContainer workContainer)

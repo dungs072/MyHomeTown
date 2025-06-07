@@ -19,40 +19,11 @@ public class WorkContainer : MonoBehaviour
     {
         personsWaitingLine = new List<TaskHandler>();
     }
-
     public void SetUsingPerson(TaskHandler person)
     {
         usingPerson = person;
-        if (person == null)
-        {
-            TriggerPersonLeft();
-        }
-        else
-        {
-
-            TryRemovePersonFromWaitingLine(person);
-            TriggerWaitingInLine();
-        }
-
-
     }
-    private void TriggerPersonLeft()
-    {
-        foreach (var person in personsWaitingLine)
-        {
-            StartCoroutine(person.HandleCurrentTask());
-        }
-    }
-    private void TriggerWaitingInLine()
-    {
-        foreach (var person in personsWaitingLine)
-        {
-            var index = GetIndexInWaitingLine(person);
-            var distance = 2;
-            var waitingPos = transform.position + distance * index * transform.forward;
-            person.TriggerWaitingInLine(waitingPos);
-        }
-    }
+
     public bool IsFreeToUse(TaskHandler person)
     {
         if (usingPerson == person)
