@@ -31,9 +31,7 @@ public class Person : MonoBehaviour
 
     private IEnumerator BehaveLikeNormalPerson()
     {
-        yield return new WaitForSeconds(5f);
-        //yield return FollowPath();
-        Debug.Log("Reached the end of the path, now doing task.");
+        yield return FollowPath();
         yield return DoTask();
     }
 

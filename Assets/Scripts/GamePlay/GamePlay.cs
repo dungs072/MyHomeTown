@@ -28,7 +28,7 @@ public class GamePlay : MonoBehaviour
     private void CreateMockAgents()
     {
         var agentManager = EmpireInstance.AgentManager;
-        StartCoroutine(agentManager.SpawnAgents(10));
+        StartCoroutine(agentManager.SpawnAgents(35));
     }
 
 }

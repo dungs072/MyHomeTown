@@ -5,6 +5,7 @@ using UnityEngine;
 public class WorkContainer : MonoBehaviour
 {
 
+
     [SerializeField] private WorkContainerType workContainerType;
     public WorkContainerType WorkContainerType => workContainerType;
 
@@ -54,6 +55,27 @@ public class WorkContainer : MonoBehaviour
     public int CountPersonInWaitingLine()
     {
         return personsWaitingLine.Count;
+    }
+
+    public Vector3 GetWaitingPosition(TaskHandler person)
+    {
+        var distance = 2;
+        var index = GetIndexInWaitingLine(person);
+        Debug.Log($"Person {person.name} is waiting in line at index {index}");
+        return transform.position + distance * index * transform.forward;
+    }
+
+
+    private void OnDrawGizmos()
+    {
+        for (int i = 0; i < personsWaitingLine.Count; i++)
+        {
+            var person = personsWaitingLine[i];
+            var position = GetWaitingPosition(person);
+            Gizmos.color = Color.yellow;
+
+            Gizmos.DrawWireSphere(position, 1);
+        }
     }
 
 

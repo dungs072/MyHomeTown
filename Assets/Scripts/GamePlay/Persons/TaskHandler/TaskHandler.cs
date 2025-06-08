@@ -62,47 +62,70 @@ public class TaskHandler : MonoBehaviour
                 //! Should trigger event here to notify that no suitable work container found
                 yield break;
             }
-            selectedWK.AddPersonToWaitingLine(this);
-            yield return MoveToWorkContainer(selectedWK);
-            //! is that you
 
+            yield return MoveToWorkContainer(selectedWK);
+            //! do the task
             if (selectedWK.IsFreeToUse(this))
             {
-                yield return handleDoTask(selectedWK, step);
+                Debug.Log($"i AM DOING HERE");
+                selectedWK.TryRemovePersonFromWaitingLine(this);
+                yield return HandleDoTask(selectedWK, step);
                 taskPerformer.MoveToNextStep();
             }
+            //! wait in line
             else
             {
-                yield return MoveToWaitingLine(selectedWK);
-                yield return new WaitUntil(() => selectedWK.IsFreeToUse());
                 //! must check there if the wk is not free or disappeared
+                yield return HandleWaitingLine(selectedWK);
             }
         }
         Debug.Log($"Task {taskPerformer.Task} is finished.");
+    }
+    private IEnumerator HandleWaitingLine(WorkContainer selectedWK)
+    {
+        selectedWK.AddPersonToWaitingLine(this);
+        yield return MoveToWaitingLine(selectedWK);
+        yield return new WaitUntil(() => selectedWK.IsFreeToUse());
+
 
     }
-    private IEnumerator handleDoTask(WorkContainer selectedWK, Step step)
+    private IEnumerator HandleDoTask(WorkContainer selectedWK, Step step)
     {
-        selectedWK.TryRemovePersonFromWaitingLine(this);
         yield return DoStep(step);
         selectedWK.SetUsingPerson(null);
     }
     private IEnumerator MoveToWaitingLine(WorkContainer wk)
     {
-        var waitingPos = GetWaitingPosition(wk);
-        yield return agent.MoveToPosition(waitingPos);
+        var waitingPos = wk.GetWaitingPosition(this);
+        while (!agent.IsReachedDestination(waitingPos))
+        {
+            agent.SetDestination(waitingPos);
+            waitingPos = wk.GetWaitingPosition(this);
+            yield return null;
+        }
     }
     private IEnumerator MoveToWorkContainer(WorkContainer wk)
     {
-        Func<bool> shouldStopWhenMoving = () =>
+        // Func<bool> shouldStopWhenMoving = () =>
+        // {
+        //     return !wk.IsFreeToUse();
+        // };
+        // Action moveFinished = () =>
+        // {
+        //     wk.SetUsingPerson(this);
+        // };
+        // yield return agent.MoveToPosition(wk.transform.position, shouldStopWhenMoving, moveFinished);
+        var destination = wk.transform.position;
+        while (!agent.IsReachedDestination(destination))
         {
-            return !wk.IsFreeToUse();
-        };
-        Action moveFinished = () =>
-        {
-            wk.SetUsingPerson(this);
-        };
-        yield return agent.MoveToPosition(wk.transform.position, shouldStopWhenMoving, moveFinished);
+            if (!wk.IsFreeToUse())
+            {
+                yield break;
+            }
+            agent.SetDestination(destination);
+            yield return null;
+        }
+        wk.SetUsingPerson(this);
 
     }
     private WorkContainer GetSuitableWorkContainer(Step step)
@@ -140,13 +163,7 @@ public class TaskHandler : MonoBehaviour
 
 
     //! Pls override this function for your own waiting in line shape you want
-    private Vector3 GetWaitingPosition(WorkContainer workContainer)
-    {
 
-        var transformWk = workContainer.transform;
-        var distance = 2;
-        return transformWk.position + distance * workContainer.GetIndexInWaitingLine(this) * transformWk.forward;
-    }
 
 
 
