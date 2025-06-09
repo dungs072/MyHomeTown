@@ -39,6 +39,8 @@ public class TaskHandler : MonoBehaviour
             }
         }
     }
+
+
     //! this will run in sequence. So pls do not break it :))
     public IEnumerator HandleAllAssignedTask()
     {
@@ -67,7 +69,6 @@ public class TaskHandler : MonoBehaviour
             //! do the task
             if (selectedWK.IsFreeToUse(this))
             {
-                Debug.Log($"i AM DOING HERE");
                 selectedWK.TryRemovePersonFromWaitingLine(this);
                 yield return HandleDoTask(selectedWK, step);
                 taskPerformer.MoveToNextStep();
@@ -86,8 +87,6 @@ public class TaskHandler : MonoBehaviour
         selectedWK.AddPersonToWaitingLine(this);
         yield return MoveToWaitingLine(selectedWK);
         yield return new WaitUntil(() => selectedWK.IsFreeToUse());
-
-
     }
     private IEnumerator HandleDoTask(WorkContainer selectedWK, Step step)
     {
@@ -97,6 +96,7 @@ public class TaskHandler : MonoBehaviour
     private IEnumerator MoveToWaitingLine(WorkContainer wk)
     {
         var waitingPos = wk.GetWaitingPosition(this);
+        agent.SetDestination(waitingPos);
         while (!agent.IsReachedDestination(waitingPos))
         {
             agent.SetDestination(waitingPos);
@@ -106,26 +106,15 @@ public class TaskHandler : MonoBehaviour
     }
     private IEnumerator MoveToWorkContainer(WorkContainer wk)
     {
-        // Func<bool> shouldStopWhenMoving = () =>
-        // {
-        //     return !wk.IsFreeToUse();
-        // };
-        // Action moveFinished = () =>
-        // {
-        //     wk.SetUsingPerson(this);
-        // };
-        // yield return agent.MoveToPosition(wk.transform.position, shouldStopWhenMoving, moveFinished);
-        var destination = wk.transform.position;
-        while (!agent.IsReachedDestination(destination))
+        Func<bool> shouldStopWhenMoving = () =>
         {
-            if (!wk.IsFreeToUse())
-            {
-                yield break;
-            }
-            agent.SetDestination(destination);
-            yield return null;
-        }
-        wk.SetUsingPerson(this);
+            return !wk.IsFreeToUse();
+        };
+        Action moveFinished = () =>
+        {
+            wk.SetUsingPerson(this);
+        };
+        yield return agent.MoveToPosition(wk.transform.position, shouldStopWhenMoving, moveFinished);
 
     }
     private WorkContainer GetSuitableWorkContainer(Step step)
@@ -155,17 +144,12 @@ public class TaskHandler : MonoBehaviour
         }
         return suitableWorkContainer;
     }
+    
 
     private IEnumerator DoStep(Step step)
     {
         yield return new WaitForSeconds(step.Data.Duration);
     }
-
-
     //! Pls override this function for your own waiting in line shape you want
-
-
-
-
 
 }

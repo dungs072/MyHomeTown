@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using ProjectDawn.Navigation;
 using ProjectDawn.Navigation.Hybrid;
 using UnityEngine;
 
@@ -12,7 +13,7 @@ public class AgentController : MonoBehaviour
     public void SetTarget(Transform target)
     {
         this.target = target;
-        agent.SetDestination(target.position);
+        SetDestination(target.position);
     }
 
     private void Awake()
@@ -21,10 +22,11 @@ public class AgentController : MonoBehaviour
     }
 
 
+
     void Start()
     {
         if (target == null) return;
-        agent.SetDestination(target.position);
+        SetDestination(target.position);
     }
 
     public void SetDestination(Vector3 destination)
@@ -45,11 +47,12 @@ public class AgentController : MonoBehaviour
     public IEnumerator MoveToPosition(Vector3 destination, Func<bool> shouldStopMoving = null, Action moveFinished = null)
 
     {
-        agent.SetDestination(destination);
+        SetDestination(destination);
         while (!IsReachedDestination(destination))
         {
             if (shouldStopMoving != null && shouldStopMoving())
             {
+                agent.Stop();
                 yield break;
             }
             yield return null;
@@ -62,8 +65,10 @@ public class AgentController : MonoBehaviour
 
     public bool IsReachedDestination(Vector3 destination)
     {
-        float SMALLEST_SQRT_DISTANCE = 0.2f;
+
+        float SMALLEST_SQRT_DISTANCE = agent.DefaultLocomotion.StoppingDistance;
         return Vector3.SqrMagnitude(agent.transform.position - destination) < SMALLEST_SQRT_DISTANCE;
+
     }
 
 }

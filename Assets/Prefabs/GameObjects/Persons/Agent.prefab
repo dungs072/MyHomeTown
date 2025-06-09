@@ -119,7 +119,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 9198347967470949743}
-  - component: {fileID: 3835213998102690341}
+  - component: {fileID: 5136496638802335421}
+  - component: {fileID: 210604698053267194}
   - component: {fileID: 9016698180414684254}
   - component: {fileID: 330555883515283830}
   - component: {fileID: 8066138087326353846}
@@ -148,7 +149,7 @@ Transform:
   - {fileID: 3438754195484663616}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &3835213998102690341
+--- !u!114 &5136496638802335421
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -167,6 +168,25 @@ MonoBehaviour:
   StoppingDistance: 0.1
   AutoBreaking: 1
   m_Layers: 1
+--- !u!114 &210604698053267194
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7458078509174832313}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 42a4cd4cbf6cf044887ce5ff1955fa9e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_HiveMindStop:
+    Enabled: 1
+    Radius: 1
+  m_GiveUpStop:
+    Enabled: 0
+    FatigueSpeed: 0.5
+    RecoverySpeed: 0.4
 --- !u!114 &9016698180414684254
 MonoBehaviour:
   m_ObjectHideFlags: 0

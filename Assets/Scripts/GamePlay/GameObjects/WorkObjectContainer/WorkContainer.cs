@@ -5,7 +5,6 @@ using UnityEngine;
 public class WorkContainer : MonoBehaviour
 {
 
-
     [SerializeField] private WorkContainerType workContainerType;
     public WorkContainerType WorkContainerType => workContainerType;
 
@@ -23,6 +22,7 @@ public class WorkContainer : MonoBehaviour
     public void SetUsingPerson(TaskHandler person)
     {
         usingPerson = person;
+
     }
 
     public bool IsFreeToUse(TaskHandler person)
@@ -61,7 +61,6 @@ public class WorkContainer : MonoBehaviour
     {
         var distance = 2;
         var index = GetIndexInWaitingLine(person);
-        Debug.Log($"Person {person.name} is waiting in line at index {index}");
         return transform.position + distance * index * transform.forward;
     }
 
