@@ -1,7 +1,6 @@
 public enum GamePlayState
 {
     NONE,
-
     WIN,
     LOSE,
     DRAW,

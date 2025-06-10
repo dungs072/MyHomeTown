@@ -12,7 +12,6 @@ public class Person : MonoBehaviour
     void Awake()
     {
         singleton = ManagerSingleton.EmpireInstance;
-        Debug.Log(singleton);
         taskHandler = GetComponent<TaskHandler>();
         agentController = GetComponent<AgentController>();
     }
@@ -31,8 +30,7 @@ public class Person : MonoBehaviour
 
     private IEnumerator BehaveLikeNormalPerson()
     {
-        // yield return FollowPath();
-        yield return new WaitForSeconds(5f);
+        yield return FollowPath();
         yield return DoTask();
     }
 
@@ -61,7 +59,6 @@ public class Person : MonoBehaviour
         taskHandler.AddTask(specificTask);
         yield return taskHandler.HandleAllAssignedTask();
         taskHandler.RemoveTask(specificTask);
-        //gameObject.SetActive(false);
-        Destroy(gameObject);
+        gameObject.SetActive(false);
     }
 }

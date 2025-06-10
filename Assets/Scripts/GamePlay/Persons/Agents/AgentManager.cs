@@ -19,7 +19,7 @@ public class AgentManager : MonoBehaviour
         agents = new List<AgentController>();
     }
 
-    public IEnumerator SpawnAgents(int amount)
+    public void SpawnAgents(int amount)
     {
         int count = 0;
         while (count < amount)
@@ -32,7 +32,6 @@ public class AgentManager : MonoBehaviour
             // }
             count++;
         }
-        yield return null;
     }
     private Vector3 GetRandomStartSpawnPoint()
     {
@@ -75,6 +74,18 @@ public class AgentManager : MonoBehaviour
             }
         }
         return true;
+    }
+    public bool IsAllAgentsLessThan(int amount)
+    {
+        int count = 0;
+        foreach (var agent in agents)
+        {
+            if (agent.gameObject.activeSelf)
+            {
+                count++;
+            }
+        }
+        return count < amount;
     }
 
     void OnDrawGizmos()

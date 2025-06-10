@@ -144,12 +144,13 @@ public class TaskHandler : MonoBehaviour
         }
         return suitableWorkContainer;
     }
-    
+
 
     private IEnumerator DoStep(Step step)
     {
         yield return new WaitForSeconds(step.Data.Duration);
     }
-    //! Pls override this function for your own waiting in line shape you want
+
+
 
 }
