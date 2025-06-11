@@ -37,7 +37,8 @@ public class PlayerInput : MonoBehaviour
         inputHandler.Player.RotateCamera.canceled += ctx => isRotatingCamera = false;
 
         inputHandler.Player.SelectionObject.performed += ctx => SelectObject();
-        inputHandler.Player.SelectionObject.canceled += ctx => SelectObject();
+        // select only
+        // inputHandler.Player.SelectionObject.canceled += ctx => SelectObject();
 
         inputHandler.Player.RotateObject.performed += ctx => RotateObject();
         inputHandler.Player.RotateObject.canceled -= ctx => RotateObject();

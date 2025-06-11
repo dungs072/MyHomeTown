@@ -2,8 +2,8 @@ using UnityEngine;
 
 public class PlayerWorldSelection : MonoBehaviour
 {
-    private PropertyBase selectedProperty;
-
+    //private PropertyBase selectedProperty;
+    private SelectableObject selectedObject;
     void OnEnable()
     {
         PlayerInput.OnSelectionObject += OnSelectionObject;
@@ -21,24 +21,20 @@ public class PlayerWorldSelection : MonoBehaviour
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         if (Physics.Raycast(ray, out RaycastHit hit))
         {
-            if (!hit.transform.TryGetComponent(out PropertyBase property))
-            {
-                TurnOffSelectedProperty();
-                return;
-            }
-            property.SetPropState(PropState.Selected);
-            selectedProperty = property;
+            TurnOffSelectedObject();
+            if (!hit.transform.TryGetComponent(out SelectableObject obj)) return;
+            selectedObject = obj;
+            selectedObject.SetSelected(true);
         }
         else
         {
-            TurnOffSelectedProperty();
+            TurnOffSelectedObject();
         }
-
     }
-    private void TurnOffSelectedProperty()
+    private void TurnOffSelectedObject()
     {
-        if (selectedProperty == null) return;
-        selectedProperty.SetPropState(PropState.Free);
-        selectedProperty = null;
+        if (selectedObject == null) return;
+        selectedObject.SetSelected(false);
+        selectedObject = null;
     }
 }
