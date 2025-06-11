@@ -18,8 +18,17 @@ public class Person : MonoBehaviour
 
     void Start()
     {
-        StartCoroutine(BehaveLikeNormalPerson());
         SetRandomColor();
+    }
+
+    void OnEnable()
+    {
+        StartCoroutine(BehaveLikeNormalPerson());
+    }
+    // reset the person here to reuse it again
+    void OnDisable()
+    {
+        agentController.ResetAgent();
     }
 
     private void SetRandomColor()
@@ -32,6 +41,7 @@ public class Person : MonoBehaviour
     {
         yield return FollowPath();
         yield return DoTask();
+        gameObject.SetActive(false);
     }
 
     private IEnumerator FollowPath()
@@ -57,8 +67,9 @@ public class Person : MonoBehaviour
         var taskData = taskManager.TasksData[0];
         var specificTask = taskManager.GetTask(taskData);
         taskHandler.AddTask(specificTask);
+
         yield return taskHandler.HandleAllAssignedTask();
         taskHandler.RemoveTask(specificTask);
-        gameObject.SetActive(false);
+
     }
 }

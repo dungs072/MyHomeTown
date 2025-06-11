@@ -45,7 +45,6 @@ public class AgentController : MonoBehaviour
     /// <returns></returns>
 
     public IEnumerator MoveToPosition(Vector3 destination, Func<bool> shouldStopMoving = null, Action moveFinished = null)
-
     {
         SetDestination(destination);
         while (!IsReachedDestination(destination))
@@ -65,9 +64,12 @@ public class AgentController : MonoBehaviour
 
     public bool IsReachedDestination(Vector3 destination)
     {
-
         float SMALLEST_SQRT_DISTANCE = agent.DefaultLocomotion.StoppingDistance;
         return Vector3.SqrMagnitude(agent.transform.position - destination) < SMALLEST_SQRT_DISTANCE;
+    }
+    public void ResetAgent()
+    {
+        StopMoving();
 
     }
 
