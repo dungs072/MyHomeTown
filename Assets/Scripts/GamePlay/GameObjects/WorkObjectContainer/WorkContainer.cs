@@ -19,40 +19,12 @@ public class WorkContainer : MonoBehaviour
     {
         personsWaitingLine = new List<TaskHandler>();
     }
-
     public void SetUsingPerson(TaskHandler person)
     {
         usingPerson = person;
-        if (person == null)
-        {
-            TriggerPersonLeft();
-        }
-        else
-        {
-
-            TryRemovePersonFromWaitingLine(person);
-            TriggerWaitingInLine();
-        }
-
 
     }
-    private void TriggerPersonLeft()
-    {
-        foreach (var person in personsWaitingLine)
-        {
-            StartCoroutine(person.HandleCurrentTask());
-        }
-    }
-    private void TriggerWaitingInLine()
-    {
-        foreach (var person in personsWaitingLine)
-        {
-            var index = GetIndexInWaitingLine(person);
-            var distance = 2;
-            var waitingPos = transform.position + distance * index * transform.forward;
-            person.TriggerWaitingInLine(waitingPos);
-        }
-    }
+
     public bool IsFreeToUse(TaskHandler person)
     {
         if (usingPerson == person)
@@ -83,6 +55,26 @@ public class WorkContainer : MonoBehaviour
     public int CountPersonInWaitingLine()
     {
         return personsWaitingLine.Count;
+    }
+
+    public Vector3 GetWaitingPosition(TaskHandler person)
+    {
+        var distance = 2;
+        var index = GetIndexInWaitingLine(person);
+        return transform.position + distance * index * transform.forward;
+    }
+
+
+    private void OnDrawGizmos()
+    {
+        for (int i = 0; i < personsWaitingLine.Count; i++)
+        {
+            var person = personsWaitingLine[i];
+            var position = GetWaitingPosition(person);
+            Gizmos.color = Color.yellow;
+
+            Gizmos.DrawWireSphere(position, 1);
+        }
     }
 
 

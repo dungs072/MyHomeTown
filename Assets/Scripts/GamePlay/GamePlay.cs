@@ -22,41 +22,32 @@ public class GamePlay : MonoBehaviour
     }
     void Start()
     {
-        CreateMockAgents();
+        SwitchGameState(GamePlayState.PLAYING);
     }
 
-    private void CreateMockAgents()
+    void Update()
+    {
+        if (gameState == GamePlayState.NONE) return;
+        if (gameState == GamePlayState.PLAYING)
+        {
+            UpdateGamePlaying();
+        }
+    }
+    private void UpdateGamePlaying()
     {
         var agentManager = EmpireInstance.AgentManager;
-        StartCoroutine(agentManager.SpawnAgents(10));
+        int shouldSpawnAgentCount = UnityEngine.Random.Range(1, 100);
+        bool shouldSpawnAgent = agentManager.IsAllAgentsLessThan(shouldSpawnAgentCount);
+        if (!shouldSpawnAgent) return;
+        SpawnAgents();
     }
+    private void SpawnAgents()
+    {
+        var agentManager = EmpireInstance.AgentManager;
+        int agentCount = UnityEngine.Random.Range(1, 25);
+        agentManager.SpawnAgents(agentCount);
 
-
-    #region Screen Flows
-    public void HandleContinueGame()
-    {
-        StartCoroutine(HandleContinueGameAsync());
     }
-    private IEnumerator HandleContinueGameAsync()
-    {
-        string screenName = ScreenName.SettingScreen.ToString();
-        GameInstance.BlockInput(true);
-        yield return ScreenManager.CloseScreenAsync(screenName);
-        GameInstance.BlockInput(false);
-    }
-    public void HandleOpenSettingScreen()
-    {
-        StartCoroutine(HandleOpenSettingScreenAsync());
-    }
-    private IEnumerator HandleOpenSettingScreenAsync()
-    {
-        string screenName = ScreenName.SettingScreen.ToString();
-        GameInstance.BlockInput(true);
-        yield return ScreenManager.OpenScreenAsync(screenName);
-        GameInstance.BlockInput(false);
-    }
-
-    #endregion
 
 
 }

@@ -1,21 +1,36 @@
 using System.Collections;
 using BaseEngine;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class GameController : MonoBehaviour
 {
+    [Header("Main")]
     [SerializeField] private GameObject blockInputContainer;
+    [Header("Debugger")]
+    [SerializeField] private Image blockInputImage;
     public static GameController GameInstance { get; private set; }
     private ScreenManager screenManager;
     private SceneController sceneController;
     private GameStorage gameStorage;
 
     public GameStorage GameStorage => gameStorage;
+
+    public T GetSpecificScene<T>() where T : class
+    {
+        var baseScene = sceneController.CurrentScene;
+        if (!baseScene) return null;
+        return baseScene as T;
+    }
+
     void Awake()
     {
         InitSingleton();
         InitCustomGameEngineComponents();
+        // debugger
+        UpdateBlockInputContainer();
     }
 
     private void InitSingleton()
@@ -33,7 +48,7 @@ public class GameController : MonoBehaviour
 
     private void InitCustomGameEngineComponents()
     {
-        screenManager = ScreenManager.Instance;
+        screenManager = ScreenManager.ScreenManagerInstance;
         sceneController = SceneController.Instance;
         gameStorage = new GameStorage();
     }
@@ -117,6 +132,16 @@ public class GameController : MonoBehaviour
     }
     #endregion
 
+
+    #region Debugger
+    private void UpdateBlockInputContainer()
+    {
+        var alphaTarget = GameConfig.IsDebugMode ? 0.27f : 0;
+        var color = blockInputImage.color;
+        color.a = alphaTarget;
+        blockInputImage.color = color;
+    }
+    #endregion
 
 
 }

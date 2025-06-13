@@ -1,10 +1,14 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using System.Collections;
+using BaseEngine;
 public class SceneController : MonoBehaviour
 {
     public static SceneController Instance { get; private set; }
     private string currentSceneName;
+    private BaseScene currentScene;
+
+    public BaseScene CurrentScene => currentScene;
     private void Awake()
     {
         if (Instance == null)
@@ -44,5 +48,19 @@ public class SceneController : MonoBehaviour
             yield return null;
         }
         currentSceneName = sceneName;
+        FindCurrentScene();
     }
+
+    private void FindCurrentScene()
+    {
+        var selectedScene = FindFirstObjectByType<BaseScene>();
+        if (!selectedScene)
+        {
+            Debug.Log("No base scene type founded");
+            return;
+        }
+        Debug.Log("Scene found: " + selectedScene.name);
+        currentScene = selectedScene;
+    }
+
 }

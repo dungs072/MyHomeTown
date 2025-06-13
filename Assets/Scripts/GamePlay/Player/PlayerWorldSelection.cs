@@ -1,13 +1,13 @@
 using UnityEngine;
+using static BaseEngine.ScreenManager;
 
 public class PlayerWorldSelection : MonoBehaviour
 {
-    private PropertyBase selectedProperty;
-
+    //private PropertyBase selectedProperty;
+    private SelectableObject selectedObject;
     void OnEnable()
     {
         PlayerInput.OnSelectionObject += OnSelectionObject;
-
     }
 
 
@@ -21,24 +21,46 @@ public class PlayerWorldSelection : MonoBehaviour
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         if (Physics.Raycast(ray, out RaycastHit hit))
         {
-            if (!hit.transform.TryGetComponent(out PropertyBase property))
-            {
-                TurnOffSelectedProperty();
-                return;
-            }
-            property.SetPropState(PropState.Selected);
-            selectedProperty = property;
+            TurnOffSelectedObject();
+            if (!hit.transform.TryGetComponent(out SelectableObject obj)) return;
+            HandleSelectObject(obj);
         }
         else
         {
-            TurnOffSelectedProperty();
+            TurnOffSelectedObject();
         }
-
     }
-    private void TurnOffSelectedProperty()
+    private void HandleSelectObject(SelectableObject obj)
     {
-        if (selectedProperty == null) return;
-        selectedProperty.SetPropState(PropState.Free);
-        selectedProperty = null;
+        selectedObject = obj;
+        selectedObject.SetSelected(true);
+        string screenName = ScreenName.GamePlayScreen.ToString();
+        var gamePlayScreen = ScreenManagerInstance.GetScreen<GamePlayScreen>(screenName);
+        if (!gamePlayScreen) return;
+        var infoPanel = gamePlayScreen.Container.InfoPanel;
+        infoPanel.gameObject.SetActive(true);
+        // handle case for person
+        if (selectedObject.TryGetComponent(out Person person))
+        {
+            var personData = person.PersonData;
+            infoPanel.SetNameText(personData.Name);
+            infoPanel.SetStateText(personData.State.ToString());
+        }
+    }
+
+    private void TurnOffSelectedObject()
+    {
+        // turn off UI
+        string screenName = ScreenName.GamePlayScreen.ToString();
+        var gamePlayScreen = ScreenManagerInstance.GetScreen<GamePlayScreen>(screenName);
+        if (!gamePlayScreen) return;
+        var infoPanel = gamePlayScreen.Container.InfoPanel;
+        infoPanel.gameObject.SetActive(false);
+
+
+        // turn off selected object
+        if (selectedObject == null) return;
+        selectedObject.SetSelected(false);
+        selectedObject = null;
     }
 }

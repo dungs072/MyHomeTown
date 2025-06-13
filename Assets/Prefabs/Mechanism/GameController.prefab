@@ -49,6 +49,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   blockInputContainer: {fileID: 8996990699980803868}
+  blockInputImage: {fileID: 7695570315948940137}
 --- !u!114 &4789695705862230003
 MonoBehaviour:
   m_ObjectHideFlags: 0
