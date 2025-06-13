@@ -48,7 +48,7 @@ public class GameController : MonoBehaviour
 
     private void InitCustomGameEngineComponents()
     {
-        screenManager = ScreenManager.Instance;
+        screenManager = ScreenManager.ScreenManagerInstance;
         sceneController = SceneController.Instance;
         gameStorage = new GameStorage();
     }

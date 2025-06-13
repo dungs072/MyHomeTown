@@ -16,14 +16,42 @@ namespace BaseEngine
     {
         private Stack<BaseScreen> screenStack = new();
         private Dictionary<string, TScreenLoader> screens = new();
-        public static ScreenManager Instance { get; private set; }
+        public static ScreenManager ScreenManagerInstance { get; private set; }
 
         private Transform screenHolder;
+
+        public T GetScreen<T>(string screenName) where T : BaseScreen
+        {
+            if (screens.ContainsKey(screenName))
+            {
+                var screen = GetScreen(screenName);
+                if (screen.TryGetComponent(out T specificScreen))
+                {
+                    return specificScreen;
+                }
+                Debug.LogError($"Screen {screenName} does not have component of type {typeof(T)}.");
+            }
+            else
+            {
+                Debug.LogError($"Screen {screenName} is not preloaded.");
+            }
+            return null;
+        }
+
+        private BaseScreen GetScreen(string screenName)
+        {
+            if (screens.ContainsKey(screenName))
+            {
+                return screens[screenName].screen;
+            }
+            Debug.LogError($"Screen {screenName} is not preloaded.");
+            return null;
+        }
         void Awake()
         {
-            if (Instance == null)
+            if (ScreenManagerInstance == null)
             {
-                Instance = this;
+                ScreenManagerInstance = this;
             }
 
         }
@@ -120,36 +148,36 @@ namespace BaseEngine
         }
         public static IEnumerator OpenScreenAsync(string screenName)
         {
-            if (Instance == null)
+            if (ScreenManagerInstance == null)
             {
                 Debug.LogError("ScreenManager instance is not initialized.");
                 yield break;
             }
-            var screenLoader = Instance.screens[screenName];
+            var screenLoader = ScreenManagerInstance.screens[screenName];
 
             if (screenLoader == null || screenLoader.screen == null)
             {
-                yield return Instance.LoadScreenAsync(screenName);
+                yield return ScreenManagerInstance.LoadScreenAsync(screenName);
             }
             var screen = screenLoader.screen;
-            Instance.screenStack.Push(screen);
+            ScreenManagerInstance.screenStack.Push(screen);
             yield return screen.OpenScreenAsync();
         }
         public static IEnumerator CloseScreenAsync(string screenName)
         {
-            if (Instance == null)
+            if (ScreenManagerInstance == null)
             {
                 Debug.LogError("ScreenManager instance is not initialized.");
                 yield break;
             }
-            if (!Instance.screens.ContainsKey(screenName))
+            if (!ScreenManagerInstance.screens.ContainsKey(screenName))
             {
                 Debug.LogError($"Screen {screenName} is not preloaded.");
                 yield break;
             }
-            var screenLoader = Instance.screens[screenName];
+            var screenLoader = ScreenManagerInstance.screens[screenName];
             var screen = screenLoader.screen;
-            Instance.screenStack.Pop();
+            ScreenManagerInstance.screenStack.Pop();
             yield return screen.CloseScreenAsync();
         }
 

@@ -1,4 +1,5 @@
 using UnityEngine;
+using static BaseEngine.ScreenManager;
 
 public class PlayerWorldSelection : MonoBehaviour
 {
@@ -7,7 +8,6 @@ public class PlayerWorldSelection : MonoBehaviour
     void OnEnable()
     {
         PlayerInput.OnSelectionObject += OnSelectionObject;
-
     }
 
 
@@ -23,16 +23,42 @@ public class PlayerWorldSelection : MonoBehaviour
         {
             TurnOffSelectedObject();
             if (!hit.transform.TryGetComponent(out SelectableObject obj)) return;
-            selectedObject = obj;
-            selectedObject.SetSelected(true);
+            HandleSelectObject(obj);
         }
         else
         {
             TurnOffSelectedObject();
         }
     }
+    private void HandleSelectObject(SelectableObject obj)
+    {
+        selectedObject = obj;
+        selectedObject.SetSelected(true);
+        string screenName = ScreenName.GamePlayScreen.ToString();
+        var gamePlayScreen = ScreenManagerInstance.GetScreen<GamePlayScreen>(screenName);
+        if (!gamePlayScreen) return;
+        var infoPanel = gamePlayScreen.Container.InfoPanel;
+        infoPanel.gameObject.SetActive(true);
+        // handle case for person
+        if (selectedObject.TryGetComponent(out Person person))
+        {
+            var personData = person.PersonData;
+            infoPanel.SetNameText(personData.Name);
+            infoPanel.SetStateText(personData.State.ToString());
+        }
+    }
+
     private void TurnOffSelectedObject()
     {
+        // turn off UI
+        string screenName = ScreenName.GamePlayScreen.ToString();
+        var gamePlayScreen = ScreenManagerInstance.GetScreen<GamePlayScreen>(screenName);
+        if (!gamePlayScreen) return;
+        var infoPanel = gamePlayScreen.Container.InfoPanel;
+        infoPanel.gameObject.SetActive(false);
+
+
+        // turn off selected object
         if (selectedObject == null) return;
         selectedObject.SetSelected(false);
         selectedObject = null;

@@ -1,12 +1,31 @@
 using System.Collections;
 using UnityEngine;
 
+
+
+public class PersonData
+{
+    public string Name { get; set; }
+    public int Age { get; set; }
+    public PersonState State { get; set; }
+
+    public PersonData(string name, int age, PersonState state)
+    {
+        Name = name;
+        Age = age;
+        State = state;
+    }
+}
+
 public class Person : MonoBehaviour
 {
+    [SerializeField] private PersonData personData;
     [SerializeField] private MeshRenderer meshRenderer;
     private TaskHandler taskHandler;
     private ManagerSingleton singleton;
     private AgentController agentController;
+
+    public PersonData PersonData => personData;
 
 
     void Awake()
@@ -23,6 +42,7 @@ public class Person : MonoBehaviour
 
     void OnEnable()
     {
+        CreatePersonData();
         StartCoroutine(BehaveLikeNormalPerson());
     }
     // reset the person here to reuse it again
@@ -30,15 +50,27 @@ public class Person : MonoBehaviour
     {
         agentController.ResetAgent();
     }
-
+    private void CreatePersonData()
+    {
+        string personName = PersonDataGenerator.GenerateName();
+        int personAge = PersonDataGenerator.GenerateAge();
+        personData = new PersonData(personName, personAge, PersonState.Idle);
+    }
     private void SetRandomColor()
     {
         Color randomColor = new Color(Random.value, Random.value, Random.value, 1.0f);
         meshRenderer.material.color = randomColor;
     }
 
+    public void SwitchState(PersonState newState)
+    {
+        personData.State = newState;
+        // You can add additional logic here if needed when the state changes
+    }
+
     private IEnumerator BehaveLikeNormalPerson()
     {
+        SwitchState(PersonState.Walking);
         yield return FollowPath();
         yield return DoTask();
         gameObject.SetActive(false);

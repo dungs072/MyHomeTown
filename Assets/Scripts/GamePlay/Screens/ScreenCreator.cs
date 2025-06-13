@@ -13,7 +13,7 @@ public class ScreenCreator : MonoBehaviour
     }
     private void InitScreens()
     {
-        var screenManager = ScreenManager.Instance;
+        var screenManager = ScreenManager.ScreenManagerInstance;
         var screenNameStr = new List<string>();
 
         screenManager.SetScreenHolder(transform);
