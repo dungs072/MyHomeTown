@@ -1,5 +1,6 @@
 using System.Collections;
 using BaseEngine;
+using DG.Tweening;
 using TMPro;
 using UnityEngine;
 
@@ -9,6 +10,8 @@ namespace GamePlayContainerElements
     {
         [SerializeField] private MagicButton settingButton;
         [SerializeField] private TMP_Text moneyText;
+
+        private Tween moneyTextTween;
 
         void Awake()
         {
@@ -36,7 +39,11 @@ namespace GamePlayContainerElements
             {
                 moneyText.text = currentNumber.ToString();
             }
-            AnimUtils.PlayNumberCounterAnim(moneyText,
+            if (moneyTextTween != null && moneyTextTween.IsActive())
+            {
+                moneyTextTween.Kill();
+            }
+            moneyTextTween = AnimUtils.PlayNumberCounterAnim(moneyText,
                 int.Parse(moneyText.text),
                 money,
                 0.5f);

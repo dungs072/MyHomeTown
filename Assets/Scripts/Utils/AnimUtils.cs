@@ -7,6 +7,7 @@ public static class AnimUtils
 {
     public static Tweener PlayNumberCounterAnim(TMP_Text text, int from, int to, float duration = 0.5f)
     {
+        
         return DOTween.To(() => from, x =>
         {
             from = x;

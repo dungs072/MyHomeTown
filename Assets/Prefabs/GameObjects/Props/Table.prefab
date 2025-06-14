@@ -100,7 +100,7 @@ GameObject:
   - component: {fileID: 8402337095299375531}
   - component: {fileID: -1674716450820195410}
   m_Layer: 0
-  m_Name: TestMeal
+  m_Name: Table
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

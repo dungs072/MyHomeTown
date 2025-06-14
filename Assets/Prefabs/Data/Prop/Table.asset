@@ -10,8 +10,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0b5c6e35ba8d5fc4d842ebd9c18eb198, type: 3}
-  m_Name: TestMeal
+  m_Name: Table
   m_EditorClassIdentifier: 
-  propName: Test Meal
+  propName: Table
   propDescription: No data available
   propPrice: 120

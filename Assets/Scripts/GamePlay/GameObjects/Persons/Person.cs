@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using static ManagerSingleton;
 
 
 
@@ -73,7 +74,14 @@ public class Person : MonoBehaviour
         SwitchState(PersonState.Walking);
         yield return FollowPath();
         yield return DoTask();
+        DemoAddMoneyWhenFinished();
         gameObject.SetActive(false);
+    }
+    private void DemoAddMoneyWhenFinished()
+    {
+        var player = EmpireInstance.Player;
+        if (!player.TryGetComponent(out PlayerWallet playerWallet)) return;
+        playerWallet.AddMoney(5);
     }
 
     private IEnumerator FollowPath()
