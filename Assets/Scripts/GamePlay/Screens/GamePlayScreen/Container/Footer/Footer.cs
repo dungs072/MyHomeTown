@@ -21,11 +21,12 @@ namespace GamePlayContainerElements
             if (!propertyFactory) return;
             propertyFactory = ManagerSingleton.EmpireInstance.PropertyFactory;
         }
-        public void CreateProp(string name, Sprite sprite)
+        public void CreateProp(string name, int price, Sprite sprite)
         {
             Prop newProp = Instantiate(prop, propHolder.transform);
             props.Add(newProp);
             newProp.SetName(name);
+            newProp.SetPrice(price);
             RegisterEventForPropUI(newProp);
             if (!sprite) return;
             newProp.SetBackground(sprite);

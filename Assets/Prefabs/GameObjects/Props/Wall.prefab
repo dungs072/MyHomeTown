@@ -188,5 +188,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4304290b3e77bec4685279bfdefd637c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  propKey: 1
   propUI: {fileID: 0}
+  propData: {fileID: 11400000, guid: f3d96fa2e39aea642add34b4cc3e0592, type: 2}

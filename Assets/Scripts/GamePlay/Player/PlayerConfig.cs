@@ -2,7 +2,7 @@ using System.Runtime.InteropServices;
 
 public class PlayerConfig
 {
-
+    public const int START_MONEY = 1000;
 }
 
 public class CameraConfig

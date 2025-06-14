@@ -24,10 +24,10 @@ public class PlayerWallet : MonoBehaviour
 
     private void SetUp()
     {
-
         var screenName = ScreenName.GamePlayScreen.ToString();
         var gamePlayScreen = GameInstance.ScreenManager.GetScreen<GamePlayScreen>(screenName);
         gamePlayScreen.Container.Header.SetMoneyText(Money);
+        //AddMoney(PlayerConfig.START_MONEY);
     }
 
     public void AddMoney(int amount)
@@ -36,5 +36,10 @@ public class PlayerWallet : MonoBehaviour
         var totalMoney = currentMoney + amount;
         GameInstance.GameStorage.SaveMoney(totalMoney);
         OnMoneyChanged?.Invoke(totalMoney);
+    }
+    public bool CanBuy(int price)
+    {
+        int currentMoney = GameInstance.GameStorage.GetMoney();
+        return currentMoney >= price;
     }
 }

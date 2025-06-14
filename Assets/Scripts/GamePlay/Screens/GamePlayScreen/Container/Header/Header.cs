@@ -32,6 +32,10 @@ namespace GamePlayContainerElements
                 moneyText.text = money.ToString();
                 return;
             }
+            else
+            {
+                moneyText.text = currentNumber.ToString();
+            }
             AnimUtils.PlayNumberCounterAnim(moneyText,
                 int.Parse(moneyText.text),
                 money,

@@ -862,6 +862,7 @@ MonoBehaviour:
   workContainerManager: {fileID: 8534147044951621783}
   agentManager: {fileID: 541506284725771998}
   propertyFactory: {fileID: 6844385187114777568}
+  player: {fileID: 1403956872372848595}
 --- !u!114 &1085125887789854357
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -983,3 +984,14 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 7757744694472108848, guid: c12a4ffa82b854846be490a7abcfccae, type: 3}
   m_PrefabInstance: {fileID: 8887460150537696365}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1403956872372848595 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7506729533647467454, guid: c12a4ffa82b854846be490a7abcfccae, type: 3}
+  m_PrefabInstance: {fileID: 8887460150537696365}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 68703681ef5291c40a31999f637dc258, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

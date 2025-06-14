@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using static ManagerSingleton;
 
 public class PropertyFactory : BaseFactory
 {
@@ -78,6 +79,7 @@ public class PropertyFactory : BaseFactory
                 occupier.SetOccupiedSlots();
             }
         }
+        HandleBuyProp(currentCreatingProduct);
         if (currentCreatingProduct.TryGetComponent(out WorkContainer workContainer))
         {
             var workContainerManager = ManagerSingleton.EmpireInstance.WorkContainerManager;
@@ -89,6 +91,13 @@ public class PropertyFactory : BaseFactory
             currentCreatingProduct.gameObject.SetActive(true);
             currentCreatingProduct = null;
         }
+    }
+    private void HandleBuyProp(PropertyBase property)
+    {
+        var player = EmpireInstance.Player;
+        if (!player.TryGetComponent(out PlayerWallet playerWallet)) return;
+        var price = property.PropData.PropPrice;
+        playerWallet.AddMoney(-price);
     }
 
 

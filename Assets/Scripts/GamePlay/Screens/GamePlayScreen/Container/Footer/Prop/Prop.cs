@@ -4,12 +4,14 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using static ManagerSingleton;
 
 public class Prop : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
 {
     [SerializeField] private Image background;
 
-    [SerializeField] private TMP_Text textName;
+    [SerializeField] private TMP_Text nameText;
+    [SerializeField] private TMP_Text priceText;
 
     private Button buttonComponent;
     private string propName;
@@ -30,8 +32,12 @@ public class Prop : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
 
     public void SetName(string name)
     {
-        textName.text = name;
+        nameText.text = name;
         propName = name;
+    }
+    public void SetPrice(int price)
+    {
+        priceText.text = price.ToString();
     }
     public void SetBackground(Sprite sprite)
     {
@@ -48,10 +54,19 @@ public class Prop : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
 
     public void OnPointerDown(PointerEventData eventData)
     {
-        OnStartCreatePropAction?.Invoke();
-        StartCoroutine(handlePointerDrag());
+        TryToBuyProp();
     }
-    public IEnumerator handlePointerDrag()
+    private void TryToBuyProp()
+    {
+        var player = EmpireInstance.Player;
+        if (!player.TryGetComponent(out PlayerWallet playerWallet)) return;
+        int propPrice = int.Parse(priceText.text);
+        if (!playerWallet.CanBuy(propPrice)) return;
+        OnStartCreatePropAction?.Invoke();
+        StartCoroutine(HandlePointerDrag());
+
+    }
+    public IEnumerator HandlePointerDrag()
     {
         while (true)
         {

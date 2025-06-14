@@ -15,6 +15,8 @@ public class ManagerSingleton : MonoBehaviour
     [SerializeField] private AgentManager agentManager;
     [Header("Factory")]
     [SerializeField] private PropertyFactory propertyFactory;
+    [Header("Player")]
+    [SerializeField] private PlayerController player;
     private static ManagerSingleton instance;
     public static ManagerSingleton EmpireInstance => instance;
 
@@ -29,6 +31,7 @@ public class ManagerSingleton : MonoBehaviour
     // MapWorld
     public MapWorld MapWorld => mapWorld;
     public GamePlay GamePlay => gamePlay;
+    public PlayerController Player => player;
     private MapWorld mapWorld;
     private GamePlay gamePlay;
     void Start()

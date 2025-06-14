@@ -10,10 +10,12 @@ public enum PropState
 [RequireComponent(typeof(Occupier))]
 public class PropertyBase : BaseProduct
 {
-    [SerializeField] private PropKeys propKey = PropKeys.CookingBase;
     [SerializeField] private PropUI propUI;
-    public override string ProductName => PropKeyDescriptions.Descriptions[propKey];
+    [SerializeField] private PropData propData;
+
+    public override string ProductName => propData.PropName;
     private PropState currentState = PropState.Free;
+    public PropData PropData => propData;
     private Occupier occupier;
     void Awake()
     {

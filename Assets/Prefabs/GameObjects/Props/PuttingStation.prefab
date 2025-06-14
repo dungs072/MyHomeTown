@@ -189,8 +189,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4304290b3e77bec4685279bfdefd637c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  propKey: 4
   propUI: {fileID: 5986040522881651115}
+  propData: {fileID: 11400000, guid: 4025e24d8a0d8864a8a205763bdcae5f, type: 2}
 --- !u!1 &933549975946536470
 GameObject:
   m_ObjectHideFlags: 0

@@ -48,7 +48,8 @@ public class GamePlayScreen : BaseScreen
                 continue;
             }
             var propName = propComponent.ProductName;
-            container.Footer.CreateProp(propName, null);
+            var propPrice = propComponent.PropData.PropPrice;
+            container.Footer.CreateProp(propName, propPrice, null);
         }
     }
 
