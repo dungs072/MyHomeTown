@@ -8,7 +8,7 @@ public class GamePlayScreen : BaseScreen
 
     public GamePlayContainer Container => container;
 
-    void Awake()
+    public override void InitScreen()
     {
         RegisterButtonEvents();
     }
