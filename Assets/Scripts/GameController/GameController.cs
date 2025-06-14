@@ -17,6 +17,7 @@ public class GameController : MonoBehaviour
     private GameStorage gameStorage;
 
     public GameStorage GameStorage => gameStorage;
+    public ScreenManager ScreenManager => screenManager;
 
     public T GetSpecificScene<T>() where T : class
     {

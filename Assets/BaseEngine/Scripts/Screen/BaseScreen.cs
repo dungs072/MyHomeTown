@@ -13,6 +13,9 @@ namespace BaseEngine
     {
         public static Action<BaseScreen> OnScreenCreated;
         public static Action<BaseScreen> OnScreenDestroyed;
+
+        public static Action<BaseScreen> OnScreenOpened;
+        public static Action<BaseScreen> OnScreenClosed;
         protected Transform screenHolder;
         private string screenName = string.Empty;
 
@@ -38,13 +41,17 @@ namespace BaseEngine
         public virtual IEnumerator OpenScreenAsync()
         {
             // Just override this method in the derived class to implement the screen opening logic.
+            //? not sure why this script and child of it is disabled when the game starts.
+            enabled = true;
             gameObject.SetActive(true);
+            OnScreenOpened?.Invoke(this);
             yield return new WaitForEndOfFrame();
         }
         public virtual IEnumerator CloseScreenAsync()
         {
             // Just override this method in the derived class to implement the screen closing logic.
             gameObject.SetActive(false);
+            OnScreenClosed?.Invoke(this);
             yield return new WaitForEndOfFrame();
         }
 

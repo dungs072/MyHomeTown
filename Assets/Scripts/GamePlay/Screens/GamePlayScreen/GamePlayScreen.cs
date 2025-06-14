@@ -8,7 +8,7 @@ public class GamePlayScreen : BaseScreen
 
     public GamePlayContainer Container => container;
 
-    void Awake()
+    public override void InitScreen()
     {
         RegisterButtonEvents();
     }
@@ -48,7 +48,8 @@ public class GamePlayScreen : BaseScreen
                 continue;
             }
             var propName = propComponent.ProductName;
-            container.Footer.CreateProp(propName, null);
+            var propPrice = propComponent.PropData.PropPrice;
+            container.Footer.CreateProp(propName, propPrice, null);
         }
     }
 
