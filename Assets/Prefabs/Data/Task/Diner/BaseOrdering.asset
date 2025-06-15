@@ -10,12 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7b0301476ecce2448be8e5276b4c50c4, type: 3}
-  m_Name: BaseCooking1
+  m_Name: BaseOrdering
   m_EditorClassIdentifier: 
-  taskName: Cooking
-  description: 
+  taskName: Ordering
+  description: This is for customers
   steps:
-  - {fileID: 11400000, guid: a5c1f047d5428464f8d1a3a7eba4e51a, type: 2}
-  - {fileID: 11400000, guid: 2a729ad6ca2f18a4abb94efac46f8f89, type: 2}
-  - {fileID: 11400000, guid: 60c80b971f80717459eda47c77619389, type: 2}
-  - {fileID: 11400000, guid: 3f7b8b9350296ec4e99c6855cef77be1, type: 2}
+  - {fileID: 11400000, guid: 3acd0d9eb117fb44284c4dbbe558f082, type: 2}
+  - {fileID: 11400000, guid: b85ee66da431ac04bb81a9dbb34bcd7b, type: 2}

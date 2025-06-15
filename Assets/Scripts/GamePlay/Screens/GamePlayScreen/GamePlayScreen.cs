@@ -53,6 +53,7 @@ public class GamePlayScreen : BaseScreen
         }
     }
 
+
     #region Button Events
     public void HandleSettingButtonClicked()
     {
