@@ -2,8 +2,6 @@ using System.Collections;
 using UnityEngine;
 using static ManagerSingleton;
 
-
-
 public class PersonData
 {
     public string Name { get; set; }
@@ -31,7 +29,7 @@ public class Person : MonoBehaviour
 
     void Awake()
     {
-        singleton = ManagerSingleton.EmpireInstance;
+        singleton = EmpireInstance;
         taskHandler = GetComponent<TaskHandler>();
         agentController = GetComponent<AgentController>();
     }
@@ -44,7 +42,6 @@ public class Person : MonoBehaviour
     void OnEnable()
     {
         CreatePersonData();
-        StartCoroutine(BehaveLikeNormalPerson());
     }
     // reset the person here to reuse it again
     void OnDisable()
@@ -73,7 +70,6 @@ public class Person : MonoBehaviour
     {
         SwitchState(PersonState.Walking);
         yield return FollowPath();
-        yield return DoTask();
         DemoAddMoneyWhenFinished();
         gameObject.SetActive(false);
     }
@@ -101,15 +97,11 @@ public class Person : MonoBehaviour
         }
     }
 
-    private IEnumerator DoTask()
+    public IEnumerator DoTask(Task task)
     {
-        var taskManager = singleton.TaskManager;
-        var taskData = taskManager.TasksData[0];
-        var specificTask = taskManager.GetTask(taskData);
-        taskHandler.AddTask(specificTask);
-
+        taskHandler.AddTask(task);
         yield return taskHandler.HandleAllAssignedTask();
-        taskHandler.RemoveTask(specificTask);
+        taskHandler.RemoveTask(task);
 
     }
 }

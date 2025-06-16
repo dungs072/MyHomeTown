@@ -10,12 +10,13 @@ public class TaskManager : MonoBehaviour
     private ManagerSingleton singleton;
 
     public List<TaskData> TasksData => tasksData;
+    public Dictionary<TaskData, Task> TasksDict => tasks;
     void Awake()
     {
         tasks = new Dictionary<TaskData, Task>();
         WorkContainerManager.OnWorkContainerAdded += HandleAddWorkContainer;
         WorkContainerManager.OnWorkContainerRemoved += HandleRemoveWorkContainer;
-
+        TransformTasks();
     }
 
     void OnDestroy()
@@ -27,9 +28,8 @@ public class TaskManager : MonoBehaviour
     {
         singleton = ManagerSingleton.EmpireInstance;
         //? just transform from the data to real tasks
-        TransformTasks();
-        AddExistingWorkContainers();
 
+        AddExistingWorkContainers();
     }
     private void AddExistingWorkContainers()
     {

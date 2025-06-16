@@ -1,23 +1,25 @@
-using System.Collections;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
+[Serializable]
+public class AgentSpawnerData
+{
+    public AgentController AgentPrefab;
+    public int Amount;
+    [HideInInspector]
+    public List<AgentController> AgentPool = new List<AgentController>();
 
+
+}
 public class AgentManager : MonoBehaviour
 {
     [SerializeField] private List<Transform> spawnPoints;
     [SerializeField] private float radius = 5f;
     [Header("Agents")]
-    [SerializeField] private AgentController agentPrefab;
+    [SerializeField] private List<AgentSpawnerData> agentSpawnersData;
 
     [Header("Debugger")]
     [SerializeField] private Transform target;
-    private List<AgentController> agents;
-
-
-    private void Awake()
-    {
-        agents = new List<AgentController>();
-    }
 
     public void SpawnAgents(int amount)
     {
@@ -35,16 +37,15 @@ public class AgentManager : MonoBehaviour
     }
     private Vector3 GetRandomStartSpawnPoint()
     {
-        int randomIndex = Random.Range(0, spawnPoints.Count);
+        int randomIndex = UnityEngine.Random.Range(0, spawnPoints.Count);
         Transform startPoint = spawnPoints[randomIndex];
         Vector3 position = startPoint.position;
-        float x = Random.Range(-radius, radius);
-        float z = Random.Range(-radius, radius);
+        float x = UnityEngine.Random.Range(-radius, radius);
+        float z = UnityEngine.Random.Range(-radius, radius);
         position.x += x;
         position.z += z;
         return position;
     }
-
 
     // handle pool
     private AgentController GetAgent()
@@ -64,17 +65,6 @@ public class AgentManager : MonoBehaviour
         return agent;
     }
 
-    public bool IsAllAgentsInPool()
-    {
-        foreach (var agent in agents)
-        {
-            if (agent.gameObject.activeSelf)
-            {
-                return false;
-            }
-        }
-        return true;
-    }
     public bool IsAllAgentsLessThan(int amount)
     {
         int count = 0;
