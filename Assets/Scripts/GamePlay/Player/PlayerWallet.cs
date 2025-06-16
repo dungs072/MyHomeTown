@@ -19,6 +19,7 @@ public class PlayerWallet : MonoBehaviour
     //! Temporarily. Make sure to Update UI when game play screen is created.
     private void OnScreenOpened(BaseScreen screen)
     {
+        if (screen is not GamePlayScreen) return;
         SetUp();
     }
 
@@ -27,7 +28,7 @@ public class PlayerWallet : MonoBehaviour
         var screenName = ScreenName.GamePlayScreen.ToString();
         var gamePlayScreen = GameInstance.ScreenManager.GetScreen<GamePlayScreen>(screenName);
         gamePlayScreen.Container.Header.SetMoneyText(Money);
-        //AddMoney(PlayerConfig.START_MONEY);
+        AddMoney(PlayerConfig.START_MONEY);
     }
 
     public void AddMoney(int amount)

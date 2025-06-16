@@ -21,6 +21,8 @@ public class Prop : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
 
     public string PropName => propName;
 
+    private bool canBuy;
+
     void Awake()
     {
         buttonComponent = GetComponent<Button>();
@@ -61,7 +63,8 @@ public class Prop : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
         var player = EmpireInstance.Player;
         if (!player.TryGetComponent(out PlayerWallet playerWallet)) return;
         int propPrice = int.Parse(priceText.text);
-        if (!playerWallet.CanBuy(propPrice)) return;
+        canBuy = playerWallet.CanBuy(propPrice);
+        if (!canBuy) return;
         OnStartCreatePropAction?.Invoke();
         StartCoroutine(HandlePointerDrag());
 
@@ -78,6 +81,7 @@ public class Prop : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
 
     public void OnPointerUp(PointerEventData eventData)
     {
+        if (!canBuy) return;
         StopAllCoroutines();
         OnFinishCreatePropAction?.Invoke();
     }
