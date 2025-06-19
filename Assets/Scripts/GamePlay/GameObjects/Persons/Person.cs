@@ -56,8 +56,22 @@ public class Person : MonoBehaviour
     }
     private void SetRandomColor()
     {
-        Color randomColor = new Color(Random.value, Random.value, Random.value, 1.0f);
+        var agentType = agentController.AgentType;
+        Color randomColor = GetColor(agentType);
         meshRenderer.material.color = randomColor;
+    }
+    public static Color GetColor(AgentType type)
+    {
+        switch (type)
+        {
+            case AgentType.CUSTOMER:
+                return new Color(0.2f, 0.7f, 1f); // Example: light blue
+            case AgentType.SERVER:
+                return Color.yellow;
+            // Add more cases as needed
+            default:
+                return Color.white;
+        }
     }
 
     public void SwitchState(PersonState newState)

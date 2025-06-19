@@ -486,7 +486,9 @@ MonoBehaviour:
   - {fileID: 5461302198871288870}
   - {fileID: 4215951379800187739}
   radius: 11.36
-  agentPrefab: {fileID: 8066138087326353846, guid: dff38a08e0967c14b957a7fd50d5f49e, type: 3}
+  agentPrefabs:
+  - {fileID: 3134241261546712147, guid: dfbf1df01e4154f4f8186e1d14de787e, type: 3}
+  - {fileID: 5537771555917314436, guid: b26dfd403b242f64b9863fef6d7ab1ac, type: 3}
   target: {fileID: 0}
 --- !u!1 &5295923681559996889
 GameObject:
