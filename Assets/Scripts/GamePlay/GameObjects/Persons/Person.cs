@@ -20,7 +20,6 @@ public class Person : MonoBehaviour
 {
     [SerializeField] private PersonData personData;
     [SerializeField] private MeshRenderer meshRenderer;
-    private TaskHandler taskHandler;
     private ManagerSingleton singleton;
     private AgentController agentController;
 
@@ -30,7 +29,6 @@ public class Person : MonoBehaviour
     void Awake()
     {
         singleton = EmpireInstance;
-        taskHandler = GetComponent<TaskHandler>();
         agentController = GetComponent<AgentController>();
     }
 
@@ -111,11 +109,5 @@ public class Person : MonoBehaviour
         }
     }
 
-    public IEnumerator DoTask(Task task)
-    {
-        taskHandler.AddTask(task);
-        yield return taskHandler.HandleAllAssignedTask();
-        taskHandler.RemoveTask(task);
 
-    }
 }

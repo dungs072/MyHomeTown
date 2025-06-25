@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 public class AgentManager : MonoBehaviour
 {
+    public static event Action<AgentController> OnAgentSpawned;
     [SerializeField] private List<Transform> spawnPoints;
     [SerializeField] private float radius = 5f;
     [Header("Agents")]
@@ -19,6 +20,7 @@ public class AgentManager : MonoBehaviour
         while (count < amount)
         {
             AgentController agent = GetAgent(agentType);
+            OnAgentSpawned?.Invoke(agent);
             agent.transform.position = GetRandomStartSpawnPoint();
             // if (target != null)
             // {

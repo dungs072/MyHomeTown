@@ -12,6 +12,8 @@ public class TaskHandler : MonoBehaviour
     private List<TaskPerformer> taskPerformers;
     private AgentController agent;
 
+    public List<TaskPerformer> TaskPerformers => taskPerformers;
+
     private int currentTaskIndex = 0;
 
     private void Awake()
