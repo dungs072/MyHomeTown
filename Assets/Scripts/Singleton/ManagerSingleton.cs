@@ -17,6 +17,8 @@ public class ManagerSingleton : MonoBehaviour
     [SerializeField] private PropertyFactory propertyFactory;
     [Header("Player")]
     [SerializeField] private PlayerController player;
+    [Header("Level Generator")]
+    [SerializeField] private LevelGenerator levelGenerator;
     private static ManagerSingleton instance;
     public static ManagerSingleton EmpireInstance => instance;
 
@@ -32,6 +34,7 @@ public class ManagerSingleton : MonoBehaviour
     public MapWorld MapWorld => mapWorld;
     public GamePlay GamePlay => gamePlay;
     public PlayerController Player => player;
+    public LevelGenerator LevelGenerator => levelGenerator;
     private MapWorld mapWorld;
     private GamePlay gamePlay;
     void Start()

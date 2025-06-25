@@ -1,32 +1,26 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-[Serializable]
-public class AgentSpawnerData
-{
-    public AgentController AgentPrefab;
-    public int Amount;
-    [HideInInspector]
-    public List<AgentController> AgentPool = new List<AgentController>();
-
-
-}
 public class AgentManager : MonoBehaviour
 {
+    public static event Action<AgentController> OnAgentSpawned;
     [SerializeField] private List<Transform> spawnPoints;
     [SerializeField] private float radius = 5f;
     [Header("Agents")]
-    [SerializeField] private List<AgentSpawnerData> agentSpawnersData;
+    [SerializeField] private List<AgentController> agentPrefabs;
 
     [Header("Debugger")]
     [SerializeField] private Transform target;
 
-    public void SpawnAgents(int amount)
+    private Dictionary<AgentType, List<AgentController>> agentsDict = new();
+
+    public void SpawnAgents(AgentType agentType, int amount)
     {
         int count = 0;
         while (count < amount)
         {
-            AgentController agent = GetAgent();
+            AgentController agent = GetAgent(agentType);
+            OnAgentSpawned?.Invoke(agent);
             agent.transform.position = GetRandomStartSpawnPoint();
             // if (target != null)
             // {
@@ -48,34 +42,71 @@ public class AgentManager : MonoBehaviour
     }
 
     // handle pool
-    private AgentController GetAgent()
+    private AgentController GetAgent(AgentType agentType)
     {
-        AgentController agent = agents.Find(a => !a.gameObject.activeSelf);
-        if (agent == null)
+        AgentController selectedAgent = null;
+        if (agentsDict.TryGetValue(agentType, out List<AgentController> agents))
         {
-            agent = Instantiate(agentPrefab, transform);
-            // agent.SetCanGoBack(true);
-            // agent.SetCanUsePool(true);
-            agents.Add(agent);
+            var agent = agents.Find(a => !a.gameObject.activeSelf && a.AgentType == agentType);
+            if (agent == null)
+            {
+                agent = CreateAgent(agentType);
+                if (agent == null)
+                {
+                    Debug.LogError($"Failed to create agent of type {agentType}. Check if the prefab is assigned.");
+                    return null;
+                }
+                agents.Add(agent);
+                selectedAgent = agent;
+            }
+            else
+            {
+                agent.gameObject.SetActive(true);
+                selectedAgent = agent;
+            }
         }
         else
         {
+            agents = new List<AgentController>();
+            agentsDict[agentType] = agents;
+            var agent = CreateAgent(agentType);
+            if (agent == null)
+            {
+                Debug.LogError($"Failed to create agent of type {agentType}. Check if the prefab is assigned.");
+                return null;
+            }
+            agents.Add(agent);
             agent.gameObject.SetActive(true);
+            selectedAgent = agent;
         }
-        return agent;
+        return selectedAgent;
+    }
+    private AgentController CreateAgent(AgentType agentType)
+    {
+        AgentController agentPrefab = agentPrefabs.Find(a => a.AgentType == agentType);
+        if (agentPrefab == null)
+        {
+            Debug.LogError($"Agent prefab for type {agentType} not found.");
+            return null;
+        }
+        AgentController newAgent = Instantiate(agentPrefab, transform);
+        return newAgent;
     }
 
     public bool IsAllAgentsLessThan(int amount)
     {
-        int count = 0;
-        foreach (var agent in agents)
+        int totalAgents = 0;
+        foreach (var agents in agentsDict.Values)
         {
-            if (agent.gameObject.activeSelf)
+            foreach (var agent in agents)
             {
-                count++;
+                if (agent.gameObject.activeSelf)
+                {
+                    totalAgents++;
+                }
             }
         }
-        return count < amount;
+        return totalAgents < amount;
     }
 
     void OnDrawGizmos()

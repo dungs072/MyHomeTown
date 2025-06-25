@@ -4,10 +4,11 @@ using ProjectDawn.Navigation;
 using ProjectDawn.Navigation.Hybrid;
 using UnityEngine;
 
-
 public class AgentController : MonoBehaviour
 {
+    [SerializeField] private AgentType agentType;
     [SerializeField] private Transform target;
+    public AgentType AgentType => agentType;
     private AgentAuthoring agent;
 
     public void SetTarget(Transform target)

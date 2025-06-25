@@ -45,7 +45,8 @@ public class GamePlay : MonoBehaviour
     {
         var agentManager = EmpireInstance.AgentManager;
         int agentCount = UnityEngine.Random.Range(1, 25);
-        agentManager.SpawnAgents(agentCount);
+        agentManager.SpawnAgents(AgentType.CUSTOMER, agentCount);
+        agentManager.SpawnAgents(AgentType.SERVER, agentCount);
 
     }
 

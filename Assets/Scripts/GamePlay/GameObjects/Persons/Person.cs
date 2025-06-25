@@ -20,7 +20,6 @@ public class Person : MonoBehaviour
 {
     [SerializeField] private PersonData personData;
     [SerializeField] private MeshRenderer meshRenderer;
-    private TaskHandler taskHandler;
     private ManagerSingleton singleton;
     private AgentController agentController;
 
@@ -30,7 +29,6 @@ public class Person : MonoBehaviour
     void Awake()
     {
         singleton = EmpireInstance;
-        taskHandler = GetComponent<TaskHandler>();
         agentController = GetComponent<AgentController>();
     }
 
@@ -56,8 +54,22 @@ public class Person : MonoBehaviour
     }
     private void SetRandomColor()
     {
-        Color randomColor = new Color(Random.value, Random.value, Random.value, 1.0f);
+        var agentType = agentController.AgentType;
+        Color randomColor = GetColor(agentType);
         meshRenderer.material.color = randomColor;
+    }
+    public static Color GetColor(AgentType type)
+    {
+        switch (type)
+        {
+            case AgentType.CUSTOMER:
+                return new Color(0.2f, 0.7f, 1f); // Example: light blue
+            case AgentType.SERVER:
+                return Color.yellow;
+            // Add more cases as needed
+            default:
+                return Color.white;
+        }
     }
 
     public void SwitchState(PersonState newState)
@@ -97,11 +109,5 @@ public class Person : MonoBehaviour
         }
     }
 
-    public IEnumerator DoTask(Task task)
-    {
-        taskHandler.AddTask(task);
-        yield return taskHandler.HandleAllAssignedTask();
-        taskHandler.RemoveTask(task);
 
-    }
 }
