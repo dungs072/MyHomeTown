@@ -20,10 +20,12 @@ public class Person : MonoBehaviour
 {
     [SerializeField] private PersonData personData;
     [SerializeField] private MeshRenderer meshRenderer;
+    [SerializeField] private InfoPersonUI infoPersonUI;
     private ManagerSingleton singleton;
     private AgentController agentController;
 
     public PersonData PersonData => personData;
+    public InfoPersonUI InfoPersonUI => infoPersonUI;
 
 
     void Awake()

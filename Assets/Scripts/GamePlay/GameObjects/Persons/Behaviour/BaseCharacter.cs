@@ -6,13 +6,14 @@ using static ManagerSingleton;
 [RequireComponent(typeof(Person))]
 public class BaseCharacter : MonoBehaviour
 {
+    [SerializeField] private bool shouldCreateNeedObjectsWhenSpawned = false;
     [SerializeField] private List<TaskData> tasksData;
 
     protected Person person;
     protected TaskHandler taskHandler;
 
     protected List<NeedObject> needObjects;
-
+    public bool ShouldCreateNeedObjectsWhenSpawned => shouldCreateNeedObjectsWhenSpawned;
     void Awake()
     {
         InitComponents();
@@ -75,6 +76,7 @@ public class BaseCharacter : MonoBehaviour
             gainedAmount = 0
         };
 
+        person.InfoPersonUI.SetInfoText($"Need {item.ItemName} x{neededAmount}");
         needObjects.Add(needObject);
     }
 
