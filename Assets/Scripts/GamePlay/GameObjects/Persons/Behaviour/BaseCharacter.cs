@@ -14,6 +14,8 @@ public class BaseCharacter : MonoBehaviour
     protected List<NeedObject> needObjects;
     public bool ShouldCreateNeedObjectsWhenSpawned => shouldCreateNeedObjectsWhenSpawned;
 
+    public List<NeedObject> NeedObjects => needObjects;
+
     void Awake()
     {
         InitComponents();

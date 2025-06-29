@@ -17,3 +17,4 @@ MonoBehaviour:
   stepType: 1
   workContainerType: 5
   duration: 0.4
+  isNeedItem: 1

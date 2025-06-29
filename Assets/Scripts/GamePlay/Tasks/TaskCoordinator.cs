@@ -46,18 +46,7 @@ public class TaskCoordinator : MonoBehaviour
             person.SwitchState(PersonState.MOVE);
             return;
         }
-        var canUseImmediately = selectedWK.IsPersonUse(person);
-        if (canUseImmediately)
-        {
-            var currentProgress = currentStep.Progress;
-            currentStep.SetProgress(currentProgress + Time.deltaTime);
-            person.SwitchState(PersonState.WORK);
-        }
-        else
-        {
-            person.SwitchState(PersonState.WAIT);
-            // wait in line
-        }
+        HandleStep(person, selectedWK, currentStep);
         if (currentStep.IsFinished)
         {
             taskPerformer.MoveToNextStep();
@@ -68,6 +57,31 @@ public class TaskCoordinator : MonoBehaviour
             taskHandler.MoveNextTask();
         }
     }
+    private void HandleStep(Person person, WorkContainer selectedWK, StepPerformer currentStep)
+    {
+        var isNeedItem = currentStep.Step.Data.IsNeedItem;
+        var baseCharacter = person.GetComponent<BaseCharacter>();
+        var needObjects = baseCharacter.NeedObjects;
+        var hasNeedItems = isNeedItem && needObjects != null && needObjects.Count > 0;
+        var canWork = selectedWK.IsPersonUse(person) && !hasNeedItems;
+        if (canWork)
+        {
+            var currentProgress = currentStep.Progress;
+            currentStep.SetProgress(currentProgress + Time.deltaTime);
+            person.SwitchState(PersonState.WORK);
+        }
+        else if (hasNeedItems)
+        {
+            person.SwitchState(PersonState.WAIT);
+
+        }
+        else
+        {
+            person.SwitchState(PersonState.WAIT);
+            // wait in line
+        }
+    }
+
     private WorkContainer GetSuitableWorkContainer(WorkContainerType type, Person person)
     {
         var workContainers = workContainerManager.WorkContainers
