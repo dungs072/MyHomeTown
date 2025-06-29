@@ -7,13 +7,13 @@ using static ManagerSingleton;
 public class BaseCharacter : MonoBehaviour
 {
     [SerializeField] private bool shouldCreateNeedObjectsWhenSpawned = false;
-    [SerializeField] private List<TaskData> tasksData;
 
     protected Person person;
     protected TaskHandler taskHandler;
 
     protected List<NeedObject> needObjects;
     public bool ShouldCreateNeedObjectsWhenSpawned => shouldCreateNeedObjectsWhenSpawned;
+
     void Awake()
     {
         InitComponents();
@@ -27,38 +27,7 @@ public class BaseCharacter : MonoBehaviour
 
     void Start()
     {
-        StartCoroutine(HandlePreTasks());
-    }
-    protected virtual IEnumerator HandlePreTasks()
-    {
-        yield return new WaitForSeconds(10f);
-        var taskManager = EmpireInstance.TaskManager;
-        foreach (var taskData in tasksData)
-        {
-            var task = taskManager.TasksDict[taskData];
-            if (task == null)
-            {
-                Debug.LogError($"Task {taskData.TaskName} not found in TaskManager.");
-                continue;
-            }
-            yield return DoTask(task);
-        }
-        OnAllTasksCompleted();
-    }
-    public IEnumerator DoTask(Task task)
-    {
-        taskHandler.AddTask(task);
-        HandleAddAdditionalItemRequired();
-        yield return taskHandler.HandleAllAssignedTask();
-        taskHandler.RemoveTask(task);
-
-    }
-    protected virtual void HandleAddAdditionalItemRequired()
-    {
-        var taskPerformers = taskHandler.TaskPerformers;
-        if (taskPerformers.Count == 0) return;
-        var newestTask = taskPerformers[taskPerformers.Count - 1];
-        //! Todo
+        //StartCoroutine(HandlePreTasks());
     }
     protected virtual void OnAllTasksCompleted()
     {

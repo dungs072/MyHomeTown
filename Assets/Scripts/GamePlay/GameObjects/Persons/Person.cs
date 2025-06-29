@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using static ManagerSingleton;
 
@@ -6,26 +7,31 @@ public class PersonData
 {
     public string Name { get; set; }
     public int Age { get; set; }
-    public PersonState State { get; set; }
 
-    public PersonData(string name, int age, PersonState state)
+    public PersonData(string name, int age)
     {
         Name = name;
         Age = age;
-        State = state;
     }
 }
 
 public class Person : MonoBehaviour
 {
+    [SerializeField] private List<TaskData> tasksData;
     [SerializeField] private PersonData personData;
     [SerializeField] private MeshRenderer meshRenderer;
     [SerializeField] private InfoPersonUI infoPersonUI;
     private ManagerSingleton singleton;
     private AgentController agentController;
+    private PersonStatus personStatus;
 
     public PersonData PersonData => personData;
     public InfoPersonUI InfoPersonUI => infoPersonUI;
+
+    public PersonStatus PersonStatus => personStatus;
+    public List<TaskData> TasksData => tasksData;
+
+    private int currentTaskIndex = 0;
 
 
     void Awake()
@@ -42,6 +48,7 @@ public class Person : MonoBehaviour
     void OnEnable()
     {
         CreatePersonData();
+        SetInitTasks();
     }
     // reset the person here to reuse it again
     void OnDisable()
@@ -52,7 +59,18 @@ public class Person : MonoBehaviour
     {
         string personName = PersonDataGenerator.GenerateName();
         int personAge = PersonDataGenerator.GenerateAge();
-        personData = new PersonData(personName, personAge, PersonState.Idle);
+        personData = new PersonData(personName, personAge);
+        personStatus = new();
+    }
+    private void SetInitTasks()
+    {
+        // temporary code to set initial tasks
+        var taskManager = singleton.TaskManager;
+        var task = taskManager.TasksDict[tasksData[currentTaskIndex]];
+        if (task == null) return;
+        personStatus.CurrentTaskPerformer = new TaskPerformer();
+        personStatus.CurrentTaskPerformer.SetTask(task);
+        personStatus.CurrentState = PersonState.IDLE;
     }
     private void SetRandomColor()
     {
@@ -73,43 +91,30 @@ public class Person : MonoBehaviour
                 return Color.white;
         }
     }
-
     public void SwitchState(PersonState newState)
     {
-        personData.State = newState;
+        personStatus.CurrentState = newState;
         // You can add additional logic here if needed when the state changes
     }
 
-    private IEnumerator BehaveLikeNormalPerson()
+    public void MoveNextTask()
     {
-        SwitchState(PersonState.Walking);
-        yield return FollowPath();
-        DemoAddMoneyWhenFinished();
-        gameObject.SetActive(false);
-    }
-    private void DemoAddMoneyWhenFinished()
-    {
-        var player = EmpireInstance.Player;
-        if (!player.TryGetComponent(out PlayerWallet playerWallet)) return;
-        playerWallet.AddMoney(5);
+        currentTaskIndex++;
+        if (currentTaskIndex >= tasksData.Count)
+        {
+            SwitchState(PersonState.IDLE);
+            gameObject.SetActive(false);
+        }
+        else
+        {
+            personStatus.CurrentTaskPerformer = new TaskPerformer();
+            var taskManager = singleton.TaskManager;
+            var task = taskManager.TasksDict[tasksData[currentTaskIndex]];
+            personStatus.CurrentTaskPerformer.SetTask(task);
+        }
     }
 
-    private IEnumerator FollowPath()
-    {
-        var patrollingSystem = singleton.PatrollingSystem;
-        var patrollingPath = patrollingSystem.PathDictionary[PatrollingPathKey.DefaultPath];
-        if (patrollingPath == null)
-        {
-            Debug.LogWarning("Patrolling path not found!");
-            yield break;
-        }
-        var points = patrollingPath.Waypoints;
-        for (int i = 0; i < points.Length; i++)
-        {
-            var position = points[i].position;
-            yield return agentController.MoveToPosition(position);
-        }
-    }
+
 
 
 }

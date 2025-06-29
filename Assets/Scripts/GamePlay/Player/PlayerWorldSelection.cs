@@ -43,8 +43,9 @@ public class PlayerWorldSelection : MonoBehaviour
         if (selectedObject.TryGetComponent(out Person person))
         {
             var personData = person.PersonData;
+            var personStatus = person.PersonStatus;
             infoPanel.SetNameText(personData.Name);
-            infoPanel.SetStateText(personData.State.ToString());
+            infoPanel.SetStateText(personStatus.CurrentState.ToString());
         }
     }
 
