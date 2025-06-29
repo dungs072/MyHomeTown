@@ -41,6 +41,7 @@ public class WorkContainer : MonoBehaviour
     {
         personsWantToWorkHere.Sort((x, y) =>
         {
+
             float sqrDistX = (x.transform.position - transform.position).sqrMagnitude;
             float sqrDistY = (y.transform.position - transform.position).sqrMagnitude;
             return sqrDistX.CompareTo(sqrDistY);

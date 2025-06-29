@@ -8,10 +8,18 @@ public class CameraDetector : MonoBehaviour
 {
     public static event Action OnCameraMovedOrRotated;
     private Vector3 lastPosition;
+    private Quaternion lastRotation;
     void LateUpdate()
     {
-        lastPosition = transform.position;
-        if (lastPosition == transform.position) return;
-        OnCameraMovedOrRotated?.Invoke();
+        if (lastPosition != transform.position)
+        {
+            OnCameraMovedOrRotated?.Invoke();
+            lastPosition = transform.position;
+        }
+        if (lastRotation != transform.rotation)
+        {
+            OnCameraMovedOrRotated?.Invoke();
+            lastRotation = transform.rotation;
+        }
     }
 }

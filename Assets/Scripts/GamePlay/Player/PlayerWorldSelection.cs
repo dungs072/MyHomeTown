@@ -42,10 +42,8 @@ public class PlayerWorldSelection : MonoBehaviour
         // handle case for person
         if (selectedObject.TryGetComponent(out Person person))
         {
-            var personData = person.PersonData;
-            var personStatus = person.PersonStatus;
-            infoPanel.SetNameText(personData.Name);
-            infoPanel.SetStateText(personStatus.CurrentState.ToString());
+            HandlePersonStatusChanged(person);
+            Person.OnPersonStatusChanged += HandlePersonStatusChanged;
         }
     }
 
@@ -61,7 +59,25 @@ public class PlayerWorldSelection : MonoBehaviour
 
         // turn off selected object
         if (selectedObject == null) return;
+        if (selectedObject.TryGetComponent(out Person person))
+        {
+            Person.OnPersonStatusChanged -= HandlePersonStatusChanged;
+        }
         selectedObject.SetSelected(false);
         selectedObject = null;
+    }
+
+    private void HandlePersonStatusChanged(Person person)
+    {
+        string screenName = ScreenName.GamePlayScreen.ToString();
+        var gamePlayScreen = ScreenManagerInstance.GetScreen<GamePlayScreen>(screenName);
+        if (!gamePlayScreen) return;
+        var infoPanel = gamePlayScreen.Container.InfoPanel;
+        var personData = person.PersonData;
+        var personStatus = person.PersonStatus;
+        infoPanel.SetNameText(personData.Name);
+        infoPanel.SetStateText(personStatus.CurrentState.ToString());
+
+
     }
 }

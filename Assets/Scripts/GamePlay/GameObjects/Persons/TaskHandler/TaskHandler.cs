@@ -1,14 +1,51 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 using static ManagerSingleton;
-//! This will handle all the tasks that are assigned to a person    
-//! Must use yield return StartCoroutine(YourFunction()) to make sure the coroutine is running in sequence
-[RequireComponent(typeof(AgentController))]
+[RequireComponent(typeof(Person))]
 public class TaskHandler : MonoBehaviour
 {
+    [SerializeField] private List<TaskData> tasksData;
 
+    public List<TaskData> TasksData => tasksData;
+    private int currentTaskIndex = 0;
+
+    private Person person;
+    void Awake()
+    {
+        person = GetComponent<Person>();
+    }
+
+    private void OnEnable()
+    {
+        SetInitTasks();
+    }
+
+    private void SetInitTasks()
+    {
+        // temporary code to set initial tasks
+        var taskManager = EmpireInstance.TaskManager;
+        var task = taskManager.TasksDict[tasksData[currentTaskIndex]];
+        if (task == null) return;
+        person.PersonStatus.CurrentTaskPerformer = new TaskPerformer();
+        person.PersonStatus.CurrentTaskPerformer.SetTask(task);
+        person.PersonStatus.CurrentState = PersonState.IDLE;
+    }
+
+    public void MoveNextTask()
+    {
+        currentTaskIndex++;
+        if (currentTaskIndex >= tasksData.Count)
+        {
+            person.SwitchState(PersonState.IDLE);
+            gameObject.SetActive(false);
+        }
+        else
+        {
+            person.PersonStatus.CurrentTaskPerformer = new TaskPerformer();
+            var taskManager = EmpireInstance.TaskManager;
+            var task = taskManager.TasksDict[tasksData[currentTaskIndex]];
+            person.PersonStatus.CurrentTaskPerformer.SetTask(task);
+        }
+    }
 
 }

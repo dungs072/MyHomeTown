@@ -400,8 +400,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ecf887123065bfe47968d9cccb11c5cc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tasksData:
-  - {fileID: 11400000, guid: 2853df05ae4b3804a9331984122755bc, type: 2}
   meshRenderer: {fileID: 7030217249203703674}
   infoPersonUI: {fileID: 4568138761281033421}
 --- !u!114 &8066138087326353846
@@ -430,6 +428,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 901c08e5998cb7c4f95b2e93d1480c89, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  tasksData:
+  - {fileID: 11400000, guid: 2853df05ae4b3804a9331984122755bc, type: 2}
 --- !u!114 &3025372721830674574
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -12,12 +12,17 @@ public class InfoPersonUI : MonoBehaviour
     {
         CameraDetector.OnCameraMovedOrRotated -= FaceUIToCamera;
     }
+    void Start()
+    {
+        FaceUIToCamera();
+    }
     private void FaceUIToCamera()
     {
         var mainCamera = Camera.main;
         if (mainCamera == null) return;
-        transform.LookAt(mainCamera.transform);
-        transform.rotation = Quaternion.Euler(0, transform.rotation.eulerAngles.y, 0);
+        if (!Utils.IsInView(mainCamera, transform)) return;
+        Vector3 direction = transform.position - mainCamera.transform.position;
+        transform.rotation = Quaternion.LookRotation(direction);
     }
     public void SetInfoText(string text)
     {

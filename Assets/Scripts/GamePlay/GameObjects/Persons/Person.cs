@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -17,7 +18,8 @@ public class PersonData
 
 public class Person : MonoBehaviour
 {
-    [SerializeField] private List<TaskData> tasksData;
+    public static event Action<Person> OnPersonStatusChanged;
+
     [SerializeField] private PersonData personData;
     [SerializeField] private MeshRenderer meshRenderer;
     [SerializeField] private InfoPersonUI infoPersonUI;
@@ -28,10 +30,12 @@ public class Person : MonoBehaviour
     public PersonData PersonData => personData;
     public InfoPersonUI InfoPersonUI => infoPersonUI;
 
-    public PersonStatus PersonStatus => personStatus;
-    public List<TaskData> TasksData => tasksData;
 
-    private int currentTaskIndex = 0;
+    public AgentController AgentController => agentController;
+    public PersonStatus PersonStatus => personStatus;
+
+
+
 
 
     void Awake()
@@ -48,7 +52,6 @@ public class Person : MonoBehaviour
     void OnEnable()
     {
         CreatePersonData();
-        SetInitTasks();
     }
     // reset the person here to reuse it again
     void OnDisable()
@@ -62,16 +65,7 @@ public class Person : MonoBehaviour
         personData = new PersonData(personName, personAge);
         personStatus = new();
     }
-    private void SetInitTasks()
-    {
-        // temporary code to set initial tasks
-        var taskManager = singleton.TaskManager;
-        var task = taskManager.TasksDict[tasksData[currentTaskIndex]];
-        if (task == null) return;
-        personStatus.CurrentTaskPerformer = new TaskPerformer();
-        personStatus.CurrentTaskPerformer.SetTask(task);
-        personStatus.CurrentState = PersonState.IDLE;
-    }
+
     private void SetRandomColor()
     {
         var agentType = agentController.AgentType;
@@ -95,26 +89,6 @@ public class Person : MonoBehaviour
     {
         personStatus.CurrentState = newState;
         // You can add additional logic here if needed when the state changes
+        OnPersonStatusChanged?.Invoke(this);
     }
-
-    public void MoveNextTask()
-    {
-        currentTaskIndex++;
-        if (currentTaskIndex >= tasksData.Count)
-        {
-            SwitchState(PersonState.IDLE);
-            gameObject.SetActive(false);
-        }
-        else
-        {
-            personStatus.CurrentTaskPerformer = new TaskPerformer();
-            var taskManager = singleton.TaskManager;
-            var task = taskManager.TasksDict[tasksData[currentTaskIndex]];
-            personStatus.CurrentTaskPerformer.SetTask(task);
-        }
-    }
-
-
-
-
 }

@@ -16,6 +16,7 @@ public class TaskCoordinator : MonoBehaviour
         var agentTypes = AgentTypeList.AgentTypes;
         foreach (var agentType in agentTypes)
         {
+            if (!agentManager.AgentsDict.ContainsKey(agentType)) continue;
             var agents = agentManager.AgentsDict[agentType];
             if (agents == null || agents.Count == 0) continue;
             UpdateAgents(agents);
@@ -31,6 +32,7 @@ public class TaskCoordinator : MonoBehaviour
     private void DoTask(AgentController agent)
     {
         if (!agent.TryGetComponent(out Person person)) return;
+        var taskHandler = person.GetComponent<TaskHandler>();
         var personStatus = person.PersonStatus;
         var taskPerformer = personStatus.CurrentTaskPerformer;
         if (taskPerformer == null || taskPerformer.IsFinished()) return;
@@ -41,6 +43,7 @@ public class TaskCoordinator : MonoBehaviour
         if (!agent.IsReachedDestination(targetPosition))
         {
             agent.SetDestination(targetPosition);
+            person.SwitchState(PersonState.MOVE);
             return;
         }
         var canUseImmediately = selectedWK.IsPersonUse(person);
@@ -48,9 +51,11 @@ public class TaskCoordinator : MonoBehaviour
         {
             var currentProgress = currentStep.Progress;
             currentStep.SetProgress(currentProgress + Time.deltaTime);
+            person.SwitchState(PersonState.WORK);
         }
         else
         {
+            person.SwitchState(PersonState.WAIT);
             // wait in line
         }
         if (currentStep.IsFinished)
@@ -60,7 +65,7 @@ public class TaskCoordinator : MonoBehaviour
         }
         if (taskPerformer.IsFinished())
         {
-            person.MoveNextTask();
+            taskHandler.MoveNextTask();
         }
     }
     private WorkContainer GetSuitableWorkContainer(WorkContainerType type, Person person)
