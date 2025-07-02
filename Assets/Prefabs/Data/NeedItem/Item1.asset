@@ -9,12 +9,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7afcd157328d6c54b9c403a824f2c553, type: 3}
-  m_Name: WaitInLine
+  m_Script: {fileID: 11500000, guid: b68eedd1aee7f664d85b7f6f3b64667c, type: 3}
+  m_Name: Item1
   m_EditorClassIdentifier: 
-  stepName: Deliver Meal
-  description: 
-  stepType: 1
-  workContainerType: 5
-  duration: 0.4
-  isNeedItem: 1
+  itemName: Item1
+  itemPrefab: {fileID: 8831783356021317289, guid: 91578dda6050eca41939e94211d69df2, type: 3}

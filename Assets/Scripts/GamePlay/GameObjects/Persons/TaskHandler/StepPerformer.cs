@@ -11,21 +11,31 @@ public class NeedObject
 public class StepPerformer
 {
     private Step step;
-    private bool isFinished;
+    private bool isFinished = false;
 
     private List<NeedObject> needObjects;
+    private float progress = 0f;
 
     public Step Step => step;
+    public bool IsFinished => isFinished;
+    public float Progress => progress;
     public StepPerformer(Step step)
     {
         this.step = step;
         isFinished = false;
     }
 
-    public bool IsFinished => isFinished;
     public void SetIsFinished(bool isFinished)
     {
         this.isFinished = isFinished;
+    }
+    public void SetProgress(float progress)
+    {
+        this.progress = progress;
+        if (this.progress >= step.Data.Duration)
+        {
+            SetIsFinished(true);
+        }
     }
 
     /// <summary>

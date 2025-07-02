@@ -7,69 +7,54 @@ public class WorkContainer : MonoBehaviour
 
     [SerializeField] private WorkContainerType workContainerType;
     public WorkContainerType WorkContainerType => workContainerType;
+    private List<Person> personsWantToWorkHere = new();
+    public List<Person> PersonsWantToWorkHere => personsWantToWorkHere;
 
-
-    private TaskHandler usingPerson;
-    public TaskHandler UsingPerson => usingPerson;
-
-    private List<TaskHandler> personsWaitingLine;
-    public List<TaskHandler> PersonsWaitingLine => personsWaitingLine;
-
-    void Awake()
+    public void AddPersonToWorkContainer(Person person)
     {
-        personsWaitingLine = new List<TaskHandler>();
+        if (personsWantToWorkHere.Contains(person)) return;
+        personsWantToWorkHere.Add(person);
+        SortPersonsWaitingLine();
     }
-    public void SetUsingPerson(TaskHandler person)
+    public void RemovePersonFromWorkContainer(Person person)
     {
-        usingPerson = person;
-
+        if (!personsWantToWorkHere.Contains(person)) return;
+        personsWantToWorkHere.Remove(person);
+        //SortPersonsWaitingLine();
     }
 
-    public bool IsFreeToUse(TaskHandler person)
+    public bool IsPersonUse(Person person)
     {
-        if (usingPerson == person)
+        var firstPerson = personsWantToWorkHere[0];
+        return firstPerson == person;
+    }
+    public Vector3 GetWaitingPosition(Person person)
+    {
+        if (!personsWantToWorkHere.Contains(person)) return Vector3.zero;
+        int index = personsWantToWorkHere.IndexOf(person);
+        float offset = 1.5f * index; // Adjust the offset as needed
+        Vector3 position = transform.position + transform.forward * offset;
+        return position;
+    }
+
+    private void SortPersonsWaitingLine()
+    {
+        personsWantToWorkHere.Sort((x, y) =>
         {
-            return true;
-        }
-        return usingPerson == null;
-    }
-    public bool IsFreeToUse()
-    {
-        return usingPerson == null;
+
+            float sqrDistX = (x.transform.position - transform.position).sqrMagnitude;
+            float sqrDistY = (y.transform.position - transform.position).sqrMagnitude;
+            return sqrDistX.CompareTo(sqrDistY);
+        });
     }
 
-    public void AddPersonToWaitingLine(TaskHandler person)
-    {
-        if (personsWaitingLine.Contains(person)) return;
-        personsWaitingLine.Add(person);
-    }
-    public void TryRemovePersonFromWaitingLine(TaskHandler person)
-    {
-        if (!personsWaitingLine.Contains(person)) return;
-        personsWaitingLine.Remove(person);
-    }
-    public int GetIndexInWaitingLine(TaskHandler person)
-    {
-        return personsWaitingLine.IndexOf(person) + 1;
-    }
-    public int CountPersonInWaitingLine()
-    {
-        return personsWaitingLine.Count;
-    }
-
-    public Vector3 GetWaitingPosition(TaskHandler person)
-    {
-        var distance = 2;
-        var index = GetIndexInWaitingLine(person);
-        return transform.position + distance * index * transform.forward;
-    }
 
 
     private void OnDrawGizmos()
     {
-        for (int i = 0; i < personsWaitingLine.Count; i++)
+        for (int i = 0; i < personsWantToWorkHere.Count; i++)
         {
-            var person = personsWaitingLine[i];
+            var person = personsWantToWorkHere[i];
             var position = GetWaitingPosition(person);
             Gizmos.color = Color.yellow;
 

@@ -68,6 +68,10 @@ public class AgentController : MonoBehaviour
         float SMALLEST_SQRT_DISTANCE = agent.DefaultLocomotion.StoppingDistance;
         return Vector3.SqrMagnitude(agent.transform.position - destination) < SMALLEST_SQRT_DISTANCE;
     }
+    public float GetRemainingDistance()
+    {
+        return agent.Body.RemainingDistance;
+    }
     public void ResetAgent()
     {
         StopMoving();

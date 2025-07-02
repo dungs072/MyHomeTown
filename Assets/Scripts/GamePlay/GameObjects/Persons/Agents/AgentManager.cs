@@ -14,6 +14,10 @@ public class AgentManager : MonoBehaviour
 
     private Dictionary<AgentType, List<AgentController>> agentsDict = new();
 
+    public Dictionary<AgentType, List<AgentController>> AgentsDict
+    {
+        get { return agentsDict; }
+    }
     public void SpawnAgents(AgentType agentType, int amount)
     {
         int count = 0;

@@ -6,12 +6,15 @@ using static ManagerSingleton;
 [RequireComponent(typeof(Person))]
 public class BaseCharacter : MonoBehaviour
 {
-    [SerializeField] private List<TaskData> tasksData;
+    [SerializeField] private bool shouldCreateNeedObjectsWhenSpawned = false;
 
     protected Person person;
     protected TaskHandler taskHandler;
 
     protected List<NeedObject> needObjects;
+    public bool ShouldCreateNeedObjectsWhenSpawned => shouldCreateNeedObjectsWhenSpawned;
+
+    public List<NeedObject> NeedObjects => needObjects;
 
     void Awake()
     {
@@ -26,38 +29,7 @@ public class BaseCharacter : MonoBehaviour
 
     void Start()
     {
-        StartCoroutine(HandlePreTasks());
-    }
-    protected virtual IEnumerator HandlePreTasks()
-    {
-        yield return new WaitForSeconds(10f);
-        var taskManager = EmpireInstance.TaskManager;
-        foreach (var taskData in tasksData)
-        {
-            var task = taskManager.TasksDict[taskData];
-            if (task == null)
-            {
-                Debug.LogError($"Task {taskData.TaskName} not found in TaskManager.");
-                continue;
-            }
-            yield return DoTask(task);
-        }
-        OnAllTasksCompleted();
-    }
-    public IEnumerator DoTask(Task task)
-    {
-        taskHandler.AddTask(task);
-        HandleAddAdditionalItemRequired();
-        yield return taskHandler.HandleAllAssignedTask();
-        taskHandler.RemoveTask(task);
-
-    }
-    protected virtual void HandleAddAdditionalItemRequired()
-    {
-        var taskPerformers = taskHandler.TaskPerformers;
-        if (taskPerformers.Count == 0) return;
-        var newestTask = taskPerformers[taskPerformers.Count - 1];
-        //! Todo
+        //StartCoroutine(HandlePreTasks());
     }
     protected virtual void OnAllTasksCompleted()
     {
@@ -75,6 +47,7 @@ public class BaseCharacter : MonoBehaviour
             gainedAmount = 0
         };
 
+        person.InfoPersonUI.SetInfoText($"Need {item.ItemName} x{neededAmount}");
         needObjects.Add(needObject);
     }
 

@@ -1,9 +1,7 @@
 public enum PersonState
 {
-    Idle,
-    Walking,
-    Working,
-    Resting,
-    Eating,
-    Sleeping,
+    IDLE,
+    MOVE,
+    WORK,
+    WAIT
 }

@@ -19,6 +19,7 @@ public class NeedItemGenerator : MonoBehaviour
     {
         if (agentController.TryGetComponent(out BaseCharacter baseCharacter))
         {
+            if (!baseCharacter.ShouldCreateNeedObjectsWhenSpawned) return;
             var needItemData = GetNeedItemData();
             if (needItemData == null) return;
             var amount = GetAmountOfNeedItem();
