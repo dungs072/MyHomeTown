@@ -14,6 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   stepName: Deliver Meal
   description: 
-  stepType: 1
-  workContainerType: 5
+  workContainerType: 1
   duration: 0.4
+  isNeedItem: 0

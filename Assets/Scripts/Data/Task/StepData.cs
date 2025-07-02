@@ -9,22 +9,30 @@ public class StepData : ScriptableObject
     [SerializeField] private string stepName;
     [SerializeField]
     private string description = null;
-    [SerializeField] private StepType stepType = StepType.SINGLE;
     [SerializeField] private WorkContainerType workContainerType;
     [SerializeField] private float duration = 0;
     [SerializeField] private bool isNeedItem = false;
-    [SerializeField] private List<StepData> nextSteps;
 
     public string StepName
     {
         get => stepName;
         set => stepName = value;
     }
-    public string Description => description;
-    public float Duration => duration;
-    public StepType StepType => stepType;
-    public WorkContainerType WorkContainerType => workContainerType;
+    public string Description
+    {
+        get => description;
+        set => description = value;
+    }
+    public float Duration
+    {
+        get => duration;
+        set => duration = value;
+    }
+    public WorkContainerType WorkContainerType
+    {
+        get => workContainerType;
+        set => workContainerType = value;
+    }
     public bool IsNeedItem => isNeedItem;
 
-    public Vector2 Position { get; set; } = Vector2.zero;
 }

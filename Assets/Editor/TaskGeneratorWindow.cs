@@ -1,14 +1,21 @@
 using UnityEngine;
 using UnityEditor;
 using System.Collections.Generic;
+using Unity.Mathematics;
+using DashboardContainerElements;
 
 public class TaskGeneratorWindow : EditorWindow
 {
+    // config the editor here
+    private readonly Vector2 NODE_SIZE = new Vector2(200, 200);
+
+    // end of the config 
     private TaskData currentGraph;
-    private Vector2 drag;
+    private List<StepDataNode> stepNodes = new List<StepDataNode>();
+
     private Vector2 offset = new Vector2(250, 150);
-    private StepData selectedStep;
-    private StepData editingStep;
+    private StepDataNode selectedNode;
+    private Vector2 scrollPos;
 
     [MenuItem("Tools/Task Graph")]
     public static void OpenWindow()
@@ -19,109 +26,185 @@ public class TaskGeneratorWindow : EditorWindow
 
     private void OnGUI()
     {
-        ProcessEvents(Event.current);
 
-        if (currentGraph != null)
-        {
-            DrawNodes();
-            DrawConnections();
-        }
+        var result = TryToGetSelectedTaskData();
+        if (!result) return;
 
-        if (GUI.Button(new Rect(10, 10, 100, 30), "Load Graph"))
-        {
-            currentGraph = Selection.activeObject as TaskData;
-            if (currentGraph != null)
-            {
-                AutoLayoutSteps();
-            }
-        }
+        Start();
 
-        if (GUI.Button(new Rect(120, 10, 100, 30), "Add Node"))
-        {
-            if (currentGraph != null)
-            {
-                var newNode = new StepData()
-                {
-                    StepName = "New Step",
-                    Position = new Vector2(100 + offset.x * currentGraph.Steps.Count, 100)
-                };
-                currentGraph.Steps.Add(newNode);
-                EditorUtility.SetDirty(currentGraph);
-            }
-        }
+        Middle();
 
-        if (selectedStep != null && GUI.Button(new Rect(230, 10, 100, 30), "Delete Node"))
-        {
-            currentGraph.Steps.Remove(selectedStep);
-            selectedStep = null;
-            EditorUtility.SetDirty(currentGraph);
-        }
+        End();
 
-        if (editingStep != null)
-        {
-            GUILayout.BeginArea(new Rect(10, 50, 200, 100), EditorStyles.helpBox);
-            GUILayout.Label("Edit Step:");
-            editingStep.StepName = EditorGUILayout.TextField("Name:", editingStep.StepName);
-            if (GUILayout.Button("Done"))
-            {
-                editingStep = null;
-                EditorUtility.SetDirty(currentGraph);
-            }
-            GUILayout.EndArea();
-        }
     }
-
-    private void DrawNodes()
+    private bool TryToGetSelectedTaskData()
     {
+        currentGraph = Selection.activeObject as TaskData;
+        if (currentGraph == null)
+        {
+            GUILayout.Label("No TaskData selected. Please select a TaskData asset.");
+            return false;
+        }
+        return true;
+    }
+    //! handle start here
+    private void Start()
+    {
+        InitHeaderUIButtons();
+        CreateStepNodes();
+        RegisterEvents();
+    }
+    private void CreateStepNodes()
+    {
+        stepNodes.Clear();
+        int i = 0;
         foreach (var step in currentGraph.Steps)
         {
             if (step == null) continue;
-
-            Rect nodeRect = new(step.Position, new Vector2(200, 100));
-            GUIStyle style = new GUIStyle(GUI.skin.box);
-            if (step == selectedStep)
-                style.normal.background = MakeTex(1, 1, Color.cyan);
-
-            GUI.Box(nodeRect, step.StepName, style);
-
-            if (nodeRect.Contains(Event.current.mousePosition))
-            {
-                if (Event.current.type == EventType.MouseDown)
-                {
-                    if (Event.current.button == 0)
-                    {
-                        selectedStep = step;
-                        if (Event.current.clickCount == 2)
-                        {
-                            editingStep = step;
-                        }
-                        GUI.changed = true;
-                        Event.current.Use();
-                    }
-                }
-            }
-
-            // Drag node
-            if (Event.current.type == EventType.MouseDrag && Event.current.button == 0 && step == selectedStep)
-            {
-                step.Position += Event.current.delta;
-                GUI.changed = true;
-                Event.current.Use();
-                EditorUtility.SetDirty(currentGraph);
-            }
+            var position = new Vector2(100 + offset.x * i, 100);
+            //? edit the size of the node here
+            var nodeRect = new Rect(position, NODE_SIZE);
+            var node = new StepDataNode(step, nodeRect);
+            stepNodes.Add(node);
+            i++;
         }
+    }
+    private void RegisterEvents()
+    {
+        // deselect step when clicking outside
+        if (Event.current.type == EventType.MouseDown && Event.current.button == 0)
+        {
+
+            Vector2 mousePosition = Event.current.mousePosition;
+            selectedNode = GetNodeAtPosition(mousePosition);
+            if (selectedNode == null)
+            {
+                GUI.changed = true;
+
+            }
+
+        }
+    }
+    //! handle middle here
+    private void Middle()
+    {
+
+        scrollPos = EditorGUILayout.BeginScrollView(scrollPos);
+        GUILayoutUtility.GetRect(4000, 4000);
+
+        if (currentGraph)
+        {
+            DrawNodes();
+            DrawConnections();
+
+        }
+
+        EditorGUILayout.EndScrollView();
+    }
+    private void InitHeaderUIButtons()
+    {
+        if (GUI.Button(new Rect(10, 10, 100, 30), "Add Step"))
+        {
+            var newStepData = new StepData()
+            {
+                StepName = "New Step",
+            };
+            var position = new Vector2(100 + offset.x * currentGraph.Steps.Count, 100);
+            var rect = new Rect(position, NODE_SIZE);
+            var newNode = new StepDataNode(newStepData, rect);
+
+            currentGraph.Steps.Add(newStepData);
+            stepNodes.Add(newNode);
+            EditorUtility.SetDirty(currentGraph);
+        }
+
+        if (selectedNode != null && GUI.Button(new Rect(120, 10, 100, 30), "Delete Step"))
+        {
+            var currentPosition = Event.current.mousePosition + scrollPos;
+            var selectedNode = GetNodeAtPosition(currentPosition);
+            if (selectedNode == null) return;
+            var stepData = selectedNode.Data;
+            currentGraph.Steps.Remove(stepData);
+            stepNodes.Remove(selectedNode);
+            EditorUtility.SetDirty(currentGraph);
+        }
+    }
+    //! handle end here
+    private void End()
+    {
+
+    }
+    private void DrawNodes()
+    {
+        foreach (var node in stepNodes)
+        {
+
+            DrawNode(node);
+            RegisterNodeClickEvents(node);
+        }
+    }
+    private void DrawNode(StepDataNode node)
+    {
+        if (node == null) return;
+        Rect nodeRect = node.NodeRect;
+        GUIStyle style = new GUIStyle(GUI.skin.box);
+        if (node == selectedNode)
+        {
+            style.normal.background = MakeTex(1, 1, Color.cyan);
+            style.fontStyle = FontStyle.Bold;
+        }
+
+        GUI.Box(nodeRect, "", style);
+        // Draw the step name
+        float fieldWidth = nodeRect.width - 20;
+        float textFieldWidth = fieldWidth;
+
+        var textFieldRect = new Rect(
+            nodeRect.x + (nodeRect.width - fieldWidth) / 2,
+            nodeRect.y + 30,
+            textFieldWidth,
+            20
+        );
+        var stepData = node.Data;
+        stepData.StepName = EditorGUI.TextField(textFieldRect, stepData.StepName);
+
+        // Description (Editable)
+        var descriptionRect = new Rect(nodeRect.x + 10, nodeRect.y + 60, nodeRect.width - 20, 40);
+        stepData.Description = EditorGUI.TextArea(descriptionRect, stepData.Description ?? "Description");
+
+        // Duration (Editable)
+        var durationRect = new Rect(nodeRect.x + 10, nodeRect.y + 110, nodeRect.width - 20, 18);
+        stepData.Duration = EditorGUI.FloatField(durationRect, "Duration(s)", stepData.Duration);
+
+        // WorkContainerType (Editable enum popup)
+        var workContainerRect = new Rect(nodeRect.x + 10, nodeRect.y + 130, nodeRect.width - 20, 18);
+        stepData.WorkContainerType = (WorkContainerType)EditorGUI.EnumPopup(workContainerRect, "Container", stepData.WorkContainerType);
+
+    }
+    private void RegisterNodeClickEvents(StepDataNode node)
+    {
+        // Drag node
+        if (Event.current.type == EventType.MouseDrag && Event.current.button == 0 && node == selectedNode)
+        {
+            var nodeRect = node.NodeRect;
+            nodeRect.position += Event.current.delta;
+            GUI.changed = true;
+            Event.current.Use();
+            EditorUtility.SetDirty(currentGraph);
+        }
+
     }
 
     private void DrawConnections()
     {
-        for (int i = 0; i < currentGraph.Steps.Count - 1; i++)
+        for (int i = 0; i < stepNodes.Count - 1; i++)
         {
-            var currentStep = currentGraph.Steps[i];
-            var nextStep = currentGraph.Steps[i + 1];
-            if (currentStep == null || nextStep == null) continue;
+            var currentNode = stepNodes[i];
+            var nextNode = stepNodes[i + 1];
+            if (currentNode == null || nextNode == null) continue;
 
-            Vector3 startPos = currentStep.Position + new Vector2(200, 50);
-            Vector3 endPos = nextStep.Position + new Vector2(0, 50);
+            Vector3 startPos = currentNode.NodeRect.position + new Vector2(200, 50);
+            Vector3 endPos = nextNode.NodeRect.position + new Vector2(0, 50);
 
             Handles.DrawBezier(startPos, endPos,
                 startPos + Vector3.right * 50,
@@ -130,37 +213,7 @@ public class TaskGeneratorWindow : EditorWindow
         }
     }
 
-    private void ProcessEvents(Event e)
-    {
-        drag = Vector2.zero;
 
-        if (e.type == EventType.MouseDrag && e.button == 2)
-        {
-            drag = e.delta;
-            if (currentGraph != null)
-            {
-                foreach (var node in currentGraph.Steps)
-                {
-                    node.Position += drag;
-                }
-                GUI.changed = true;
-            }
-        }
-    }
-
-    private void AutoLayoutSteps()
-    {
-        for (int i = 0; i < currentGraph.Steps.Count; i++)
-        {
-            var step = currentGraph.Steps[i];
-            if (step == null) continue;
-
-            if (step.Position == Vector2.zero)
-            {
-                step.Position = new Vector2(100 + offset.x * i, 100);
-            }
-        }
-    }
 
     private Texture2D MakeTex(int width, int height, Color col)
     {
@@ -172,4 +225,16 @@ public class TaskGeneratorWindow : EditorWindow
         result.Apply();
         return result;
     }
+    private StepDataNode GetNodeAtPosition(Vector2 position)
+    {
+        foreach (var node in stepNodes)
+        {
+            if (node.NodeRect.Contains(position))
+            {
+                return node;
+            }
+        }
+        return null;
+    }
+
 }
