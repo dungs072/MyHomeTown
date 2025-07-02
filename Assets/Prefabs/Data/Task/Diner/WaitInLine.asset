@@ -12,9 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7afcd157328d6c54b9c403a824f2c553, type: 3}
   m_Name: WaitInLine
   m_EditorClassIdentifier: 
-  stepName: Deliver Meal
+  stepName: Wait in line
   description: 
   stepType: 1
   workContainerType: 5
   duration: 0.4
   isNeedItem: 1
+  nextSteps: []

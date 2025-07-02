@@ -12,8 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7afcd157328d6c54b9c403a824f2c553, type: 3}
   m_Name: GoToTable
   m_EditorClassIdentifier: 
-  stepName: Test Meal
+  stepName: GoToTable
   description: 
   stepType: 1
   workContainerType: 3
   duration: 12
+  isNeedItem: 0
+  nextSteps: []
