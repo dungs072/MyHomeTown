@@ -15,7 +15,23 @@ MonoBehaviour:
   taskName: Cooking
   description: 
   steps:
-  - {fileID: 11400000, guid: a5c1f047d5428464f8d1a3a7eba4e51a, type: 2}
-  - {fileID: 11400000, guid: 2a729ad6ca2f18a4abb94efac46f8f89, type: 2}
-  - {fileID: 11400000, guid: 60c80b971f80717459eda47c77619389, type: 2}
-  - {fileID: 11400000, guid: 3f7b8b9350296ec4e99c6855cef77be1, type: 2}
+  - stepName: Prepare
+    description: 
+    workContainerType: 0
+    duration: 0
+    isNeedItem: 0
+  - stepName: 
+    description: 
+    workContainerType: 0
+    duration: 0
+    isNeedItem: 0
+  - stepName: 
+    description: 
+    workContainerType: 0
+    duration: 0
+    isNeedItem: 0
+  - stepName: 
+    description: 
+    workContainerType: 0
+    duration: 0
+    isNeedItem: 0

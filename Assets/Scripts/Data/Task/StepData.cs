@@ -2,11 +2,12 @@
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
-
-[CreateAssetMenu(fileName = "StepData", menuName = "Data/Task/StepData")]
-public class StepData : ScriptableObject
+using System;
+[Serializable]
+public class StepData
 {
     [SerializeField] private string stepName;
+
     [SerializeField]
     private string description = null;
     [SerializeField] private WorkContainerType workContainerType;
@@ -34,5 +35,6 @@ public class StepData : ScriptableObject
         set => workContainerType = value;
     }
     public bool IsNeedItem => isNeedItem;
+
 
 }
