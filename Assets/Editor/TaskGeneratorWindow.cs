@@ -16,7 +16,6 @@ public class TaskGeneratorWindow : EditorWindow
     private List<StepDataNode> stepNodes = new();
     private StepDataNode selectedNode;
     private Vector2 scrollPos;
-    private bool isDragging = false;
     private Vector2 dragOffset;
 
     [MenuItem("Tools/Task Graph")]
@@ -104,28 +103,17 @@ public class TaskGeneratorWindow : EditorWindow
             selectedNode = GetNodeAtPosition(mousePosition);
             if (selectedNode != null)
             {
-                isDragging = true;
                 dragOffset = mousePosition - selectedNode.Position;
                 GUI.changed = true;
             }
-            else
-            {
-                selectedNode = null;
-            }
         }
 
-        // if (e.type == EventType.MouseUp && e.button == 0)
-        // {
-        //     isDragging = false;
-        // }
-
-        // if (e.type == EventType.MouseDrag && e.button == 0 && isDragging && selectedNode != null)
-        // {
-        //     selectedNode.Position = mousePosition - dragOffset;
-        //     GUI.changed = true;
-        //     e.Use();
-        //     EditorUtility.SetDirty(selectedTask);
-        // }
+        if (e.type == EventType.MouseDrag && e.button == 0 && selectedNode != null)
+        {
+            selectedNode.Position = mousePosition - dragOffset;
+            GUI.changed = true;
+            EditorUtility.SetDirty(selectedTask);
+        }
     }
     //! handle middle here
     private void Draw()
@@ -146,22 +134,10 @@ public class TaskGeneratorWindow : EditorWindow
                 StepName = "New Step",
             };
             var position = new Vector2(100 + DEFAULT_OFFSET.x * selectedTask.Steps.Count, 100);
-            var rect = new Rect(position, NODE_SIZE);
             var newNode = new StepDataNode(newStepData, position);
 
             selectedTask.Steps.Add(newStepData);
             stepNodes.Add(newNode);
-            EditorUtility.SetDirty(selectedTask);
-        }
-
-        if (selectedNode != null && GUI.Button(new Rect(120, 10, 100, 30), "Delete Step"))
-        {
-            var currentPosition = Event.current.mousePosition + scrollPos;
-            var selectedNode = GetNodeAtPosition(currentPosition);
-            if (selectedNode == null) return;
-            var stepData = selectedNode.Data;
-            selectedTask.Steps.Remove(stepData);
-            stepNodes.Remove(selectedNode);
             EditorUtility.SetDirty(selectedTask);
         }
     }
@@ -210,6 +186,17 @@ public class TaskGeneratorWindow : EditorWindow
         var workContainerRect = new Rect(nodeRect.x + 10, nodeRect.y + 130, nodeRect.width - 20, 18);
         stepData.WorkContainerType = (WorkContainerType)EditorGUI.EnumPopup(workContainerRect, "Container", stepData.WorkContainerType);
 
+
+        // functions
+        var deleteRect = new Rect(nodeRect.x + 10, nodeRect.y + 150, nodeRect.width - 20, 18);
+        if (GUI.Button(deleteRect, "Delete Step"))
+        {
+            
+            selectedTask.Steps.Remove(stepData);
+            stepNodes.Remove(selectedNode);
+            EditorUtility.SetDirty(selectedTask);
+            GUI.changed = true;
+        }
     }
 
     private void DrawConnections()
