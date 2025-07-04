@@ -15,23 +15,13 @@ MonoBehaviour:
   taskName: Cooking
   description: 
   steps:
-  - stepName: Prepare
-    description: 
+  - stepName: Dung
+    description: asdasdasdasdasdasdasdasdas
     workContainerType: 0
     duration: 0
     isNeedItem: 0
-  - stepName: 
-    description: 
-    workContainerType: 0
-    duration: 0
-    isNeedItem: 0
-  - stepName: 
-    description: 
-    workContainerType: 0
-    duration: 0
-    isNeedItem: 0
-  - stepName: 
-    description: 
-    workContainerType: 0
+  - stepName: New Step
+    description: Description
+    workContainerType: 2
     duration: 0
     isNeedItem: 0

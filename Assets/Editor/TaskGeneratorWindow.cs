@@ -17,6 +17,7 @@ public class TaskGeneratorWindow : EditorWindow
     private StepDataNode selectedNode;
     private Vector2 scrollPos;
     private Vector2 dragOffset;
+    private Rect headerRect;
 
     [MenuItem("Tools/Task Graph")]
     public static void OpenWindow()
@@ -45,6 +46,12 @@ public class TaskGeneratorWindow : EditorWindow
     private void OnEnable()
     {
         Selection.selectionChanged += OnSelectionChange;
+        Undo.undoRedoPerformed += OnUndoRedoPerformed;
+    }
+    void OnDisable()
+    {
+        Selection.selectionChanged -= OnSelectionChange;
+        Undo.undoRedoPerformed -= OnUndoRedoPerformed;
     }
     private void OnSelectionChange()
     {
@@ -54,6 +61,14 @@ public class TaskGeneratorWindow : EditorWindow
             Debug.LogWarning("No TaskData selected. Please select a TaskData asset.");
         }
         else
+        {
+            CreateStepNodes();
+            Repaint();
+        }
+    }
+    private void OnUndoRedoPerformed()
+    {
+        if (selectedTask != null)
         {
             CreateStepNodes();
             Repaint();
@@ -87,7 +102,7 @@ public class TaskGeneratorWindow : EditorWindow
         End();
 
     }
-    //! handle start here
+    #region Start
     private void Start()
     {
         RegisterEvents();
@@ -96,26 +111,40 @@ public class TaskGeneratorWindow : EditorWindow
     private void RegisterEvents()
     {
         Event e = Event.current;
-        Vector2 mousePosition = e.mousePosition;
-
+        Vector2 mousePositionOnWindow = e.mousePosition;
+        Vector2 currentMousePosition = mousePositionOnWindow + scrollPos;
         if (e.type == EventType.MouseDown && e.button == 0)
         {
-            selectedNode = GetNodeAtPosition(mousePosition);
+            if (IsMouseOverHeader(currentMousePosition)) return;
+            selectedNode = GetNodeAtPosition(currentMousePosition);
             if (selectedNode != null)
             {
-                dragOffset = mousePosition - selectedNode.Position;
+                dragOffset = currentMousePosition - selectedNode.Position;
                 GUI.changed = true;
+            }
+            else
+            {
+                dragOffset = mousePositionOnWindow + scrollPos;
             }
         }
 
-        if (e.type == EventType.MouseDrag && e.button == 0 && selectedNode != null)
+        var isDragByMouseLeft = e.type == EventType.MouseDrag && e.button == 0;
+        if (isDragByMouseLeft && selectedNode != null)
         {
-            selectedNode.Position = mousePosition - dragOffset;
+            selectedNode.Position = currentMousePosition - dragOffset;
             GUI.changed = true;
             EditorUtility.SetDirty(selectedTask);
         }
+
+        if (isDragByMouseLeft && selectedNode == null)
+        {
+            scrollPos = dragOffset - mousePositionOnWindow;
+            GUI.changed = true;
+        }
     }
-    //! handle middle here
+    #endregion
+
+    #region Draw
     private void Draw()
     {
         scrollPos = EditorGUILayout.BeginScrollView(scrollPos);
@@ -127,19 +156,50 @@ public class TaskGeneratorWindow : EditorWindow
     }
     private void DrawHeaderUIButtons()
     {
-        if (GUI.Button(new Rect(10, 10, 100, 30), "Add Step"))
+        headerRect = new Rect(0, 0, position.width, 30);
+        var headerStyle = new GUIStyle(GUI.skin.box)
         {
-            var newStepData = new StepData()
-            {
-                StepName = "New Step",
-            };
-            var position = new Vector2(100 + DEFAULT_OFFSET.x * selectedTask.Steps.Count, 100);
-            var newNode = new StepDataNode(newStepData, position);
+            alignment = TextAnchor.MiddleCenter,
+            fontStyle = FontStyle.Bold,
+            fontSize = 16,
+        };
+        GUI.Box(headerRect, "Task Graph Header", headerStyle);
 
-            selectedTask.Steps.Add(newStepData);
-            stepNodes.Add(newNode);
-            EditorUtility.SetDirty(selectedTask);
+        GUILayout.BeginArea(headerRect);
+        GUILayout.BeginHorizontal();
+
+        if (GUILayout.Button("Add Step", GUILayout.Width(100), GUILayout.Height(30)))
+        {
+            HandleAddStep();
         }
+
+        if (selectedNode != null && GUILayout.Button("Delete step", GUILayout.Width(100), GUILayout.Height(30)))
+        {
+            HandleRemoveStep();
+        }
+
+        GUILayout.EndHorizontal();
+        GUILayout.EndArea();
+    }
+    private void HandleAddStep()
+    {
+        Undo.RecordObject(selectedTask, "Undo Add Step Data");
+        var newStepData = new StepData()
+        {
+            StepName = "New Step",
+        };
+        var position = new Vector2(100 + DEFAULT_OFFSET.x * selectedTask.Steps.Count, 100);
+        var newNode = new StepDataNode(newStepData, position);
+
+        selectedTask.Steps.Add(newStepData);
+        stepNodes.Add(newNode);
+    }
+    private void HandleRemoveStep()
+    {
+        Undo.RecordObject(selectedTask, "Undo Delete Step Data");
+        selectedTask.Steps.Remove(selectedNode.Data);
+        stepNodes.Remove(selectedNode);
+        selectedNode = null;
     }
 
     private void DrawNodes()
@@ -172,30 +232,31 @@ public class TaskGeneratorWindow : EditorWindow
             20
         );
         var stepData = node.Data;
-        stepData.StepName = EditorGUI.TextField(textFieldRect, stepData.StepName);
+        Undo.RecordObject(selectedTask, "Undo Edit Step Data");
 
+        // Step Name (Editable)
+
+        EditorGUI.BeginChangeCheck();
+        var stepName = EditorGUI.TextField(textFieldRect, stepData.StepName);
         // Description (Editable)
+
         var descriptionRect = new Rect(nodeRect.x + 10, nodeRect.y + 60, nodeRect.width - 20, 40);
-        stepData.Description = EditorGUI.TextArea(descriptionRect, stepData.Description ?? "Description");
-
+        var description = EditorGUI.TextArea(descriptionRect, stepData.Description ?? "Description");
         // Duration (Editable)
+
         var durationRect = new Rect(nodeRect.x + 10, nodeRect.y + 110, nodeRect.width - 20, 18);
-        stepData.Duration = EditorGUI.FloatField(durationRect, "Duration(s)", stepData.Duration);
-
+        var duration = EditorGUI.FloatField(durationRect, "Duration(s)", stepData.Duration);
         // WorkContainerType (Editable enum popup)
+
         var workContainerRect = new Rect(nodeRect.x + 10, nodeRect.y + 130, nodeRect.width - 20, 18);
-        stepData.WorkContainerType = (WorkContainerType)EditorGUI.EnumPopup(workContainerRect, "Container", stepData.WorkContainerType);
+        var workContainerType = (WorkContainerType)EditorGUI.EnumPopup(workContainerRect, "Container", stepData.WorkContainerType);
 
-
-        // functions
-        var deleteRect = new Rect(nodeRect.x + 10, nodeRect.y + 150, nodeRect.width - 20, 18);
-        if (GUI.Button(deleteRect, "Delete Step"))
+        if (EditorGUI.EndChangeCheck())
         {
-            
-            selectedTask.Steps.Remove(stepData);
-            stepNodes.Remove(selectedNode);
-            EditorUtility.SetDirty(selectedTask);
-            GUI.changed = true;
+            stepData.StepName = stepName;
+            stepData.Description = description;
+            stepData.Duration = duration;
+            stepData.WorkContainerType = workContainerType;
         }
     }
 
@@ -216,7 +277,9 @@ public class TaskGeneratorWindow : EditorWindow
                 Color.white, null, 4f);
         }
     }
-    //! handle end here
+    #endregion
+
+    #region End
     private void End()
     {
         if (EditorGUI.EndChangeCheck())
@@ -224,8 +287,11 @@ public class TaskGeneratorWindow : EditorWindow
             EditorUtility.SetDirty(selectedTask);
         }
     }
+    #endregion
 
 
+
+    #region Utility Methods
 
     private Texture2D MakeTex(int width, int height, Color col)
     {
@@ -257,4 +323,9 @@ public class TaskGeneratorWindow : EditorWindow
                mousePosition.y <= node.Position.y + NODE_SIZE.y;
 
     }
+    private bool IsMouseOverHeader(Vector2 mousePosition)
+    {
+        return mousePosition.y <= headerRect.yMax && mousePosition.x <= headerRect.xMax;
+    }
+    #endregion
 }
