@@ -15,5 +15,13 @@ MonoBehaviour:
   taskName: Dinner
   description: This is for customers
   steps:
-  - {fileID: 11400000, guid: 3acd0d9eb117fb44284c4dbbe558f082, type: 2}
-  - {fileID: 11400000, guid: b85ee66da431ac04bb81a9dbb34bcd7b, type: 2}
+  - stepName: 
+    description: 
+    workContainerType: 0
+    duration: 0
+    isNeedItem: 0
+  - stepName: 
+    description: 
+    workContainerType: 0
+    duration: 0
+    isNeedItem: 0

@@ -9,7 +9,6 @@ public class Step
 
     public List<WorkContainer> WorkContainers { get; private set; }
 
-    public StepType StepType => Data.StepType;
     public WorkContainerType WorkContainerType => Data.WorkContainerType;
 
     public Step(StepData data)
