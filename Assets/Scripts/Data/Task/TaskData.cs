@@ -9,10 +9,12 @@ public class TaskData : ScriptableObject
     [SerializeField]
     private string description = null;
     [SerializeField] private List<StepData> steps;
-#if UNITY_EDITOR
+    private Dictionary<StepData, List<StepData>> stepsDictionary;
+#if UNITY_EDITOR || UNITY_RUNTIME
     void Awake()
     {
         InitDefaultStep();
+        InitDefaultData();
     }
 #endif
     private void InitDefaultStep()
@@ -30,8 +32,102 @@ public class TaskData : ScriptableObject
         };
 
     }
+    void OnValidate()
+    {
+        InitDefaultData();
+    }
+    private void InitDefaultData()
+    {
+        stepsDictionary = new Dictionary<StepData, List<StepData>>();
+        foreach (var step in steps)
+        {
+            var stepList = new List<StepData>();
+            stepsDictionary.Add(step, stepList);
+            foreach (var anotherStep in steps)
+            {
+                if (anotherStep.UniqueID == step.UniqueID) continue;
+                if (step.Children.Contains(anotherStep.UniqueID))
+                {
+                    stepList.Add(anotherStep);
+                }
+            }
+        }
+    }
+    public void CreateStep(StepData parentStep, Vector2 position)
+    {
+        var newStep = new StepData
+        {
+            StepName = "New Step",
+            Description = "This is a new step.",
+            Duration = 0,
+            WorkContainerType = WorkContainerType.COOKING_STATION,
+            Position = position
+        };
+        AddStep(newStep);
+        if (parentStep != null)
+        {
+            LinkStep(parentStep, newStep);
+        }
+    }
+    public void AddStep(StepData step)
+    {
+        if (steps.Contains(step))
+        {
+            Debug.LogWarning("Step already exists in the task.");
+            return;
+        }
+        steps.Add(step);
+        stepsDictionary[step] = new List<StepData>();
+    }
+    public void RemoveStep(StepData step)
+    {
+        if (!steps.Contains(step))
+        {
+            Debug.LogWarning("Step does not exist in the task.");
+            return;
+        }
+        foreach (var kvp in stepsDictionary)
+        {
+            kvp.Value.Remove(step);
+            kvp.Key.TryToRemoveChild(step.UniqueID);
+        }
+
+        // Remove this step from the dictionary (as a key)
+        stepsDictionary.Remove(step);
+
+        // Remove from main list
+        steps.Remove(step);
+    }
+    public void LinkStep(StepData parent, StepData child)
+    {
+        if (stepsDictionary.ContainsKey(parent) && stepsDictionary[parent].Contains(child))
+        {
+            Debug.LogWarning("Step already linked.");
+            return;
+        }
+        if (!stepsDictionary.ContainsKey(parent))
+        {
+            stepsDictionary[parent] = new List<StepData>();
+        }
+        var result = parent.TryToAddChild(child.UniqueID);
+        if (!result) return;
+        stepsDictionary[parent].Add(child);
+    }
+    public void UnlinkStep(StepData parent, StepData child)
+    {
+        if (!stepsDictionary.ContainsKey(parent) || !stepsDictionary[parent].Contains(child))
+        {
+            Debug.LogWarning("Step not linked.");
+            return;
+        }
+        var result = parent.TryToRemoveChild(child.UniqueID);
+        if (!result) return;
+        stepsDictionary[parent].Remove(child);
+    }
+
 
     public string TaskName => taskName;
     public string Description => description;
     public List<StepData> Steps => steps;
+    public Dictionary<StepData, List<StepData>> StepsDictionary => stepsDictionary;
 }

@@ -4,20 +4,22 @@ using System.Collections.Generic;
 using Unity.Mathematics;
 using DashboardContainerElements;
 using UnityEditor.Callbacks;
+using System.Linq;
 
 public class TaskGeneratorWindow : EditorWindow
 {
     // config the editor here
-    private readonly Vector2 NODE_SIZE = new(200, 200);
+    private readonly Vector2 NODE_SIZE = new(200, 250);
     private readonly Vector2 DEFAULT_OFFSET = new(250, 150);
 
     // end of the config 
     private TaskData selectedTask;
-    private List<StepDataNode> stepNodes = new();
-    private StepDataNode selectedNode;
+    private StepData selectedNode;
     private Vector2 scrollPos;
     private Vector2 dragOffset;
     private Rect headerRect;
+    // linking steps
+    private StepData linkingParentNode = null;
 
     [MenuItem("Tools/Task Graph")]
     public static void OpenWindow()
@@ -26,9 +28,6 @@ public class TaskGeneratorWindow : EditorWindow
         var taskData = Selection.activeObject as TaskData;
         window.titleContent = new GUIContent("Task Graph");
         window.selectedTask = taskData;
-        window.titleContent = new GUIContent("Task Graph");
-        window.CreateStepNodes();
-
     }
 
     [OnOpenAsset(1)]
@@ -62,7 +61,6 @@ public class TaskGeneratorWindow : EditorWindow
         }
         else
         {
-            CreateStepNodes();
             Repaint();
         }
     }
@@ -70,21 +68,8 @@ public class TaskGeneratorWindow : EditorWindow
     {
         if (selectedTask != null)
         {
-            CreateStepNodes();
+            //CreateStepNodes();
             Repaint();
-        }
-    }
-    private void CreateStepNodes()
-    {
-        stepNodes.Clear();
-        int i = 0;
-        foreach (var step in selectedTask.Steps)
-        {
-            if (step == null) continue;
-            var position = new Vector2(100 + DEFAULT_OFFSET.x * i, 100);
-            var node = new StepDataNode(step, position);
-            stepNodes.Add(node);
-            i++;
         }
     }
 
@@ -115,7 +100,6 @@ public class TaskGeneratorWindow : EditorWindow
         Vector2 currentMousePosition = mousePositionOnWindow + scrollPos;
         if (e.type == EventType.MouseDown && e.button == 0)
         {
-            if (IsMouseOverHeader(currentMousePosition)) return;
             selectedNode = GetNodeAtPosition(currentMousePosition);
             if (selectedNode != null)
             {
@@ -124,6 +108,7 @@ public class TaskGeneratorWindow : EditorWindow
             }
             else
             {
+                linkingParentNode = null;
                 dragOffset = mousePositionOnWindow + scrollPos;
             }
         }
@@ -149,10 +134,10 @@ public class TaskGeneratorWindow : EditorWindow
     {
         scrollPos = EditorGUILayout.BeginScrollView(scrollPos);
         GUILayoutUtility.GetRect(4000, 4000);
-        DrawHeaderUIButtons();
         DrawNodes();
         DrawConnections();
         EditorGUILayout.EndScrollView();
+        DrawHeaderUIButtons();
     }
     private void DrawHeaderUIButtons()
     {
@@ -163,7 +148,8 @@ public class TaskGeneratorWindow : EditorWindow
             fontStyle = FontStyle.Bold,
             fontSize = 16,
         };
-        GUI.Box(headerRect, "Task Graph Header", headerStyle);
+        var displayHeaderName = selectedTask != null ? selectedTask.TaskName : "No Task Selected";
+        GUI.Box(headerRect, $"Task: {displayHeaderName}", headerStyle);
 
         GUILayout.BeginArea(headerRect);
         GUILayout.BeginHorizontal();
@@ -173,43 +159,24 @@ public class TaskGeneratorWindow : EditorWindow
             HandleAddStep();
         }
 
-        if (selectedNode != null && GUILayout.Button("Delete step", GUILayout.Width(100), GUILayout.Height(30)))
-        {
-            HandleRemoveStep();
-        }
-
         GUILayout.EndHorizontal();
         GUILayout.EndArea();
     }
     private void HandleAddStep()
     {
         Undo.RecordObject(selectedTask, "Undo Add Step Data");
-        var newStepData = new StepData()
-        {
-            StepName = "New Step",
-        };
-        var position = new Vector2(100 + DEFAULT_OFFSET.x * selectedTask.Steps.Count, 100);
-        var newNode = new StepDataNode(newStepData, position);
-
-        selectedTask.Steps.Add(newStepData);
-        stepNodes.Add(newNode);
-    }
-    private void HandleRemoveStep()
-    {
-        Undo.RecordObject(selectedTask, "Undo Delete Step Data");
-        selectedTask.Steps.Remove(selectedNode.Data);
-        stepNodes.Remove(selectedNode);
-        selectedNode = null;
+        var position = new Vector2(0, 0);
+        selectedTask.CreateStep(null, position);
     }
 
     private void DrawNodes()
     {
-        foreach (var node in stepNodes)
+        foreach (var node in selectedTask.Steps.ToList())
         {
             DrawNode(node);
         }
     }
-    private void DrawNode(StepDataNode node)
+    private void DrawNode(StepData node)
     {
         if (node == null) return;
         Rect nodeRect = new Rect(node.Position, NODE_SIZE);
@@ -231,51 +198,128 @@ public class TaskGeneratorWindow : EditorWindow
             textFieldWidth,
             20
         );
-        var stepData = node.Data;
         Undo.RecordObject(selectedTask, "Undo Edit Step Data");
 
         // Step Name (Editable)
 
         EditorGUI.BeginChangeCheck();
-        var stepName = EditorGUI.TextField(textFieldRect, stepData.StepName);
+        var stepName = EditorGUI.TextField(textFieldRect, node.StepName);
         // Description (Editable)
 
         var descriptionRect = new Rect(nodeRect.x + 10, nodeRect.y + 60, nodeRect.width - 20, 40);
-        var description = EditorGUI.TextArea(descriptionRect, stepData.Description ?? "Description");
+        var description = EditorGUI.TextArea(descriptionRect, node.Description ?? "Description");
         // Duration (Editable)
 
         var durationRect = new Rect(nodeRect.x + 10, nodeRect.y + 110, nodeRect.width - 20, 18);
-        var duration = EditorGUI.FloatField(durationRect, "Duration(s)", stepData.Duration);
+        var duration = EditorGUI.FloatField(durationRect, "Duration(s)", node.Duration);
         // WorkContainerType (Editable enum popup)
 
         var workContainerRect = new Rect(nodeRect.x + 10, nodeRect.y + 130, nodeRect.width - 20, 18);
-        var workContainerType = (WorkContainerType)EditorGUI.EnumPopup(workContainerRect, "Container", stepData.WorkContainerType);
+        var workContainerType = (WorkContainerType)EditorGUI.EnumPopup(workContainerRect, "Container", node.WorkContainerType);
 
         if (EditorGUI.EndChangeCheck())
         {
-            stepData.StepName = stepName;
-            stepData.Description = description;
-            stepData.Duration = duration;
-            stepData.WorkContainerType = workContainerType;
+            node.StepName = stepName;
+            node.Description = description;
+            node.Duration = duration;
+            node.WorkContainerType = workContainerType;
+        }
+
+        // functions
+        DrawFunctions(node, nodeRect);
+    }
+    private void DrawFunctions(StepData node, Rect nodeRect)
+    {
+        DrawLinkFunction(node, nodeRect);
+        DrawCreateChildFunction(node, nodeRect);
+        DrawDeleteFunction(node, nodeRect);
+    }
+    private void DrawLinkFunction(StepData node, Rect nodeRect)
+    {
+        var linkButtonRect = new Rect(nodeRect.x + 10, nodeRect.y + 150, nodeRect.width - 20, 18);
+        if (linkingParentNode == null)
+        {
+            if (GUI.Button(linkButtonRect, "Link"))
+            {
+                linkingParentNode = node;
+            }
+        }
+        else
+        {
+            if (linkingParentNode == node)
+            {
+                if (GUI.Button(linkButtonRect, "Cancel link"))
+                {
+                    linkingParentNode = null;
+                }
+            }
+            else if (linkingParentNode.IsChildExist(node.UniqueID))
+            {
+                if (GUI.Button(linkButtonRect, "Unlink"))
+                {
+                    Undo.RecordObject(selectedTask, "Undo Unlink Step Data");
+                    selectedTask.UnlinkStep(linkingParentNode, node);
+                    linkingParentNode = null;
+                }
+            }
+            else if (GUI.Button(linkButtonRect, "Child"))
+            {
+                Undo.RecordObject(selectedTask, "Undo Link Step Data");
+                selectedTask.LinkStep(linkingParentNode, node);
+                linkingParentNode = null;
+            }
         }
     }
-
+    private void DrawCreateChildFunction(StepData node, Rect nodeRect)
+    {
+        var createChildButtonRect = new Rect(nodeRect.x + 10, nodeRect.y + 170, nodeRect.width - 20, 18);
+        if (GUI.Button(createChildButtonRect, "Create Child"))
+        {
+            Undo.RecordObject(selectedTask, "Undo Create Child Step Data");
+            var position = node.Position + DEFAULT_OFFSET;
+            selectedTask.CreateStep(node, position);
+            GUI.changed = true;
+        }
+    }
+    private void DrawDeleteFunction(StepData node, Rect nodeRect)
+    {
+        var deleteButtonRect = new Rect(nodeRect.x + 10, nodeRect.y + 190, nodeRect.width - 20, 18);
+        if (GUI.Button(deleteButtonRect, "Delete Step"))
+        {
+            Undo.RecordObject(selectedTask, "Undo Delete Step Data");
+            selectedTask.RemoveStep(node);
+            selectedNode = null;
+            EditorUtility.SetDirty(selectedTask);
+            Repaint();
+        }
+    }
     private void DrawConnections()
     {
-        for (int i = 0; i < stepNodes.Count - 1; i++)
+        var stepNodes = selectedTask.Steps;
+        for (int i = 0; i < stepNodes.Count; i++)
         {
             var currentNode = stepNodes[i];
-            var nextNode = stepNodes[i + 1];
-            if (currentNode == null || nextNode == null) continue;
+            var children = selectedTask.StepsDictionary[currentNode];
+            if (children == null || children.Count == 0) continue;
+            foreach (var child in children)
+            {
+                DrawConnection(currentNode, child);
+            }
 
-            Vector3 startPos = currentNode.Position + new Vector2(200, 50);
-            Vector3 endPos = nextNode.Position + new Vector2(0, 50);
-
-            Handles.DrawBezier(startPos, endPos,
-                startPos + Vector3.right * 50,
-                endPos + Vector3.left * 50,
-                Color.white, null, 4f);
         }
+    }
+    private void DrawConnection(StepData fromNode, StepData toNode)
+    {
+        if (fromNode == null || toNode == null) return;
+        float x = NODE_SIZE.x;
+        float y = NODE_SIZE.y;
+        Vector3 startPos = fromNode.Position + new Vector2(x, y / 2);
+        Vector3 endPos = toNode.Position + new Vector2(0, y / 2);
+
+        Handles.DrawBezier(startPos, endPos,
+            startPos + Vector3.right * 50,
+            endPos + Vector3.left * 50,
+            Color.white, null, 4f);
     }
     #endregion
 
@@ -303,9 +347,9 @@ public class TaskGeneratorWindow : EditorWindow
         result.Apply();
         return result;
     }
-    private StepDataNode GetNodeAtPosition(Vector2 position)
+    private StepData GetNodeAtPosition(Vector2 position)
     {
-        foreach (var node in stepNodes)
+        foreach (var node in selectedTask.Steps)
         {
             if (IsMouseOverNode(node, position))
             {
@@ -314,7 +358,7 @@ public class TaskGeneratorWindow : EditorWindow
         }
         return null;
     }
-    private bool IsMouseOverNode(StepDataNode node, Vector2 mousePosition)
+    private bool IsMouseOverNode(StepData node, Vector2 mousePosition)
     {
         return node != null &&
                mousePosition.x >= node.Position.x &&
@@ -322,10 +366,6 @@ public class TaskGeneratorWindow : EditorWindow
                mousePosition.y >= node.Position.y &&
                mousePosition.y <= node.Position.y + NODE_SIZE.y;
 
-    }
-    private bool IsMouseOverHeader(Vector2 mousePosition)
-    {
-        return mousePosition.y <= headerRect.yMax && mousePosition.x <= headerRect.xMax;
     }
     #endregion
 }
