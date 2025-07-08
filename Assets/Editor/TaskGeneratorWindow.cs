@@ -21,6 +21,12 @@ public class TaskGeneratorWindow : EditorWindow
     // linking steps
     private StepData linkingParentNode = null;
 
+    // zoom
+    private float zoomScale = 1f;
+    private const float ZOOM_MIN = 0.2f;
+    private const float ZOOM_MAX = 2.0f;
+    private Rect zoomArea;
+
     [MenuItem("Tools/Task Graph")]
     public static void OpenWindow()
     {
@@ -28,6 +34,7 @@ public class TaskGeneratorWindow : EditorWindow
         var taskData = Selection.activeObject as TaskData;
         window.titleContent = new GUIContent("Task Graph");
         window.selectedTask = taskData;
+        window.SetUpNodePositions();
     }
 
     [OnOpenAsset(1)]
@@ -80,24 +87,30 @@ public class TaskGeneratorWindow : EditorWindow
             EditorGUILayout.LabelField("Please select a TaskData asset in the Project window.");
             return;
         }
+
+
         Start();
 
         Draw();
 
         End();
 
+
+
     }
+
     #region Start
     private void Start()
     {
         RegisterEvents();
+        HandleZoom();
     }
 
     private void RegisterEvents()
     {
         Event e = Event.current;
         Vector2 mousePositionOnWindow = e.mousePosition;
-        Vector2 currentMousePosition = mousePositionOnWindow + scrollPos;
+        Vector2 currentMousePosition = (mousePositionOnWindow + scrollPos) / zoomScale;
         if (e.type == EventType.MouseDown && e.button == 0)
         {
             selectedNode = GetNodeAtPosition(currentMousePosition);
@@ -127,15 +140,59 @@ public class TaskGeneratorWindow : EditorWindow
             GUI.changed = true;
         }
     }
+    private void HandleZoom()
+    {
+        var e = Event.current;
+        if (e.type == EventType.ScrollWheel)
+        {
+            float oldZoom = zoomScale;
+            float zoomDelta = -e.delta.y * 0.01f;
+            zoomScale += zoomDelta;
+            zoomScale = Mathf.Clamp(zoomScale, ZOOM_MIN, ZOOM_MAX);
+
+            Vector2 zoomCenter = e.mousePosition;
+            Vector2 zoomPos = (zoomCenter + scrollPos) / oldZoom;
+            scrollPos = zoomPos * zoomScale - zoomCenter;
+
+            e.Use();
+            Repaint();
+        }
+    }
+
+    private void SetUpNodePositions()
+    {
+        for (int i = 0; i < selectedTask.Steps.Count; i++)
+        {
+            var stepNode = selectedTask.Steps[i];
+            var children = selectedTask.StepsDictionary[stepNode];
+            if (children == null || children.Count == 0) continue;
+            for (int j = 0; j < children.Count; j++)
+            {
+                var childNode = children[j];
+                if (childNode == null) continue;
+                if (childNode.Position == Vector2.zero)
+                {
+                    childNode.Position = stepNode.Position + new Vector2(DEFAULT_OFFSET.x * (j + 1), DEFAULT_OFFSET.y);
+                }
+            }
+        }
+    }
     #endregion
 
     #region Draw
     private void Draw()
     {
         scrollPos = EditorGUILayout.BeginScrollView(scrollPos);
+        zoomArea = new Rect(0, 0, position.width, position.height);
+
+        Matrix4x4 oldMatrix = GUI.matrix;
+
+        // Apply zoom scale matrix
+        GUIUtility.ScaleAroundPivot(Vector2.one * zoomScale, Vector2.zero);
         GUILayoutUtility.GetRect(4000, 4000);
         DrawNodes();
         DrawConnections();
+        GUI.matrix = oldMatrix;
         EditorGUILayout.EndScrollView();
         DrawHeaderUIButtons();
     }

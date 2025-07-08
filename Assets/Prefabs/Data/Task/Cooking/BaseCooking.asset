@@ -15,19 +15,50 @@ MonoBehaviour:
   taskName: Cooking
   description: 
   steps:
-  - uniqueId: 1d8a88fc-8dec-4c6d-ac64-0010235eedca
-    stepName: Dung
-    description: asdasdasdasdasdasdasdasdas
+  - uniqueId: f0f28f5f-3469-457d-9156-115662356317
+    stepName: New Step 1
+    description: 
     workContainerType: 0
     duration: 0
     isNeedItem: 0
     children:
-    - 2abf9c22-af6d-4426-bd1f-406b287eefbe
-  - uniqueId: 2abf9c22-af6d-4426-bd1f-406b287eefbe
+    - 082c5134-1c8e-43c5-a3ba-e7b4ccfe9003
+    - 03906ecf-e813-485a-8cc1-ab3efec98598
+  - uniqueId: 082c5134-1c8e-43c5-a3ba-e7b4ccfe9003
     stepName: New Step
-    description: Description
+    description: This is a new step.
     workContainerType: 2
     duration: 0
     isNeedItem: 0
     children:
-    - 1d8a88fc-8dec-4c6d-ac64-0010235eedca
+    - f08ba059-d16c-4faf-bf57-25ed869bb2d0
+  - uniqueId: 03906ecf-e813-485a-8cc1-ab3efec98598
+    stepName: New Step
+    description: This is a new step.
+    workContainerType: 2
+    duration: 0
+    isNeedItem: 0
+    children:
+    - 7b23df6d-3532-4e45-ad71-a6bf535ada36
+  - uniqueId: 7b23df6d-3532-4e45-ad71-a6bf535ada36
+    stepName: New Step
+    description: This is a new step.
+    workContainerType: 2
+    duration: 0
+    isNeedItem: 0
+    children:
+    - b1e281a4-5d38-4f2e-8e20-d0e43ceec304
+  - uniqueId: f08ba059-d16c-4faf-bf57-25ed869bb2d0
+    stepName: New Step
+    description: This is a new step.
+    workContainerType: 2
+    duration: 0
+    isNeedItem: 0
+    children: []
+  - uniqueId: b1e281a4-5d38-4f2e-8e20-d0e43ceec304
+    stepName: New Step
+    description: This is a new step.
+    workContainerType: 2
+    duration: 0
+    isNeedItem: 0
+    children: []
