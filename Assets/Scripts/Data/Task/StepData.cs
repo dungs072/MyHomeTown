@@ -64,5 +64,15 @@ public class StepData
         return children.Contains(childId);
     }
 
+    //! must override Equals and GetHashCode for dictionary usage
+    public override bool Equals(object obj)
+    {
+        return obj is StepData other && UniqueID == other.UniqueID;
+    }
+
+    public override int GetHashCode()
+    {
+        return UniqueID?.GetHashCode() ?? 0;
+    }
 
 }
