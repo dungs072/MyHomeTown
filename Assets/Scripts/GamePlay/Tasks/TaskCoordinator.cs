@@ -38,6 +38,7 @@ public class TaskCoordinator : MonoBehaviour
         if (taskPerformer == null || taskPerformer.IsFinished()) return;
         var currentStep = taskPerformer.GetCurrentStepPerformer();
         var selectedWK = GetSuitableWorkContainer(currentStep.Step.Data.WorkContainerType, person);
+        if (selectedWK == null) return;
         selectedWK.AddPersonToWorkContainer(person);
         var targetPosition = selectedWK.GetWaitingPosition(person);
         if (!agent.IsReachedDestination(targetPosition))

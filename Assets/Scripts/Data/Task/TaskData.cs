@@ -10,13 +10,13 @@ public class TaskData : ScriptableObject
     private string description = null;
     [SerializeField] private List<StepData> steps;
     private Dictionary<StepData, List<StepData>> stepsDictionary;
-#if UNITY_EDITOR || UNITY_RUNTIME
+    private StepData rootStep;
     void Awake()
     {
+        InitRootStep();
         InitDefaultStep();
         InitDefaultData();
     }
-#endif
     private void InitDefaultStep()
     {
         if (steps.Count > 0) return;
@@ -39,6 +39,8 @@ public class TaskData : ScriptableObject
     private void InitDefaultData()
     {
         stepsDictionary = new Dictionary<StepData, List<StepData>>();
+        Debug.Log($"<color=#488b84>stepsDictionary: {stepsDictionary}</color>");
+
         foreach (var step in steps)
         {
             var stepList = new List<StepData>();
@@ -50,6 +52,27 @@ public class TaskData : ScriptableObject
                 {
                     stepList.Add(anotherStep);
                 }
+            }
+        }
+    }
+    private void InitRootStep()
+    {
+        foreach (var step in steps)
+        {
+            var isRoot = true;
+            foreach (var otherStep in steps)
+            {
+                if (step == otherStep) continue;
+                if (otherStep.Children.Contains(step.UniqueID))
+                {
+                    isRoot = false;
+                    break;
+                }
+            }
+            if (isRoot)
+            {
+                rootStep = step;
+                break;
             }
         }
     }
@@ -130,4 +153,5 @@ public class TaskData : ScriptableObject
     public string Description => description;
     public List<StepData> Steps => steps;
     public Dictionary<StepData, List<StepData>> StepsDictionary => stepsDictionary;
+    public StepData RootStep => rootStep;
 }

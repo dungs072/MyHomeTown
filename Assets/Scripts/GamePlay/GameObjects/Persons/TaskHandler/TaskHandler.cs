@@ -37,6 +37,7 @@ public class TaskHandler : MonoBehaviour
         if (currentTaskIndex >= tasksData.Count)
         {
             person.SwitchState(PersonState.IDLE);
+            currentTaskIndex = 0;
             gameObject.SetActive(false);
         }
         else

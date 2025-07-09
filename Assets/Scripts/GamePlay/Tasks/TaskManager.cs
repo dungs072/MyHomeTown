@@ -56,10 +56,22 @@ public class TaskManager : MonoBehaviour
         foreach (var taskData in tasksData)
         {
             var task = new Task(taskData);
-            foreach (var stepData in taskData.Steps)
+            var rootStepData = taskData.RootStep;
+            if (rootStepData == null)
             {
-                var step = new Step(stepData);
+                Debug.LogWarning($"Task {taskData.name} has no root step. Skipping task creation.");
+                continue;
+            }
+
+            var rootStep = new Step(rootStepData);
+            task.PushBack(rootStep);
+            var childrenSteps = taskData.StepsDictionary[rootStepData];
+            while (childrenSteps.Count > 0)
+            {
+                var tempSelectedStepData = childrenSteps[0];
+                var step = new Step(tempSelectedStepData);
                 task.PushBack(step);
+                childrenSteps = taskData.StepsDictionary[tempSelectedStepData];
             }
             tasks.Add(taskData, task);
         }

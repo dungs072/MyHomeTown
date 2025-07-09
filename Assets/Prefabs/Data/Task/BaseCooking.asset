@@ -16,49 +16,25 @@ MonoBehaviour:
   description: 
   steps:
   - uniqueId: f0f28f5f-3469-457d-9156-115662356317
-    stepName: New Step 1
+    stepName: Take ingredients
     description: 
-    workContainerType: 0
-    duration: 0
+    workContainerType: 1
+    duration: 1
     isNeedItem: 0
     children:
-    - 082c5134-1c8e-43c5-a3ba-e7b4ccfe9003
     - 03906ecf-e813-485a-8cc1-ab3efec98598
-  - uniqueId: 082c5134-1c8e-43c5-a3ba-e7b4ccfe9003
-    stepName: New Step
-    description: This is a new step.
-    workContainerType: 2
-    duration: 0
-    isNeedItem: 0
-    children:
-    - f08ba059-d16c-4faf-bf57-25ed869bb2d0
   - uniqueId: 03906ecf-e813-485a-8cc1-ab3efec98598
-    stepName: New Step
+    stepName: Cook Dish
     description: This is a new step.
     workContainerType: 2
-    duration: 0
+    duration: 5
     isNeedItem: 0
     children:
     - 7b23df6d-3532-4e45-ad71-a6bf535ada36
   - uniqueId: 7b23df6d-3532-4e45-ad71-a6bf535ada36
-    stepName: New Step
+    stepName: Put Food
     description: This is a new step.
-    workContainerType: 2
-    duration: 0
-    isNeedItem: 0
-    children:
-    - b1e281a4-5d38-4f2e-8e20-d0e43ceec304
-  - uniqueId: f08ba059-d16c-4faf-bf57-25ed869bb2d0
-    stepName: New Step
-    description: This is a new step.
-    workContainerType: 2
-    duration: 0
-    isNeedItem: 0
-    children: []
-  - uniqueId: b1e281a4-5d38-4f2e-8e20-d0e43ceec304
-    stepName: New Step
-    description: This is a new step.
-    workContainerType: 2
-    duration: 0
+    workContainerType: 5
+    duration: 1
     isNeedItem: 0
     children: []

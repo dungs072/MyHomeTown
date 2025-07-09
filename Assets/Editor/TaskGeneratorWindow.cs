@@ -11,6 +11,7 @@ public class TaskGeneratorWindow : EditorWindow
     // config the editor here
     private readonly Vector2 NODE_SIZE = new(200, 250);
     private readonly Vector2 DEFAULT_OFFSET = new(250, 150);
+    private readonly Vector2 CANVAS_SIZE = new(4000, 4000);
 
     // end of the config 
     private TaskData selectedTask;
@@ -25,7 +26,6 @@ public class TaskGeneratorWindow : EditorWindow
     private float zoomScale = 1f;
     private const float ZOOM_MIN = 0.2f;
     private const float ZOOM_MAX = 2.0f;
-    private Rect zoomArea;
 
     [MenuItem("Tools/Task Graph")]
     public static void OpenWindow()
@@ -182,18 +182,20 @@ public class TaskGeneratorWindow : EditorWindow
     #region Draw
     private void Draw()
     {
-        scrollPos = EditorGUILayout.BeginScrollView(scrollPos);
-        zoomArea = new Rect(0, 0, position.width, position.height);
-
+        var zoomArea = new Rect(0, 0, position.width, position.height);
+        scrollPos = GUI.BeginScrollView(zoomArea, scrollPos, new Rect(0, 0, CANVAS_SIZE.x * zoomScale, CANVAS_SIZE.y * zoomScale));
         Matrix4x4 oldMatrix = GUI.matrix;
-
         // Apply zoom scale matrix
         GUIUtility.ScaleAroundPivot(Vector2.one * zoomScale, Vector2.zero);
-        GUILayoutUtility.GetRect(4000, 4000);
+        var viewSize = CANVAS_SIZE * zoomScale;
+        GUILayout.BeginArea(new Rect(0, 0, viewSize.x, viewSize.y));
         DrawNodes();
         DrawConnections();
+        GUILayout.EndArea();
         GUI.matrix = oldMatrix;
-        EditorGUILayout.EndScrollView();
+        GUI.EndScrollView();
+
+        // header UI
         DrawHeaderUIButtons();
     }
     private void DrawHeaderUIButtons()
