@@ -20,13 +20,13 @@ MonoBehaviour:
     description: 
     workContainerType: 0
     duration: 12
-    isNeedItem: 0
+    needItems: []
     children: []
   - uniqueId: 504d8583-10ca-4aa1-94fc-e56b2389c4f7
     stepName: Take Food
     description: 
     workContainerType: 5
     duration: 1
-    isNeedItem: 0
+    needItems: []
     children:
     - 084ba371-40e5-40c0-9e85-d91b6f6e4d74

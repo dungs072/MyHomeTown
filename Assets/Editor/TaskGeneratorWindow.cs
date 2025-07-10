@@ -238,7 +238,17 @@ public class TaskGeneratorWindow : EditorWindow
     private void DrawNode(StepData node)
     {
         if (node == null) return;
-        Rect nodeRect = new Rect(node.Position, NODE_SIZE);
+        float baseNodeHeight = 250f;
+        float itemFieldHeight = 20f;
+        float itemFieldPadding = 2f;
+        float extraHeightPerItem = itemFieldHeight + itemFieldPadding;
+
+        // Include space for each NeedItem + add button + bottom functions
+        int totalItemCount = node.NeedItems.Count;
+        float extraHeight = totalItemCount * extraHeightPerItem + 80f; // 80 includes add + 3 buttons
+        float totalHeight = baseNodeHeight + extraHeight;
+
+        Rect nodeRect = new Rect(node.Position, new Vector2(NODE_SIZE.x, totalHeight));
         GUIStyle style = new GUIStyle(GUI.skin.box);
         if (node == selectedNode)
         {
@@ -284,18 +294,68 @@ public class TaskGeneratorWindow : EditorWindow
             node.WorkContainerType = workContainerType;
         }
 
+
+        float itemListStartY = nodeRect.y + 160;
+        // Draw each need item
+        for (int i = 0; i < node.NeedItems.Count; i++)
+        {
+            var item = node.NeedItems[i];
+            float itemY = itemListStartY + i * (itemFieldHeight + itemFieldPadding);
+
+            // Item Key Enum
+            var keyRect = new Rect(nodeRect.x + 10, itemY, nodeRect.width / 2 - 20, itemFieldHeight);
+            var newKey = (NeedItemKey)EditorGUI.EnumPopup(keyRect, item.itemKey);
+
+            // Amount Field
+            var amountRect = new Rect(nodeRect.x + nodeRect.width / 2, itemY, nodeRect.width / 2 - 30, itemFieldHeight);
+            var newAmount = EditorGUI.IntField(amountRect, item.amount);
+
+            // Delete button
+            var deleteRect = new Rect(nodeRect.x + nodeRect.width - 20, itemY, 16, itemFieldHeight);
+            if (GUI.Button(deleteRect, "X"))
+            {
+                Undo.RecordObject(selectedTask, "Remove Need Item");
+                node.NeedItems.RemoveAt(i);
+                EditorUtility.SetDirty(selectedTask);
+                break; // prevent layout issues after modifying the list
+            }
+
+            // Apply changes
+            if (newKey != item.itemKey || newAmount != item.amount)
+            {
+                Undo.RecordObject(selectedTask, "Edit Need Item");
+                item.itemKey = newKey;
+                item.amount = newAmount;
+                EditorUtility.SetDirty(selectedTask);
+            }
+        }
+
+        // Add button below list
+        var addButtonY = itemListStartY + node.NeedItems.Count * (itemFieldHeight + itemFieldPadding);
+        var addButtonRect = new Rect(nodeRect.x + 10, addButtonY, nodeRect.width - 20, itemFieldHeight);
+        if (GUI.Button(addButtonRect, "Add Need Item"))
+        {
+            Undo.RecordObject(selectedTask, "Add Need Item");
+            node.NeedItems.Add(new ItemData());
+            EditorUtility.SetDirty(selectedTask);
+        }
+
         // functions
         DrawFunctions(node, nodeRect);
     }
     private void DrawFunctions(StepData node, Rect nodeRect)
     {
-        DrawLinkFunction(node, nodeRect);
-        DrawCreateChildFunction(node, nodeRect);
-        DrawDeleteFunction(node, nodeRect);
+        float itemFieldHeight = 20f;
+        float itemFieldPadding = 2f;
+        float startY = nodeRect.y + 160 + node.NeedItems.Count * (itemFieldHeight + itemFieldPadding) + 22f; // 22 = space for Add button
+
+        DrawLinkFunction(node, nodeRect, startY);
+        DrawCreateChildFunction(node, nodeRect, startY + 20f);
+        DrawDeleteFunction(node, nodeRect, startY + 40f);
     }
-    private void DrawLinkFunction(StepData node, Rect nodeRect)
+    private void DrawLinkFunction(StepData node, Rect nodeRect, float y)
     {
-        var linkButtonRect = new Rect(nodeRect.x + 10, nodeRect.y + 150, nodeRect.width - 20, 18);
+        var linkButtonRect = new Rect(nodeRect.x + 10, y, nodeRect.width - 20, 18);
         if (linkingParentNode == null)
         {
             if (GUI.Button(linkButtonRect, "Link"))
@@ -329,9 +389,9 @@ public class TaskGeneratorWindow : EditorWindow
             }
         }
     }
-    private void DrawCreateChildFunction(StepData node, Rect nodeRect)
+    private void DrawCreateChildFunction(StepData node, Rect nodeRect, float y)
     {
-        var createChildButtonRect = new Rect(nodeRect.x + 10, nodeRect.y + 170, nodeRect.width - 20, 18);
+        var createChildButtonRect = new Rect(nodeRect.x + 10, y, nodeRect.width - 20, 18);
         if (GUI.Button(createChildButtonRect, "Create Child"))
         {
             Undo.RecordObject(selectedTask, "Undo Create Child Step Data");
@@ -340,9 +400,9 @@ public class TaskGeneratorWindow : EditorWindow
             GUI.changed = true;
         }
     }
-    private void DrawDeleteFunction(StepData node, Rect nodeRect)
+    private void DrawDeleteFunction(StepData node, Rect nodeRect, float y)
     {
-        var deleteButtonRect = new Rect(nodeRect.x + 10, nodeRect.y + 190, nodeRect.width - 20, 18);
+        var deleteButtonRect = new Rect(nodeRect.x + 10, y, nodeRect.width - 20, 18);
         if (GUI.Button(deleteButtonRect, "Delete Step"))
         {
             Undo.RecordObject(selectedTask, "Undo Delete Step Data");
@@ -419,12 +479,15 @@ public class TaskGeneratorWindow : EditorWindow
     }
     private bool IsMouseOverNode(StepData node, Vector2 mousePosition)
     {
+        float baseNodeHeight = 250f;
+        float extraHeight = node.NeedItems.Count * 22f + 80f; // use same logic as DrawNode
+        float dynamicHeight = baseNodeHeight + extraHeight;
+
         return node != null &&
                mousePosition.x >= node.Position.x &&
                mousePosition.x <= node.Position.x + NODE_SIZE.x &&
                mousePosition.y >= node.Position.y &&
-               mousePosition.y <= node.Position.y + NODE_SIZE.y;
-
+               mousePosition.y <= node.Position.y + dynamicHeight;
     }
     #endregion
 }
