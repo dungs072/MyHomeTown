@@ -60,10 +60,9 @@ public class TaskCoordinator : MonoBehaviour
     }
     private void HandleStep(Person person, WorkContainer selectedWK, StepPerformer currentStep)
     {
-        var isNeedItem = currentStep.Step.Data.IsNeedItem;
         var baseCharacter = person.GetComponent<BaseCharacter>();
         var needObjects = baseCharacter.NeedObjects;
-        var hasNeedItems = isNeedItem && needObjects != null && needObjects.Count > 0;
+        var hasNeedItems = false;//isNeedItem && needObjects != null && needObjects.Count > 0;
         var canWork = selectedWK.IsPersonUse(person) && !hasNeedItems;
         if (canWork)
         {

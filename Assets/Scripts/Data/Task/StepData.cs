@@ -4,6 +4,13 @@ using Unity.VisualScripting;
 using UnityEngine;
 using System;
 [Serializable]
+public class ItemData
+{
+    public NeedItemKey itemKey;
+    public int amount = 0;
+}
+
+[Serializable]
 public class StepData
 {
     [SerializeField] private string uniqueId;
@@ -13,8 +20,9 @@ public class StepData
     private string description = null;
     [SerializeField] private WorkContainerType workContainerType;
     [SerializeField] private float duration = 0;
-    [SerializeField] private bool isNeedItem = false;
+    [SerializeField] private List<ItemData> needItems = new();
     [SerializeField] private List<string> children = new List<string>();
+
     public StepData()
     {
         uniqueId = Guid.NewGuid().ToString();
@@ -40,10 +48,10 @@ public class StepData
         get => workContainerType;
         set => workContainerType = value;
     }
-    public bool IsNeedItem => isNeedItem;
+    public List<ItemData> NeedItems => needItems;
     public List<string> Children => children;
 
-    //? for editor use only
+    //? for editor purposes only
     public Vector2 Position { get; set; }
 
     public bool TryToAddChild(string childId)

@@ -39,7 +39,6 @@ public class TaskData : ScriptableObject
     private void InitDefaultData()
     {
         stepsDictionary = new Dictionary<StepData, List<StepData>>();
-        Debug.Log($"<color=#488b84>stepsDictionary: {stepsDictionary}</color>");
 
         foreach (var step in steps)
         {
