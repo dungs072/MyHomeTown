@@ -23,7 +23,8 @@ public class NeedItemGenerator : MonoBehaviour
             var needItemData = GetNeedItemData();
             if (needItemData == null) return;
             var amount = GetAmountOfNeedItem();
-            baseCharacter.AddNeedObject(needItemData, amount);
+            //! modify this code here
+            //baseCharacter.AddNeedObject();
         }
     }
     private NeedItemData GetNeedItemData()

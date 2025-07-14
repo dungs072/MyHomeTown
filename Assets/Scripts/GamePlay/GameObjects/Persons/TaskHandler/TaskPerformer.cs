@@ -43,6 +43,12 @@ public class TaskPerformer
             var step = steps[i];
             var stepPerformer = new StepPerformer(step);
             stepPerformers.Add(stepPerformer);
+            var needObjects = step.Data.NeedItems;
+            if (needObjects == null || needObjects.Count == 0) continue;
+            foreach (var needObject in needObjects)
+            {
+                stepPerformer.AddNeedObject(needObject);
+            }
         }
     }
 
@@ -50,7 +56,7 @@ public class TaskPerformer
     {
         stepPerformers = new List<StepPerformer>();
     }
-    
+
 
 
 

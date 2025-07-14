@@ -11,10 +11,10 @@ public class BaseCharacter : MonoBehaviour
     protected Person person;
     protected TaskHandler taskHandler;
 
-    protected List<NeedObject> needObjects;
+    protected List<RequiredItem> needObjects;
     public bool ShouldCreateNeedObjectsWhenSpawned => shouldCreateNeedObjectsWhenSpawned;
 
-    public List<NeedObject> NeedObjects => needObjects;
+    public List<RequiredItem> NeedObjects => needObjects;
 
     void Awake()
     {
@@ -36,18 +36,17 @@ public class BaseCharacter : MonoBehaviour
         gameObject.SetActive(false);
     }
 
-    public void AddNeedObject(NeedItemData item, int neededAmount)
+    public void AddNeedObject(ItemData item)
     {
-        needObjects ??= new List<NeedObject>();
+        needObjects ??= new List<RequiredItem>();
 
-        var needObject = new NeedObject
+        var needObject = new RequiredItem
         {
             itemData = item,
-            neededAmount = neededAmount,
             gainedAmount = 0
         };
-
-        person.InfoPersonUI.SetInfoText($"Need {item.ItemName} x{neededAmount}");
+        var itemName = NeedItemKeyNames.ToName(item.itemKey);
+        person.InfoPersonUI.SetInfoText($"Need {itemName} x{item.amount}");
         needObjects.Add(needObject);
     }
 
