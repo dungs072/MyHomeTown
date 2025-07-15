@@ -15,6 +15,7 @@ public class ManagerSingleton : MonoBehaviour
     [SerializeField] private AgentManager agentManager;
     [Header("Factory")]
     [SerializeField] private PropertyFactory propertyFactory;
+    [SerializeField] private ItemFactory itemFactory;
     [Header("Player")]
     [SerializeField] private PlayerController player;
     [Header("Level Generator")]
@@ -30,6 +31,7 @@ public class ManagerSingleton : MonoBehaviour
     public AgentManager AgentManager => agentManager;
     // Factory
     public PropertyFactory PropertyFactory => propertyFactory;
+    public ItemFactory ItemFactory => itemFactory;
     // MapWorld
     public MapWorld MapWorld => mapWorld;
     public GamePlay GamePlay => gamePlay;

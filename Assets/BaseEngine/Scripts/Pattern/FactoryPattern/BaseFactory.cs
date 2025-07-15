@@ -12,7 +12,7 @@ public class BaseFactory : MonoBehaviour
     protected Dictionary<string, BaseProduct> productDictionary = new Dictionary<string, BaseProduct>();
 
     protected Dictionary<string, List<BaseProduct>> productListDictionary = new Dictionary<string, List<BaseProduct>>();
-    
+
     public virtual void RegisterProduct(string productName, BaseProduct product)
     {
         if (!productDictionary.ContainsKey(productName))

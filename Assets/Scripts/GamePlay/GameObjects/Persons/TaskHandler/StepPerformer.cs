@@ -1,18 +1,14 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class RequiredItem
-{
-    public ItemData itemData;
-    public int gainedAmount = 0;
-}
+
 
 public class StepPerformer
 {
     private Step step;
     private bool isFinished = false;
 
-    private List<RequiredItem> needObjects;
+    private List<GatheredItem> needObjects;
     private float progress = 0f;
 
     public Step Step => step;
@@ -42,11 +38,11 @@ public class StepPerformer
     /// </summary>
     /// <param name="item"></param>
     /// <param name="neededAmount"></param>
-    public void AddNeedObject(ItemData item)
+    public void AddNeedObject(ItemRequirement item)
     {
-        needObjects ??= new List<RequiredItem>();
+        needObjects ??= new List<GatheredItem>();
 
-        var needObject = new RequiredItem
+        var needObject = new GatheredItem
         {
             itemData = item,
             gainedAmount = 0
@@ -54,7 +50,7 @@ public class StepPerformer
 
         needObjects.Add(needObject);
     }
-    public void SetGainedAmount(NeedItemKey key, int gainedAmount)
+    public void SetGainedAmount(ItemKey key, int gainedAmount)
     {
         if (needObjects == null) return;
 
@@ -67,7 +63,7 @@ public class StepPerformer
             }
         }
     }
-    public RequiredItem GetNeedObject(NeedItemKey key)
+    public GatheredItem GetNeedObject(ItemKey key)
     {
         if (needObjects == null) return null;
 
@@ -79,6 +75,20 @@ public class StepPerformer
             }
         }
         return null;
+    }
+
+    public bool HasEnoughItems()
+    {
+        if (needObjects == null || needObjects.Count == 0) return true;
+
+        foreach (var needObject in needObjects)
+        {
+            if (needObject.gainedAmount < needObject.itemData.amount)
+            {
+                return false;
+            }
+        }
+        return true;
     }
 
 
