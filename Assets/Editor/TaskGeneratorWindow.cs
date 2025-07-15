@@ -64,7 +64,7 @@ public class TaskGeneratorWindow : EditorWindow
         selectedTask = Selection.activeObject as TaskData;
         if (selectedTask == null)
         {
-            Debug.LogWarning("No TaskData selected. Please select a TaskData asset.");
+            //Debug.LogWarning("No TaskData selected. Please select a TaskData asset.");
         }
         else
         {
@@ -304,7 +304,7 @@ public class TaskGeneratorWindow : EditorWindow
 
             // Item Key Enum
             var keyRect = new Rect(nodeRect.x + 10, itemY, nodeRect.width / 2 - 20, itemFieldHeight);
-            var newKey = (NeedItemKey)EditorGUI.EnumPopup(keyRect, item.itemKey);
+            var newKey = (ItemKey)EditorGUI.EnumPopup(keyRect, item.itemKey);
 
             // Amount Field
             var amountRect = new Rect(nodeRect.x + nodeRect.width / 2, itemY, nodeRect.width / 2 - 30, itemFieldHeight);
@@ -336,7 +336,7 @@ public class TaskGeneratorWindow : EditorWindow
         if (GUI.Button(addButtonRect, "Add Need Item"))
         {
             Undo.RecordObject(selectedTask, "Add Need Item");
-            node.NeedItems.Add(new ItemData());
+            node.NeedItems.Add(new ItemRequirement());
             EditorUtility.SetDirty(selectedTask);
         }
 

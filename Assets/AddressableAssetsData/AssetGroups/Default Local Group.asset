@@ -49,6 +49,12 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 91578dda6050eca41939e94211d69df2
+    m_Address: Assets/Prefabs/GameObjects/Items/Item1.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ItemPrefabs
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: deb083bf231b6e24295cb8b292a02fb9
     m_Address: Assets/Prefabs/GameObjects/Props/PuttingStation.prefab
     m_ReadOnly: 0

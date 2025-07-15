@@ -47,6 +47,7 @@ public class TaskCoordinator : MonoBehaviour
             person.SwitchState(PersonState.MOVE);
             return;
         }
+        if (!currentStep.HasEnoughItems()) return;
         HandleStep(person, selectedWK, currentStep);
         if (currentStep.IsFinished)
         {
@@ -61,7 +62,7 @@ public class TaskCoordinator : MonoBehaviour
     private void HandleStep(Person person, WorkContainer selectedWK, StepPerformer currentStep)
     {
         var baseCharacter = person.GetComponent<BaseCharacter>();
-        var needObjects = baseCharacter.NeedObjects;
+        // var needObjects = baseCharacter.NeedObjects;
         var hasNeedItems = false;//isNeedItem && needObjects != null && needObjects.Count > 0;
         var canWork = selectedWK.IsPersonUse(person) && !hasNeedItems;
         if (canWork)

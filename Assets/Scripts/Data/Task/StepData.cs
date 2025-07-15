@@ -3,12 +3,7 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 using System;
-[Serializable]
-public class ItemData
-{
-    public NeedItemKey itemKey;
-    public int amount = 0;
-}
+
 
 [Serializable]
 public class StepData
@@ -20,7 +15,7 @@ public class StepData
     private string description = null;
     [SerializeField] private WorkContainerType workContainerType;
     [SerializeField] private float duration = 0;
-    [SerializeField] private List<ItemData> needItems = new();
+    [SerializeField] private List<ItemRequirement> needItems = new();
     [SerializeField] private List<string> children = new List<string>();
 
     public StepData()
@@ -48,7 +43,7 @@ public class StepData
         get => workContainerType;
         set => workContainerType = value;
     }
-    public List<ItemData> NeedItems => needItems;
+    public List<ItemRequirement> NeedItems => needItems;
     public List<string> Children => children;
 
     //? for editor purposes only

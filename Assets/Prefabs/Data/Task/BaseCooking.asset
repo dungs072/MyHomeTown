@@ -28,7 +28,11 @@ MonoBehaviour:
     description: This is a new step.
     workContainerType: 2
     duration: 5
-    needItems: []
+    needItems:
+    - itemKey: 0
+      amount: 1
+    - itemKey: 1
+      amount: 1
     children:
     - 7b23df6d-3532-4e45-ad71-a6bf535ada36
   - uniqueId: 7b23df6d-3532-4e45-ad71-a6bf535ada36
