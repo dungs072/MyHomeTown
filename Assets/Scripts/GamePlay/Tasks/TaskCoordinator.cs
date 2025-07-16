@@ -51,6 +51,8 @@ public class TaskCoordinator : MonoBehaviour
         HandleStep(person, selectedWK, currentStep);
         if (currentStep.IsFinished)
         {
+            var itemsInContainer = selectedWK.ItemsInContainer;
+            person.TakeNeedItems(itemsInContainer);
             taskPerformer.MoveToNextStep();
             selectedWK.RemovePersonFromWorkContainer(person);
         }

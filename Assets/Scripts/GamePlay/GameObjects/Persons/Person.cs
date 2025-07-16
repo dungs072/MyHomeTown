@@ -34,10 +34,6 @@ public class Person : MonoBehaviour
     public AgentController AgentController => agentController;
     public PersonStatus PersonStatus => personStatus;
 
-
-
-
-
     void Awake()
     {
         singleton = EmpireInstance;
@@ -90,5 +86,40 @@ public class Person : MonoBehaviour
         personStatus.CurrentState = newState;
         // You can add additional logic here if needed when the state changes
         OnPersonStatusChanged?.Invoke(this);
+    }
+
+    public void TakeNeedItems(Dictionary<ItemKey, int> items)
+    {
+        var needItems = GetNeedItemsFromCurrentToEndStep();
+        if (needItems == null || needItems.Count == 0) return;
+        foreach (var needItem in needItems)
+        {
+            var itemKey = needItem.itemData.itemKey;
+            var requiredAmount = needItem.itemData.amount;
+            if (items.TryGetValue(itemKey, out int amount))
+            {
+                var gainedAmount = Mathf.Min(amount, requiredAmount);
+                needItem.gainedAmount += gainedAmount;
+                items[itemKey] -= gainedAmount;
+            }
+        }
+    }
+    //! must edit the way to get step of specific task
+    //! temporary get index = 0
+    private List<GatheredItem> GetNeedItemsFromCurrentToEndStep()
+    {
+        List<GatheredItem> items = new();
+        var currentTask = personStatus.CurrentTaskPerformer;
+        var currentStep = currentTask.GetCurrentStepPerformer();
+        if (currentStep == null) return null;
+        for (int i = currentTask.CurrentStepIndex; i < currentTask.StepPerformers.Count; i++)
+        {
+            var step = currentTask.StepPerformers[i];
+            if (step == null) continue;
+            var stepNeedItems = step.NeedItems;
+            if (stepNeedItems == null || stepNeedItems.Count == 0) continue;
+            items.AddRange(stepNeedItems);
+        }
+        return items;
     }
 }

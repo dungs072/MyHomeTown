@@ -7,7 +7,7 @@ public class ServerCharacter : BaseCharacter
     protected Dictionary<ItemKey, int> owningItemsDict = new();
     public Dictionary<ItemKey, int> OwningItemsDict => owningItemsDict;
     public List<ItemKey> OwningItemsList => owningItemsList;
-    public void AddNeedObject(ItemKey key, int amount)
+    public void AddOwningObject(ItemKey key, int amount)
     {
         if (owningItemsDict.ContainsKey(key))
         {
@@ -22,7 +22,7 @@ public class ServerCharacter : BaseCharacter
         var itemName = ItemKeyNames.ToName(key);
         person.InfoPersonUI.SetInfoText($"Has {itemName} x{owningItemsDict[key]}");
     }
-    public void RemoveNeedObject(ItemKey key, int amount)
+    public void RemoveOwningObject(ItemKey key, int amount)
     {
         if (owningItemsDict.ContainsKey(key))
         {

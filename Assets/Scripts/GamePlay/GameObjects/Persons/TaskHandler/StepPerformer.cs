@@ -8,12 +8,13 @@ public class StepPerformer
     private Step step;
     private bool isFinished = false;
 
-    private List<GatheredItem> needObjects;
+    private List<GatheredItem> needItems;
     private float progress = 0f;
 
     public Step Step => step;
     public bool IsFinished => isFinished;
     public float Progress => progress;
+    public List<GatheredItem> NeedItems => needItems;
     public StepPerformer(Step step)
     {
         this.step = step;
@@ -40,7 +41,7 @@ public class StepPerformer
     /// <param name="neededAmount"></param>
     public void AddNeedObject(ItemRequirement item)
     {
-        needObjects ??= new List<GatheredItem>();
+        needItems ??= new List<GatheredItem>();
 
         var needObject = new GatheredItem
         {
@@ -48,13 +49,13 @@ public class StepPerformer
             gainedAmount = 0
         };
 
-        needObjects.Add(needObject);
+        needItems.Add(needObject);
     }
     public void SetGainedAmount(ItemKey key, int gainedAmount)
     {
-        if (needObjects == null) return;
+        if (needItems == null) return;
 
-        foreach (var needObject in needObjects)
+        foreach (var needObject in needItems)
         {
             if (needObject.itemData.itemKey == key)
             {
@@ -65,9 +66,9 @@ public class StepPerformer
     }
     public GatheredItem GetNeedObject(ItemKey key)
     {
-        if (needObjects == null) return null;
+        if (needItems == null) return null;
 
-        foreach (var needObject in needObjects)
+        foreach (var needObject in needItems)
         {
             if (needObject.itemData.itemKey == key)
             {
@@ -79,9 +80,9 @@ public class StepPerformer
 
     public bool HasEnoughItems()
     {
-        if (needObjects == null || needObjects.Count == 0) return true;
+        if (needItems == null || needItems.Count == 0) return true;
 
-        foreach (var needObject in needObjects)
+        foreach (var needObject in needItems)
         {
             if (needObject.gainedAmount < needObject.itemData.amount)
             {
