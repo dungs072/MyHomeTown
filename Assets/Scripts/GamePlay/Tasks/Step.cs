@@ -11,6 +11,7 @@ public class Step
 
     public WorkContainerType WorkContainerType => Data.WorkContainerType;
 
+
     public Step(StepData data)
     {
         Data = data;

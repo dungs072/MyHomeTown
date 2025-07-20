@@ -53,37 +53,74 @@ public class TaskManager : MonoBehaviour
     {
         foreach (var taskData in tasksData)
         {
-            var task = new Task(taskData);
             var rootStepData = taskData.RootStep;
             if (rootStepData == null)
             {
                 Debug.LogWarning($"Task {taskData.name} has no root step. Skipping task creation.");
                 continue;
             }
-            var queue = new Queue<Step>();
+            var stack = new Stack<(Step, List<Step>)>();
             var rootStep = new Step(rootStepData);
-            queue.Enqueue(rootStep);
-            task.PushBack(rootStep);
+            stack.Push((rootStep, new List<Step>() { rootStep }));
 
-            while (queue.Count > 0)
+            while (stack.Count > 0)
             {
-                var currentStep = queue.Dequeue();
+                var (currentStep, previousSteps) = stack.Pop();
                 var stepData = currentStep.Data;
                 var childrenSteps = taskData.StepsDictionary[stepData];
 
-                if (stepData.TaskName != TaskName.NONE)
+                if (childrenSteps == null || childrenSteps.Count == 0)
                 {
+                    var taskName = GetTaskNameFromList(previousSteps);
+                    if (!tasksDict.ContainsKey(taskName))
+                    {
+                        var newTask = new Task(taskName);
+                        newTask.PushBack(previousSteps);
+                        tasksDict[taskName] = newTask;
+                        DebugTask(newTask);
+                    }
+                }
+                else
+                {
+                    for (int i = 0; i < childrenSteps.Count; i++)
+                    {
+                        var childStepData = childrenSteps[i];
+                        var childStep = new Step(childStepData);
+                        var newSteps = new List<Step>(previousSteps) { childStep };
+                        stack.Push((childStep, newSteps));
+                    }
+                }
 
-                }
-                foreach (var childStepData in childrenSteps)
-                {
-                    var childStep = new Step(childStepData);
-                    queue.Enqueue(childStep);
-                }
             }
 
         }
     }
+    private TaskName GetTaskNameFromList(List<Step> steps)
+    {
+        if (steps == null || steps.Count == 0)
+        {
+            return TaskName.NONE;
+        }
+        foreach (var step in steps)
+        {
+            if (step.Data.TaskName != TaskName.NONE)
+            {
+                return step.Data.TaskName;
+            }
+        }
+        return TaskName.NONE;
+    }
+    private void DebugTask(Task task)
+    {
+        var stringBuilder = new System.Text.StringBuilder();
+        stringBuilder.AppendLine($"Task: {task.TaskName.ToName()}");
+        foreach (var step in task.Steps)
+        {
+            stringBuilder.Append($" Step: {step.Data.StepName},");
+        }
+        Debug.Log(stringBuilder.ToString());
+    }
+
     public void AddWorkContainer(WorkContainer workContainer)
     {
         if (tasksDict.Count == 0)

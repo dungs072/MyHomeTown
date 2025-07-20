@@ -16,6 +16,8 @@ public static class TaskNameParser
             TaskName.DISH_1 => "Dish 1",
             TaskName.DISH_2 => "Dish 2",
             TaskName.DISH_3 => "Dish 3",
+            TaskName.DINNER => "Dinner",
+
             _ => "None"
         };
     }

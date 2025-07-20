@@ -4,23 +4,25 @@ using System.Collections.Generic;
 //! it has a list of step to handle and you have to use it like a queue data structure
 public class Task
 {
-
-    private TaskData taskData;
+    private TaskName taskName;
     private List<Step> steps;
 
     public List<Step> Steps => steps;
+    public TaskName TaskName => taskName;
 
-    public TaskData TaskData => taskData;
-
-    public Task(TaskData taskData)
+    public Task(TaskName taskName)
     {
-        this.taskData = taskData;
+        this.taskName = taskName;
         steps = new List<Step>();
     }
 
     public void PushBack(Step step)
     {
         steps.Add(step);
+    }
+    public void PushBack(List<Step> steps)
+    {
+        this.steps.AddRange(steps);
     }
 
     public void RemoveFirstStep()
