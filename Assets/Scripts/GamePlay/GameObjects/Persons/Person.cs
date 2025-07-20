@@ -27,21 +27,20 @@ public class Person : MonoBehaviour
     private AgentController agentController;
     private PersonStatus personStatus;
 
+    private BaseCharacter baseCharacter;
     public PersonData PersonData => personData;
     public InfoPersonUI InfoPersonUI => infoPersonUI;
 
 
     public AgentController AgentController => agentController;
     public PersonStatus PersonStatus => personStatus;
-
-
-
-
+    public BaseCharacter BaseCharacter => baseCharacter;
 
     void Awake()
     {
         singleton = EmpireInstance;
         agentController = GetComponent<AgentController>();
+        baseCharacter = GetComponent<BaseCharacter>();
     }
 
     void Start()
@@ -91,4 +90,5 @@ public class Person : MonoBehaviour
         // You can add additional logic here if needed when the state changes
         OnPersonStatusChanged?.Invoke(this);
     }
+
 }

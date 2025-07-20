@@ -47,10 +47,14 @@ public class TaskCoordinator : MonoBehaviour
             person.SwitchState(PersonState.MOVE);
             return;
         }
-        if (!currentStep.HasEnoughItems()) return;
+        if (!HasEnoughItemToDoStep(person, currentStep)) return;
         HandleStep(person, selectedWK, currentStep);
         if (currentStep.IsFinished)
         {
+            var itemsInContainer = selectedWK.ItemsInContainer;
+            var baseCharacter = person.BaseCharacter;
+            PutNeedItemsToDoStep(person, currentStep);
+            baseCharacter.TakeNeedItems(itemsInContainer);
             taskPerformer.MoveToNextStep();
             selectedWK.RemovePersonFromWorkContainer(person);
         }
@@ -59,22 +63,46 @@ public class TaskCoordinator : MonoBehaviour
             taskHandler.MoveNextTask();
         }
     }
+    private bool HasEnoughItemToDoStep(Person person, StepPerformer step)
+    {
+        var baseCharacter = person.BaseCharacter;
+        var isEnough = true;
+        if (step.NeedItems == null || step.NeedItems.Count == 0) return isEnough;
+        foreach (var needItem in step.NeedItems)
+        {
+            var itemKey = needItem.itemData.itemKey;
+            if (!baseCharacter.OwningItemsDict.ContainsKey(itemKey) ||
+                baseCharacter.OwningItemsDict[itemKey] < needItem.itemData.amount)
+            {
+                isEnough = false;
+                break;
+            }
+        }
+        return isEnough;
+    }
+    private void PutNeedItemsToDoStep(Person person, StepPerformer step)
+    {
+        var baseCharacter = person.BaseCharacter;
+        var needItems = step.NeedItems;
+        if (needItems == null || needItems.Count == 0) return;
+
+        foreach (var needItem in needItems)
+        {
+            var itemKey = needItem.itemData.itemKey;
+            if (!baseCharacter.OwningItemsDict.TryGetValue(itemKey, out int amount)) return;
+            var requiredAmount = needItem.itemData.amount;
+            if (amount < requiredAmount) return;
+            baseCharacter.RemoveOwningObject(itemKey, requiredAmount);
+        }
+    }
     private void HandleStep(Person person, WorkContainer selectedWK, StepPerformer currentStep)
     {
-        var baseCharacter = person.GetComponent<BaseCharacter>();
-        // var needObjects = baseCharacter.NeedObjects;
-        var hasNeedItems = false;//isNeedItem && needObjects != null && needObjects.Count > 0;
-        var canWork = selectedWK.IsPersonUse(person) && !hasNeedItems;
+        var canWork = selectedWK.IsPersonUse(person);
         if (canWork)
         {
             var currentProgress = currentStep.Progress;
             currentStep.SetProgress(currentProgress + Time.deltaTime);
             person.SwitchState(PersonState.WORK);
-        }
-        else if (hasNeedItems)
-        {
-            person.SwitchState(PersonState.WAIT);
-
         }
         else
         {

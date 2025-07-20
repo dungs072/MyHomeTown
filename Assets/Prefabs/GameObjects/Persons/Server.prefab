@@ -16,6 +16,14 @@ PrefabInstance:
       propertyPath: agentType
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 8791239991844329536, guid: dff38a08e0967c14b957a7fd50d5f49e, type: 3}
+      propertyPath: taskNames.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8791239991844329536, guid: dff38a08e0967c14b957a7fd50d5f49e, type: 3}
+      propertyPath: 'taskNames.Array.data[0]'
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 9198347967470949743, guid: dff38a08e0967c14b957a7fd50d5f49e, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0

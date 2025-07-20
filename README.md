@@ -5,3 +5,6 @@ Hello everyone
 - Events should be written like: On + Object + V(ing/ed). Ex: OnAgentSpawned
 - Folder structures: 
     - Data folder: contains ScriptableObject components and types
+
+- Task Designer
+    - The step should be split only one time. After that, the children of that step will no longer be separated again.

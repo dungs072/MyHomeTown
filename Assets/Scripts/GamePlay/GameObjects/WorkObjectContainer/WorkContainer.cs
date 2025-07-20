@@ -4,11 +4,22 @@ using UnityEngine;
 
 public class WorkContainer : MonoBehaviour
 {
-
+    // handle task
     [SerializeField] private WorkContainerType workContainerType;
     public WorkContainerType WorkContainerType => workContainerType;
     private List<Person> personsWantToWorkHere = new();
     public List<Person> PersonsWantToWorkHere => personsWantToWorkHere;
+
+    // handle items
+    private Dictionary<ItemKey, int> itemsInContainer = new();
+    public Dictionary<ItemKey, int> ItemsInContainer => itemsInContainer;
+    void Start()
+    {
+        if (workContainerType != WorkContainerType.FOOD_STORAGE) return;
+        itemsInContainer.Add(ItemKey.VEGETABLE, 10);
+        itemsInContainer.Add(ItemKey.MEAT, 5);
+        itemsInContainer.Add(ItemKey.FRUIT, 20);
+    }
 
     public void AddPersonToWorkContainer(Person person)
     {
@@ -61,9 +72,37 @@ public class WorkContainer : MonoBehaviour
             Gizmos.DrawWireSphere(position, 1);
         }
     }
+    /// <summary>
+    /// If the amount of item is less than 0, it will be removed from the container.
+    /// </summary>
+    /// <param name="itemKey"></param>
+    /// <param name="amount"></param>
+    public void AddItemToContainer(ItemKey itemKey, int amount)
+    {
+        if (amount <= 0) return;
+        if (itemsInContainer.ContainsKey(itemKey))
+        {
+            itemsInContainer[itemKey] += amount;
+            if (itemsInContainer[itemKey] <= 0)
+            {
+                itemsInContainer.Remove(itemKey);
+            }
+        }
+        else
+        {
+            itemsInContainer[itemKey] = amount;
+        }
+    }
+    public int GetItemFromContainer(ItemKey itemKey)
+    {
+        if (itemsInContainer.TryGetValue(itemKey, out int amount))
+        {
+            return amount;
+        }
+        Debug.LogWarning($"Item {itemKey} not found in container.");
+        return 0; // or throw an exception if item not found
 
-
-
+    }
 
     //TODO add more functions to handle work container
 }

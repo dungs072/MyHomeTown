@@ -4,9 +4,9 @@ using static ManagerSingleton;
 [RequireComponent(typeof(Person))]
 public class TaskHandler : MonoBehaviour
 {
-    [SerializeField] private List<TaskData> tasksData;
+    [SerializeField] private List<TaskName> taskNames;
 
-    public List<TaskData> TasksData => tasksData;
+    public List<TaskName> TaskNames => taskNames;
     private int currentTaskIndex = 0;
 
     private Person person;
@@ -24,7 +24,7 @@ public class TaskHandler : MonoBehaviour
     {
         // temporary code to set initial tasks
         var taskManager = EmpireInstance.TaskManager;
-        var task = taskManager.TasksDict[tasksData[currentTaskIndex]];
+        var task = taskManager.TasksDict[taskNames[currentTaskIndex]];
         if (task == null) return;
         person.PersonStatus.CurrentTaskPerformer = new TaskPerformer();
         person.PersonStatus.CurrentTaskPerformer.SetTask(task);
@@ -34,7 +34,7 @@ public class TaskHandler : MonoBehaviour
     public void MoveNextTask()
     {
         currentTaskIndex++;
-        if (currentTaskIndex >= tasksData.Count)
+        if (currentTaskIndex >= taskNames.Count)
         {
             person.SwitchState(PersonState.IDLE);
             currentTaskIndex = 0;
@@ -44,7 +44,7 @@ public class TaskHandler : MonoBehaviour
         {
             person.PersonStatus.CurrentTaskPerformer = new TaskPerformer();
             var taskManager = EmpireInstance.TaskManager;
-            var task = taskManager.TasksDict[tasksData[currentTaskIndex]];
+            var task = taskManager.TasksDict[taskNames[currentTaskIndex]];
             person.PersonStatus.CurrentTaskPerformer.SetTask(task);
         }
     }

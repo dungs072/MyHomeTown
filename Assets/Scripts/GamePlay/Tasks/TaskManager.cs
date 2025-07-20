@@ -6,14 +6,12 @@ public class TaskManager : MonoBehaviour
     [Header("Tasks")]
     [SerializeField] private List<TaskData> tasksData;
 
-    private Dictionary<TaskData, Task> tasks;
+    private Dictionary<TaskName, Task> tasksDict;
     private ManagerSingleton singleton;
-
-    public List<TaskData> TasksData => tasksData;
-    public Dictionary<TaskData, Task> TasksDict => tasks;
+    public Dictionary<TaskName, Task> TasksDict => tasksDict;
     void Awake()
     {
-        tasks = new Dictionary<TaskData, Task>();
+        tasksDict = new Dictionary<TaskName, Task>();
         WorkContainerManager.OnWorkContainerAdded += HandleAddWorkContainer;
         WorkContainerManager.OnWorkContainerRemoved += HandleRemoveWorkContainer;
         TransformTasks();
@@ -55,36 +53,83 @@ public class TaskManager : MonoBehaviour
     {
         foreach (var taskData in tasksData)
         {
-            var task = new Task(taskData);
             var rootStepData = taskData.RootStep;
             if (rootStepData == null)
             {
                 Debug.LogWarning($"Task {taskData.name} has no root step. Skipping task creation.");
                 continue;
             }
-
+            var stack = new Stack<(Step, List<Step>)>();
             var rootStep = new Step(rootStepData);
-            task.PushBack(rootStep);
-            var childrenSteps = taskData.StepsDictionary[rootStepData];
-            while (childrenSteps.Count > 0)
+            stack.Push((rootStep, new List<Step>() { rootStep }));
+
+            while (stack.Count > 0)
             {
-                var tempSelectedStepData = childrenSteps[0];
-                var step = new Step(tempSelectedStepData);
-                task.PushBack(step);
-                childrenSteps = taskData.StepsDictionary[tempSelectedStepData];
+                var (currentStep, previousSteps) = stack.Pop();
+                var stepData = currentStep.Data;
+                var childrenSteps = taskData.StepsDictionary[stepData];
+
+                if (childrenSteps == null || childrenSteps.Count == 0)
+                {
+                    var taskName = GetTaskNameFromList(previousSteps);
+                    if (!tasksDict.ContainsKey(taskName))
+                    {
+                        var newTask = new Task(taskName);
+                        newTask.PushBack(previousSteps);
+                        tasksDict[taskName] = newTask;
+                        DebugTask(newTask);
+                    }
+                }
+                else
+                {
+                    for (int i = 0; i < childrenSteps.Count; i++)
+                    {
+                        var childStepData = childrenSteps[i];
+                        var childStep = new Step(childStepData);
+                        var newSteps = new List<Step>(previousSteps) { childStep };
+                        stack.Push((childStep, newSteps));
+                    }
+                }
+
             }
-            tasks.Add(taskData, task);
+
         }
     }
+    private TaskName GetTaskNameFromList(List<Step> steps)
+    {
+        if (steps == null || steps.Count == 0)
+        {
+            return TaskName.NONE;
+        }
+        foreach (var step in steps)
+        {
+            if (step.Data.TaskName != TaskName.NONE)
+            {
+                return step.Data.TaskName;
+            }
+        }
+        return TaskName.NONE;
+    }
+    private void DebugTask(Task task)
+    {
+        var stringBuilder = new System.Text.StringBuilder();
+        stringBuilder.AppendLine($"Task: {task.TaskName.ToName()}");
+        foreach (var step in task.Steps)
+        {
+            stringBuilder.Append($" Step: {step.Data.StepName},");
+        }
+        Debug.Log(stringBuilder.ToString());
+    }
+
     public void AddWorkContainer(WorkContainer workContainer)
     {
-        if (tasks.Count == 0)
+        if (tasksDict.Count == 0)
         {
             Debug.LogWarning("No task to add work container");
             return;
         }
 
-        foreach (var task in tasks)
+        foreach (var task in tasksDict)
         {
             foreach (var step in task.Value.Steps)
             {
@@ -98,12 +143,12 @@ public class TaskManager : MonoBehaviour
 
     public void RemoveWorkContainer(WorkContainer workContainer)
     {
-        if (tasks.Count == 0)
+        if (tasksDict.Count == 0)
         {
             Debug.LogWarning("No task to remove work container");
             return;
         }
-        foreach (var task in tasks)
+        foreach (var task in tasksDict)
         {
             foreach (var step in task.Value.Steps)
             {
@@ -115,11 +160,11 @@ public class TaskManager : MonoBehaviour
         }
     }
 
-    public Task GetTask(TaskData taskData)
+    public Task GetTask(TaskName taskName)
     {
-        if (tasks.ContainsKey(taskData))
+        if (tasksDict.ContainsKey(taskName))
         {
-            return tasks[taskData];
+            return tasksDict[taskName];
         }
         return null;
     }

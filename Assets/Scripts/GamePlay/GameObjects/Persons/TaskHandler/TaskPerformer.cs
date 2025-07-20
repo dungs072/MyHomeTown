@@ -12,6 +12,7 @@ public class TaskPerformer
     private int currentStepIndex = 0;
     public Task Task => task;
     public int CurrentStepIndex => currentStepIndex;
+    public List<StepPerformer> StepPerformers => stepPerformers;
 
     public StepPerformer GetCurrentStepPerformer()
     {

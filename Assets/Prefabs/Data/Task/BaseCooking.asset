@@ -23,8 +23,10 @@ MonoBehaviour:
     needItems: []
     children:
     - 03906ecf-e813-485a-8cc1-ab3efec98598
+    - 7dcefbb0-0a42-4819-8676-bd4e3ef01e14
+    taskName: 0
   - uniqueId: 03906ecf-e813-485a-8cc1-ab3efec98598
-    stepName: Cook Dish
+    stepName: Cook Dish 1
     description: This is a new step.
     workContainerType: 2
     duration: 5
@@ -35,6 +37,7 @@ MonoBehaviour:
       amount: 1
     children:
     - 7b23df6d-3532-4e45-ad71-a6bf535ada36
+    taskName: 1
   - uniqueId: 7b23df6d-3532-4e45-ad71-a6bf535ada36
     stepName: Put Food
     description: This is a new step.
@@ -42,3 +45,17 @@ MonoBehaviour:
     duration: 1
     needItems: []
     children: []
+    taskName: 0
+  - uniqueId: 7dcefbb0-0a42-4819-8676-bd4e3ef01e14
+    stepName: Cook Dish 2
+    description: This is a new step.
+    workContainerType: 2
+    duration: -0.68
+    needItems:
+    - itemKey: 2
+      amount: 1
+    - itemKey: 0
+      amount: 1
+    children:
+    - 7b23df6d-3532-4e45-ad71-a6bf535ada36
+    taskName: 2

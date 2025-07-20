@@ -29,6 +29,14 @@ PrefabInstance:
       value: Customer
       objectReference: {fileID: 0}
     - target: {fileID: 8791239991844329536, guid: dff38a08e0967c14b957a7fd50d5f49e, type: 3}
+      propertyPath: taskNames.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8791239991844329536, guid: dff38a08e0967c14b957a7fd50d5f49e, type: 3}
+      propertyPath: 'taskNames.Array.data[0]'
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 8791239991844329536, guid: dff38a08e0967c14b957a7fd50d5f49e, type: 3}
       propertyPath: 'tasksData.Array.data[0]'
       value: 
       objectReference: {fileID: 11400000, guid: 0888058731d4b0148bc1b924dfa7c37f, type: 2}
