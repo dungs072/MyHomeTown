@@ -27,17 +27,20 @@ public class Person : MonoBehaviour
     private AgentController agentController;
     private PersonStatus personStatus;
 
+    private BaseCharacter baseCharacter;
     public PersonData PersonData => personData;
     public InfoPersonUI InfoPersonUI => infoPersonUI;
 
 
     public AgentController AgentController => agentController;
     public PersonStatus PersonStatus => personStatus;
+    public BaseCharacter BaseCharacter => baseCharacter;
 
     void Awake()
     {
         singleton = EmpireInstance;
         agentController = GetComponent<AgentController>();
+        baseCharacter = GetComponent<BaseCharacter>();
     }
 
     void Start()
@@ -88,38 +91,4 @@ public class Person : MonoBehaviour
         OnPersonStatusChanged?.Invoke(this);
     }
 
-    public void TakeNeedItems(Dictionary<ItemKey, int> items)
-    {
-        var needItems = GetNeedItemsFromCurrentToEndStep();
-        if (needItems == null || needItems.Count == 0) return;
-        foreach (var needItem in needItems)
-        {
-            var itemKey = needItem.itemData.itemKey;
-            var requiredAmount = needItem.itemData.amount;
-            if (items.TryGetValue(itemKey, out int amount))
-            {
-                var gainedAmount = Mathf.Min(amount, requiredAmount);
-                needItem.gainedAmount += gainedAmount;
-                items[itemKey] -= gainedAmount;
-            }
-        }
-    }
-    //! must edit the way to get step of specific task
-    //! temporary get index = 0
-    private List<GatheredItem> GetNeedItemsFromCurrentToEndStep()
-    {
-        List<GatheredItem> items = new();
-        var currentTask = personStatus.CurrentTaskPerformer;
-        var currentStep = currentTask.GetCurrentStepPerformer();
-        if (currentStep == null) return null;
-        for (int i = currentTask.CurrentStepIndex; i < currentTask.StepPerformers.Count; i++)
-        {
-            var step = currentTask.StepPerformers[i];
-            if (step == null) continue;
-            var stepNeedItems = step.NeedItems;
-            if (stepNeedItems == null || stepNeedItems.Count == 0) continue;
-            items.AddRange(stepNeedItems);
-        }
-        return items;
-    }
 }

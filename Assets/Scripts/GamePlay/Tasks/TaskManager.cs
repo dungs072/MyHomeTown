@@ -6,14 +6,12 @@ public class TaskManager : MonoBehaviour
     [Header("Tasks")]
     [SerializeField] private List<TaskData> tasksData;
 
-    private Dictionary<TaskData, Task> tasks;
+    private Dictionary<TaskName, Task> tasksDict;
     private ManagerSingleton singleton;
-
-    public List<TaskData> TasksData => tasksData;
-    public Dictionary<TaskData, Task> TasksDict => tasks;
+    public Dictionary<TaskName, Task> TasksDict => tasksDict;
     void Awake()
     {
-        tasks = new Dictionary<TaskData, Task>();
+        tasksDict = new Dictionary<TaskName, Task>();
         WorkContainerManager.OnWorkContainerAdded += HandleAddWorkContainer;
         WorkContainerManager.OnWorkContainerRemoved += HandleRemoveWorkContainer;
         TransformTasks();
@@ -62,29 +60,39 @@ public class TaskManager : MonoBehaviour
                 Debug.LogWarning($"Task {taskData.name} has no root step. Skipping task creation.");
                 continue;
             }
-
+            var queue = new Queue<Step>();
             var rootStep = new Step(rootStepData);
+            queue.Enqueue(rootStep);
             task.PushBack(rootStep);
-            var childrenSteps = taskData.StepsDictionary[rootStepData];
-            while (childrenSteps.Count > 0)
+
+            while (queue.Count > 0)
             {
-                var tempSelectedStepData = childrenSteps[0];
-                var step = new Step(tempSelectedStepData);
-                task.PushBack(step);
-                childrenSteps = taskData.StepsDictionary[tempSelectedStepData];
+                var currentStep = queue.Dequeue();
+                var stepData = currentStep.Data;
+                var childrenSteps = taskData.StepsDictionary[stepData];
+
+                if (stepData.TaskName != TaskName.NONE)
+                {
+
+                }
+                foreach (var childStepData in childrenSteps)
+                {
+                    var childStep = new Step(childStepData);
+                    queue.Enqueue(childStep);
+                }
             }
-            tasks.Add(taskData, task);
+
         }
     }
     public void AddWorkContainer(WorkContainer workContainer)
     {
-        if (tasks.Count == 0)
+        if (tasksDict.Count == 0)
         {
             Debug.LogWarning("No task to add work container");
             return;
         }
 
-        foreach (var task in tasks)
+        foreach (var task in tasksDict)
         {
             foreach (var step in task.Value.Steps)
             {
@@ -98,12 +106,12 @@ public class TaskManager : MonoBehaviour
 
     public void RemoveWorkContainer(WorkContainer workContainer)
     {
-        if (tasks.Count == 0)
+        if (tasksDict.Count == 0)
         {
             Debug.LogWarning("No task to remove work container");
             return;
         }
-        foreach (var task in tasks)
+        foreach (var task in tasksDict)
         {
             foreach (var step in task.Value.Steps)
             {
@@ -115,11 +123,11 @@ public class TaskManager : MonoBehaviour
         }
     }
 
-    public Task GetTask(TaskData taskData)
+    public Task GetTask(TaskName taskName)
     {
-        if (tasks.ContainsKey(taskData))
+        if (tasksDict.ContainsKey(taskName))
         {
-            return tasks[taskData];
+            return tasksDict[taskName];
         }
         return null;
     }

@@ -286,16 +286,20 @@ public class TaskGeneratorWindow : EditorWindow
         var workContainerRect = new Rect(nodeRect.x + 10, nodeRect.y + 130, nodeRect.width - 20, 18);
         var workContainerType = (WorkContainerType)EditorGUI.EnumPopup(workContainerRect, "Container", node.WorkContainerType);
 
+        var taskNameRect = new Rect(nodeRect.x + 10, nodeRect.y + 150, nodeRect.width - 20, 18);
+        var taskName = (TaskName)EditorGUI.EnumPopup(taskNameRect, "Task", node.TaskName);
+
         if (EditorGUI.EndChangeCheck())
         {
             node.StepName = stepName;
             node.Description = description;
             node.Duration = duration;
             node.WorkContainerType = workContainerType;
+            node.TaskName = taskName;
         }
 
 
-        float itemListStartY = nodeRect.y + 160;
+        float itemListStartY = nodeRect.y + 180;
         // Draw each need item
         for (int i = 0; i < node.NeedItems.Count; i++)
         {

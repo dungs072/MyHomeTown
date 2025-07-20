@@ -17,7 +17,7 @@ public class StepData
     [SerializeField] private float duration = 0;
     [SerializeField] private List<ItemRequirement> needItems = new();
     [SerializeField] private List<string> children = new List<string>();
-
+    [SerializeField] private TaskName taskName = TaskName.NONE;
     public StepData()
     {
         uniqueId = Guid.NewGuid().ToString();
@@ -45,6 +45,11 @@ public class StepData
     }
     public List<ItemRequirement> NeedItems => needItems;
     public List<string> Children => children;
+    public TaskName TaskName
+    {
+        get => taskName;
+        set => taskName = value;
+    }
 
     //? for editor purposes only
     public Vector2 Position { get; set; }
