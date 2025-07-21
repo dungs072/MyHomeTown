@@ -39,8 +39,20 @@ public class TaskCoordinator : MonoBehaviour
         var currentStep = taskPerformer.GetCurrentStepPerformer();
         var selectedWK = GetSuitableWorkContainer(currentStep.Step.Data.WorkContainerType, person);
         if (selectedWK == null) return;
-        selectedWK.AddPersonToWorkContainer(person);
-        var targetPosition = selectedWK.GetWaitingPosition(person);
+        var isWorkHereInfinite = currentStep.IsWorkHereInfinite();
+        var targetPosition = Vector3.zero;
+        if (isWorkHereInfinite)
+        {
+            // Handle infinite work here
+            selectedWK.SetServerPerson(person);
+            targetPosition = selectedWK.GetServerPosition();
+        }
+        else
+        {
+
+            selectedWK.AddPersonToWorkContainer(person);
+            targetPosition = selectedWK.GetWaitingPosition(person);
+        }
         if (!agent.IsReachedDestination(targetPosition))
         {
             agent.SetDestination(targetPosition);
@@ -101,7 +113,9 @@ public class TaskCoordinator : MonoBehaviour
         if (canWork)
         {
             var currentProgress = currentStep.Progress;
-            currentStep.SetProgress(currentProgress + Time.deltaTime);
+            var isWorkHereInfinite = currentStep.IsWorkHereInfinite();
+            var newProgress = currentProgress + (isWorkHereInfinite ? 0 : Time.deltaTime);
+            currentStep.SetProgress(newProgress);
             person.SwitchState(PersonState.WORK);
         }
         else

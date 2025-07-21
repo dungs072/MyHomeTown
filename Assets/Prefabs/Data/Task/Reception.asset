@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7b0301476ecce2448be8e5276b4c50c4, type: 3}
+  m_Name: Reception
+  m_EditorClassIdentifier: 
+  taskName: 
+  description: 
+  steps:
+  - uniqueId: f0dab8be-83b8-443a-8b39-eda2bd8f5a29
+    stepName: Reception
+    description: This is a default step.
+    workContainerType: 5
+    duration: -1
+    needItems: []
+    needPermissionToGiveItems: 0
+    children: []
+    taskName: 5

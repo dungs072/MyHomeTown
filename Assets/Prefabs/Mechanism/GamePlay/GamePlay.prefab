@@ -580,6 +580,7 @@ MonoBehaviour:
   agentPrefabs:
   - {fileID: 3134241261546712147, guid: dfbf1df01e4154f4f8186e1d14de787e, type: 3}
   - {fileID: 5537771555917314436, guid: b26dfd403b242f64b9863fef6d7ab1ac, type: 3}
+  - {fileID: 5537771555917314436, guid: f7bc3b51a3c73a7498827b9e373c2541, type: 3}
   target: {fileID: 0}
 --- !u!114 &2569536051313611732
 MonoBehaviour:
@@ -1040,6 +1041,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: TaskManager
       objectReference: {fileID: 0}
+    - target: {fileID: 3441452637689545170, guid: 71b34235b8fb00245bdb24777ddf3e92, type: 3}
+      propertyPath: tasksData.Array.size
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 3441452637689545170, guid: 71b34235b8fb00245bdb24777ddf3e92, type: 3}
+      propertyPath: 'tasksData.Array.data[2]'
+      value: 
+      objectReference: {fileID: 11400000, guid: a46802bc3064c1a4d8faddbe7fe16530, type: 2}
     - target: {fileID: 7489488773730646356, guid: 71b34235b8fb00245bdb24777ddf3e92, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0

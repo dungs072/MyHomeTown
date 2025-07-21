@@ -23,6 +23,10 @@ public class GamePlay : MonoBehaviour
     void Start()
     {
         SwitchGameState(GamePlayState.PLAYING);
+        //! temporary code to spawn agents
+        var agentManager = EmpireInstance.AgentManager;
+
+        agentManager.SpawnAgents(AgentType.RECEPTIONIST, 1);
     }
 
     void Update()

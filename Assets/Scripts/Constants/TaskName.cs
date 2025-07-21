@@ -5,6 +5,7 @@ public enum TaskName
     DISH_2 = 2,
     DISH_3 = 3,
     DINNER = 4,
+    RECEPTION = 5,
 }
 
 public static class TaskNameParser
@@ -17,7 +18,7 @@ public static class TaskNameParser
             TaskName.DISH_2 => "Dish 2",
             TaskName.DISH_3 => "Dish 3",
             TaskName.DINNER => "Dinner",
-
+            TaskName.RECEPTION => "Reception",
             _ => "None"
         };
     }

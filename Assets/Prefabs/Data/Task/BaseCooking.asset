@@ -21,6 +21,8 @@ MonoBehaviour:
     workContainerType: 1
     duration: 1
     needItems: []
+    needPermissionToGiveItems: 0
+    possibleCreateItems: []
     children:
     - 03906ecf-e813-485a-8cc1-ab3efec98598
     - 7dcefbb0-0a42-4819-8676-bd4e3ef01e14
@@ -35,6 +37,8 @@ MonoBehaviour:
       amount: 1
     - itemKey: 1
       amount: 1
+    needPermissionToGiveItems: 0
+    possibleCreateItems: []
     children:
     - 7b23df6d-3532-4e45-ad71-a6bf535ada36
     taskName: 1
@@ -44,6 +48,8 @@ MonoBehaviour:
     workContainerType: 5
     duration: 1
     needItems: []
+    needPermissionToGiveItems: 0
+    possibleCreateItems: []
     children: []
     taskName: 0
   - uniqueId: 7dcefbb0-0a42-4819-8676-bd4e3ef01e14
@@ -56,6 +62,8 @@ MonoBehaviour:
       amount: 1
     - itemKey: 0
       amount: 1
+    needPermissionToGiveItems: 0
+    possibleCreateItems: []
     children:
     - 7b23df6d-3532-4e45-ad71-a6bf535ada36
     taskName: 2

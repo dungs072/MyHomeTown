@@ -6,10 +6,12 @@ public class WorkContainer : MonoBehaviour
 {
     // handle task
     [SerializeField] private WorkContainerType workContainerType;
+    [SerializeField] private Transform serverTransform;
     public WorkContainerType WorkContainerType => workContainerType;
     private List<Person> personsWantToWorkHere = new();
     public List<Person> PersonsWantToWorkHere => personsWantToWorkHere;
-
+    private Person serverPerson;
+    public Person ServerPerson => serverPerson;
     // handle items
     private Dictionary<ItemKey, int> itemsInContainer = new();
     public Dictionary<ItemKey, int> ItemsInContainer => itemsInContainer;
@@ -59,6 +61,21 @@ public class WorkContainer : MonoBehaviour
         });
     }
 
+
+    public Vector3 GetServerPosition()
+    {
+        if (serverTransform != null)
+        {
+            return serverTransform.position;
+        }
+        Debug.LogWarning("Server transform is not set for this work container.");
+        return transform.position; // Fallback to the container's position
+    }
+    public void SetServerPerson(Person person)
+    {
+        serverPerson = person;
+
+    }
 
 
     private void OnDrawGizmos()

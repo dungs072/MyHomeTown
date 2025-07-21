@@ -10,11 +10,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 7458078509174832313, guid: dff38a08e0967c14b957a7fd50d5f49e, type: 3}
       propertyPath: m_Name
-      value: Server
+      value: Receptionist
       objectReference: {fileID: 0}
     - target: {fileID: 8066138087326353846, guid: dff38a08e0967c14b957a7fd50d5f49e, type: 3}
       propertyPath: agentType
-      value: 2
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 8791239991844329536, guid: dff38a08e0967c14b957a7fd50d5f49e, type: 3}
       propertyPath: taskNames.Array.size
@@ -22,7 +22,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8791239991844329536, guid: dff38a08e0967c14b957a7fd50d5f49e, type: 3}
       propertyPath: 'taskNames.Array.data[0]'
-      value: 1
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 9198347967470949743, guid: dff38a08e0967c14b957a7fd50d5f49e, type: 3}
       propertyPath: m_LocalPosition.x

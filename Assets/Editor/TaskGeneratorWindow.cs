@@ -289,6 +289,9 @@ public class TaskGeneratorWindow : EditorWindow
         var taskNameRect = new Rect(nodeRect.x + 10, nodeRect.y + 150, nodeRect.width - 20, 18);
         var taskName = (TaskName)EditorGUI.EnumPopup(taskNameRect, "Task", node.TaskName);
 
+        var needPermissionRect = new Rect(nodeRect.x + 10, nodeRect.y + 170, nodeRect.width - 20, 18);
+        var needPermissionToGiveItems = EditorGUI.Toggle(needPermissionRect, "Need Permission to Give Items", node.NeedPermissionToGiveItems);
+
         if (EditorGUI.EndChangeCheck())
         {
             node.StepName = stepName;
@@ -296,10 +299,11 @@ public class TaskGeneratorWindow : EditorWindow
             node.Duration = duration;
             node.WorkContainerType = workContainerType;
             node.TaskName = taskName;
+            node.NeedPermissionToGiveItems = needPermissionToGiveItems;
         }
 
 
-        float itemListStartY = nodeRect.y + 180;
+        float itemListStartY = nodeRect.y + 190;
         // Draw each need item
         for (int i = 0; i < node.NeedItems.Count; i++)
         {
@@ -334,6 +338,41 @@ public class TaskGeneratorWindow : EditorWindow
             }
         }
 
+        float possibleItemListStartY = nodeRect.y + 190;
+        // Draw each possible create item
+        for (int i = 0; i < node.PossibleCreateItems.Count; i++)
+        {
+            var item = node.PossibleCreateItems[i];
+            float itemY = possibleItemListStartY + i * (itemFieldHeight + itemFieldPadding);
+
+            // Item Key Enum
+            var keyRect = new Rect(nodeRect.x + 10, itemY, nodeRect.width / 2 - 20, itemFieldHeight);
+            var newKey = (ItemKey)EditorGUI.EnumPopup(keyRect, item.itemKey);
+
+            // Amount Field
+            var amountRect = new Rect(nodeRect.x + nodeRect.width / 2, itemY, nodeRect.width / 2 - 30, itemFieldHeight);
+            var newAmount = EditorGUI.IntField(amountRect, item.amount);
+
+            // Delete button
+            var deleteRect = new Rect(nodeRect.x + nodeRect.width - 20, itemY, 16, itemFieldHeight);
+            if (GUI.Button(deleteRect, "X"))
+            {
+                Undo.RecordObject(selectedTask, "Remove Possible Create Item");
+                node.PossibleCreateItems.RemoveAt(i);
+                EditorUtility.SetDirty(selectedTask);
+                break; // prevent layout issues after modifying the list
+            }
+
+            // Apply changes
+            if (newKey != item.itemKey || newAmount != item.amount)
+            {
+                Undo.RecordObject(selectedTask, "Edit Possible Create Item");
+                item.itemKey = newKey;
+                item.amount = newAmount;
+                EditorUtility.SetDirty(selectedTask);
+            }
+        }
+
         // Add button below list
         var addButtonY = itemListStartY + node.NeedItems.Count * (itemFieldHeight + itemFieldPadding);
         var addButtonRect = new Rect(nodeRect.x + 10, addButtonY, nodeRect.width - 20, itemFieldHeight);
@@ -341,6 +380,15 @@ public class TaskGeneratorWindow : EditorWindow
         {
             Undo.RecordObject(selectedTask, "Add Need Item");
             node.NeedItems.Add(new ItemRequirement());
+            EditorUtility.SetDirty(selectedTask);
+        }
+        // Add button for possible create items
+        var addPossibleButtonY = possibleItemListStartY + node.PossibleCreateItems.Count * (itemFieldHeight + itemFieldPadding);
+        var addPossibleButtonRect = new Rect(nodeRect.x + 10, addPossibleButtonY, nodeRect.width - 20, itemFieldHeight);
+        if (GUI.Button(addPossibleButtonRect, "Add Possible Create Item"))
+        {
+            Undo.RecordObject(selectedTask, "Add Possible Create Item");
+            node.PossibleCreateItems.Add(new ItemRequirement());
             EditorUtility.SetDirty(selectedTask);
         }
 
@@ -351,7 +399,7 @@ public class TaskGeneratorWindow : EditorWindow
     {
         float itemFieldHeight = 20f;
         float itemFieldPadding = 2f;
-        float startY = nodeRect.y + 160 + node.NeedItems.Count * (itemFieldHeight + itemFieldPadding) + 22f; // 22 = space for Add button
+        float startY = nodeRect.y + 190 + node.NeedItems.Count * (itemFieldHeight + itemFieldPadding) + 22f; // 22 = space for Add button
 
         DrawLinkFunction(node, nodeRect, startY);
         DrawCreateChildFunction(node, nodeRect, startY + 20f);
