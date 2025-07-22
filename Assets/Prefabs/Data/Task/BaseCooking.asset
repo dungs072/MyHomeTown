@@ -52,15 +52,13 @@ MonoBehaviour:
     stepName: Put Food
     description: This is a new step.
     workContainerType: 5
-    duration: 12.05
+    duration: 1
     needItems: []
     needPermissionToGiveItems: 0
-    possibleCreateItems:
-    - itemKey: 0
-      amount: 0
+    possibleCreateItems: []
     children: []
     taskName: 0
-    position: {x: 786.7287, y: 120.35741}
+    position: {x: 774.72864, y: 81.02406}
     isMinimized: 0
   - uniqueId: 7dcefbb0-0a42-4819-8676-bd4e3ef01e14
     stepName: Cook Dish 2
