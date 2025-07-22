@@ -40,7 +40,7 @@ public class BaseCharacter : MonoBehaviour
         gameObject.SetActive(false);
     }
 
-    public void AddOwningObject(ItemKey key, int amount)
+    public void AddOwningItem(ItemKey key, int amount)
     {
         if (owningItemsDict.ContainsKey(key))
         {
@@ -54,15 +54,24 @@ public class BaseCharacter : MonoBehaviour
 
         UpdateDisplayInfo();
     }
-    public void RemoveOwningObject(ItemKey key, int amount)
+    public void AddOwningItems(List<ItemRequirement> items)
+    {
+        if (items == null || items.Count == 0) return;
+        foreach (var item in items)
+        {
+            if (item == null) continue;
+            AddOwningItem(item.itemKey, item.amount);
+        }
+    }
+    public void RemoveOwningItem(ItemKey key, int amount)
     {
         if (owningItemsDict.ContainsKey(key))
         {
             owningItemsDict[key] -= amount;
-            owningItemsList.Remove(key);
             if (owningItemsDict[key] <= 0)
             {
                 owningItemsDict.Remove(key);
+                owningItemsList.Remove(key);
             }
 
         }
@@ -91,7 +100,7 @@ public class BaseCharacter : MonoBehaviour
             if (items.TryGetValue(itemKey, out int amount))
             {
                 var gainedAmount = Mathf.Min(amount, requiredAmount);
-                AddOwningObject(itemKey, gainedAmount);
+                AddOwningItem(itemKey, gainedAmount);
                 items[itemKey] -= gainedAmount;
             }
         }

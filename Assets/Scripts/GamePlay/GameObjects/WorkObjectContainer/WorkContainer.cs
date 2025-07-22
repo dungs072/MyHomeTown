@@ -6,10 +6,14 @@ public class WorkContainer : MonoBehaviour
 {
     // handle task
     [SerializeField] private WorkContainerType workContainerType;
+    [SerializeField] private List<ItemKey> possibleContainItems = new();
+    [SerializeField] private Transform serverTransform;
+    [SerializeField] private Transform puttingTransform;
     public WorkContainerType WorkContainerType => workContainerType;
     private List<Person> personsWantToWorkHere = new();
     public List<Person> PersonsWantToWorkHere => personsWantToWorkHere;
-
+    private Person serverPerson;
+    public Person ServerPerson => serverPerson;
     // handle items
     private Dictionary<ItemKey, int> itemsInContainer = new();
     public Dictionary<ItemKey, int> ItemsInContainer => itemsInContainer;
@@ -37,7 +41,7 @@ public class WorkContainer : MonoBehaviour
     public bool IsPersonUse(Person person)
     {
         var firstPerson = personsWantToWorkHere[0];
-        return firstPerson == person;
+        return firstPerson == person || serverPerson == person;
     }
     public Vector3 GetWaitingPosition(Person person)
     {
@@ -60,6 +64,34 @@ public class WorkContainer : MonoBehaviour
     }
 
 
+    public Vector3 GetServerPosition()
+    {
+        if (serverTransform != null)
+        {
+            return serverTransform.position;
+        }
+        Debug.LogWarning("Server transform is not set for this work container.");
+        return transform.position; // Fallback to the container's position
+    }
+    public void SetServerPerson(Person person)
+    {
+        serverPerson = person;
+    }
+
+    public Vector3 GetPuttingPosition()
+    {
+        if (puttingTransform != null)
+        {
+            return puttingTransform.position;
+        }
+        Debug.LogWarning("Putting transform is not set for this work container.");
+        return transform.position; // Fallback to the container's position
+    }
+
+    public bool IsPuttingStation()
+    {
+        return workContainerType == WorkContainerType.PUTTING_STATION;
+    }
 
     private void OnDrawGizmos()
     {
@@ -92,6 +124,11 @@ public class WorkContainer : MonoBehaviour
         {
             itemsInContainer[itemKey] = amount;
         }
+    }
+    public void AddPossibleItemToContainer(ItemKey itemKey, int amount)
+    {
+        if (!possibleContainItems.Contains(itemKey)) return;
+        AddItemToContainer(itemKey, amount);
     }
     public int GetItemFromContainer(ItemKey itemKey)
     {

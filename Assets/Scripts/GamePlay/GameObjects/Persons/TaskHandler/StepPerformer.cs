@@ -91,6 +91,9 @@ public class StepPerformer
         }
         return true;
     }
-
+    public bool IsWorkHereInfinite()
+    {
+        return step.Data.Duration == -1;
+    }
 
 }

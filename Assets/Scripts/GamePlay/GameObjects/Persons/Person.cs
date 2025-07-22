@@ -79,6 +79,8 @@ public class Person : MonoBehaviour
                 return new Color(0.2f, 0.7f, 1f); // Example: light blue
             case AgentType.SERVER:
                 return Color.yellow;
+            case AgentType.RECEPTIONIST:
+                return Color.green;
             // Add more cases as needed
             default:
                 return Color.white;

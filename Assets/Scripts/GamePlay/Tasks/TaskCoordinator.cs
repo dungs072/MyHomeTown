@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using Unity.Entities.UniversalDelegates;
+using Unity.VisualScripting;
 using UnityEngine;
 using static ManagerSingleton;
 public class TaskCoordinator : MonoBehaviour
@@ -39,8 +41,7 @@ public class TaskCoordinator : MonoBehaviour
         var currentStep = taskPerformer.GetCurrentStepPerformer();
         var selectedWK = GetSuitableWorkContainer(currentStep.Step.Data.WorkContainerType, person);
         if (selectedWK == null) return;
-        selectedWK.AddPersonToWorkContainer(person);
-        var targetPosition = selectedWK.GetWaitingPosition(person);
+        var targetPosition = GetTargetPosition(currentStep, selectedWK, person);
         if (!agent.IsReachedDestination(targetPosition))
         {
             agent.SetDestination(targetPosition);
@@ -53,8 +54,16 @@ public class TaskCoordinator : MonoBehaviour
         {
             var itemsInContainer = selectedWK.ItemsInContainer;
             var baseCharacter = person.BaseCharacter;
+            var createdItems = currentStep.Step.Data.PossibleCreateItems;
             PutNeedItemsToDoStep(person, currentStep);
+            PutPossibleItemToContainer(baseCharacter, selectedWK);
+
             baseCharacter.TakeNeedItems(itemsInContainer);
+            // items are created by finishing the step
+            baseCharacter.AddOwningItems(createdItems);
+
+
+
             taskPerformer.MoveToNextStep();
             selectedWK.RemovePersonFromWorkContainer(person);
         }
@@ -62,6 +71,28 @@ public class TaskCoordinator : MonoBehaviour
         {
             taskHandler.MoveNextTask();
         }
+    }
+    private Vector3 GetTargetPosition(StepPerformer step, WorkContainer selectedWK, Person person)
+    {
+        var isWorkHereInfinite = step.IsWorkHereInfinite();
+        var targetPosition = Vector3.zero;
+        var isPuttingStation = step.Step.Data.WorkContainerType == WorkContainerType.PUTTING_STATION; ;
+        if (isWorkHereInfinite)
+        {
+            // Handle infinite work here
+            selectedWK.SetServerPerson(person);
+            targetPosition = selectedWK.GetServerPosition();
+        }
+        else if (isPuttingStation && person.TryGetComponent(out ServerCharacter server))
+        {
+            targetPosition = selectedWK.GetPuttingPosition();
+        }
+        else
+        {
+            selectedWK.AddPersonToWorkContainer(person);
+            targetPosition = selectedWK.GetWaitingPosition(person);
+        }
+        return targetPosition;
     }
     private bool HasEnoughItemToDoStep(Person person, StepPerformer step)
     {
@@ -92,16 +123,35 @@ public class TaskCoordinator : MonoBehaviour
             if (!baseCharacter.OwningItemsDict.TryGetValue(itemKey, out int amount)) return;
             var requiredAmount = needItem.itemData.amount;
             if (amount < requiredAmount) return;
-            baseCharacter.RemoveOwningObject(itemKey, requiredAmount);
+            baseCharacter.RemoveOwningItem(itemKey, requiredAmount);
+        }
+    }
+    private void PutPossibleItemToContainer(BaseCharacter baseCharacter, WorkContainer selectedWK)
+    {
+        if (!selectedWK.IsPuttingStation()) return;
+        var itemsToPut = new List<ItemKey>(baseCharacter.OwningItemsList);
+        foreach (var itemKey in itemsToPut)
+        {
+            var amount = baseCharacter.OwningItemsDict[itemKey];
+            selectedWK.AddPossibleItemToContainer(itemKey, amount);
+            baseCharacter.RemoveOwningItem(itemKey, amount);
         }
     }
     private void HandleStep(Person person, WorkContainer selectedWK, StepPerformer currentStep)
     {
         var canWork = selectedWK.IsPersonUse(person);
-        if (canWork)
+        var isPuttingStation = selectedWK.IsPuttingStation();
+        var isServer = person.TryGetComponent(out ServerCharacter server);
+        var isServerPuttingItems = isPuttingStation && isServer;
+        if (canWork || isServerPuttingItems)
         {
             var currentProgress = currentStep.Progress;
-            currentStep.SetProgress(currentProgress + Time.deltaTime);
+            var isWorkHereInfinite = currentStep.IsWorkHereInfinite();
+            if (!isWorkHereInfinite)
+            {
+                var newProgress = currentProgress + Time.deltaTime;
+                currentStep.SetProgress(newProgress);
+            }
             person.SwitchState(PersonState.WORK);
         }
         else

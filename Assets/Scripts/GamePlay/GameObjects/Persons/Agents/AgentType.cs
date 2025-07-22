@@ -4,8 +4,9 @@ using System.Linq;
 
 public enum AgentType
 {
-    CUSTOMER,
-    SERVER
+    CUSTOMER = 1,
+    SERVER = 2,
+    RECEPTIONIST = 3,
 }
 public class AgentTypeList
 {

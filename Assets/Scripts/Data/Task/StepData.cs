@@ -16,6 +16,8 @@ public class StepData
     [SerializeField] private WorkContainerType workContainerType;
     [SerializeField] private float duration = 0;
     [SerializeField] private List<ItemRequirement> needItems = new();
+    [SerializeField] private bool needPermissionToGiveItems = false;
+    [SerializeField] private List<ItemRequirement> possibleCreateItems = new();
     [SerializeField] private List<string> children = new List<string>();
     [SerializeField] private TaskName taskName = TaskName.NONE;
     public StepData()
@@ -44,6 +46,12 @@ public class StepData
         set => workContainerType = value;
     }
     public List<ItemRequirement> NeedItems => needItems;
+    public bool NeedPermissionToGiveItems
+    {
+        get => needPermissionToGiveItems;
+        set => needPermissionToGiveItems = value;
+    }
+    public List<ItemRequirement> PossibleCreateItems => possibleCreateItems;
     public List<string> Children => children;
     public TaskName TaskName
     {
@@ -52,7 +60,8 @@ public class StepData
     }
 
     //? for editor purposes only
-    public Vector2 Position { get; set; }
+    public Vector2 position = Vector2.zero;
+    public bool isMinimized = false;
 
     public bool TryToAddChild(string childId)
     {
