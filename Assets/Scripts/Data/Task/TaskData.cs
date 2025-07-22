@@ -83,7 +83,7 @@ public class TaskData : ScriptableObject
             Description = "This is a new step.",
             Duration = 0,
             WorkContainerType = WorkContainerType.COOKING_STATION,
-            Position = position
+            position = position
         };
         AddStep(newStep);
         if (parentStep != null)

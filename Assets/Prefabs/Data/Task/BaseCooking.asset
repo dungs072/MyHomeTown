@@ -27,6 +27,8 @@ MonoBehaviour:
     - 03906ecf-e813-485a-8cc1-ab3efec98598
     - 7dcefbb0-0a42-4819-8676-bd4e3ef01e14
     taskName: 0
+    position: {x: 49.127136, y: 264.08246}
+    isMinimized: 1
   - uniqueId: 03906ecf-e813-485a-8cc1-ab3efec98598
     stepName: Cook Dish 1
     description: This is a new step.
@@ -38,20 +40,28 @@ MonoBehaviour:
     - itemKey: 1
       amount: 1
     needPermissionToGiveItems: 0
-    possibleCreateItems: []
+    possibleCreateItems:
+    - itemKey: 3
+      amount: 1
     children:
     - 7b23df6d-3532-4e45-ad71-a6bf535ada36
     taskName: 1
+    position: {x: 357.64975, y: 51.93815}
+    isMinimized: 1
   - uniqueId: 7b23df6d-3532-4e45-ad71-a6bf535ada36
     stepName: Put Food
     description: This is a new step.
     workContainerType: 5
-    duration: 1
+    duration: 12.05
     needItems: []
     needPermissionToGiveItems: 0
-    possibleCreateItems: []
+    possibleCreateItems:
+    - itemKey: 0
+      amount: 0
     children: []
     taskName: 0
+    position: {x: 786.7287, y: 120.35741}
+    isMinimized: 0
   - uniqueId: 7dcefbb0-0a42-4819-8676-bd4e3ef01e14
     stepName: Cook Dish 2
     description: This is a new step.
@@ -63,7 +73,11 @@ MonoBehaviour:
     - itemKey: 0
       amount: 1
     needPermissionToGiveItems: 0
-    possibleCreateItems: []
+    possibleCreateItems:
+    - itemKey: 4
+      amount: 1
     children:
     - 7b23df6d-3532-4e45-ad71-a6bf535ada36
     taskName: 2
+    position: {x: 369.81458, y: 374.4673}
+    isMinimized: 1

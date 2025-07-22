@@ -60,7 +60,8 @@ public class StepData
     }
 
     //? for editor purposes only
-    public Vector2 Position { get; set; }
+    public Vector2 position = Vector2.zero;
+    public bool isMinimized = false;
 
     public bool TryToAddChild(string childId)
     {

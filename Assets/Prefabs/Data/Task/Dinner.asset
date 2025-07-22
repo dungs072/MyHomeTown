@@ -22,8 +22,11 @@ MonoBehaviour:
     duration: 12
     needItems: []
     needPermissionToGiveItems: 0
+    possibleCreateItems: []
     children: []
     taskName: 0
+    position: {x: 431.99997, y: 105.33334}
+    isMinimized: 1
   - uniqueId: 504d8583-10ca-4aa1-94fc-e56b2389c4f7
     stepName: Take Food
     description: 
@@ -33,6 +36,9 @@ MonoBehaviour:
     - itemKey: 3
       amount: 1
     needPermissionToGiveItems: 1
+    possibleCreateItems: []
     children:
     - 084ba371-40e5-40c0-9e85-d91b6f6e4d74
     taskName: 4
+    position: {x: 45.33333, y: 107.33334}
+    isMinimized: 1
