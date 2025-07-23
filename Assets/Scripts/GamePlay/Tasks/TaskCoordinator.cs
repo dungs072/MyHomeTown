@@ -39,7 +39,11 @@ public class TaskCoordinator : MonoBehaviour
         var taskPerformer = personStatus.CurrentTaskPerformer;
         if (taskPerformer == null || taskPerformer.IsFinished()) return;
         var currentStep = taskPerformer.GetCurrentStepPerformer();
-        var selectedWK = GetSuitableWorkContainer(currentStep.Step.Data.WorkContainerType, person);
+        WorkContainer selectedWK = personStatus.CurrentWorkContainer;
+        if (selectedWK == null)
+        {
+            selectedWK = GetSuitableWorkContainer(currentStep.Step.Data.WorkContainerType, person);
+        }
         if (selectedWK == null) return;
         var targetPosition = GetTargetPosition(currentStep, selectedWK, person);
         if (!agent.IsReachedDestination(targetPosition))
@@ -48,14 +52,14 @@ public class TaskCoordinator : MonoBehaviour
             person.SwitchState(PersonState.MOVE);
             return;
         }
-        if (!HasEnoughItemToDoStep(person, currentStep)) return;
+        if (!TryToMeetConditionsToDoStep(person, currentStep, selectedWK)) return;
         HandleStep(person, selectedWK, currentStep);
         if (currentStep.IsFinished)
         {
             var itemsInContainer = selectedWK.ItemsInContainer;
             var baseCharacter = person.BaseCharacter;
             var createdItems = currentStep.Step.Data.PossibleCreateItems;
-            PutNeedItemsToDoStep(person, currentStep);
+            PutNeedItemsToDoStep(person, currentStep, selectedWK);
             PutPossibleItemToContainer(baseCharacter, selectedWK);
 
             baseCharacter.TakeNeedItems(itemsInContainer);
@@ -66,6 +70,7 @@ public class TaskCoordinator : MonoBehaviour
 
             taskPerformer.MoveToNextStep();
             selectedWK.RemovePersonFromWorkContainer(person);
+            personStatus.CurrentWorkContainer = null;
         }
         if (taskPerformer.IsFinished())
         {
@@ -94,37 +99,72 @@ public class TaskCoordinator : MonoBehaviour
         }
         return targetPosition;
     }
-    private bool HasEnoughItemToDoStep(Person person, StepPerformer step)
+    private bool TryToMeetConditionsToDoStep(Person person, StepPerformer step, WorkContainer selectedWK)
     {
         var baseCharacter = person.BaseCharacter;
-        var isEnough = true;
-        if (step.NeedItems == null || step.NeedItems.Count == 0) return isEnough;
-        foreach (var needItem in step.NeedItems)
+        var needItems = step.NeedItems;
+        if (needItems == null || needItems.Count == 0) return true;
+        if (baseCharacter is ServerCharacter)
         {
-            var itemKey = needItem.itemData.itemKey;
-            if (!baseCharacter.OwningItemsDict.ContainsKey(itemKey) ||
-                baseCharacter.OwningItemsDict[itemKey] < needItem.itemData.amount)
+            foreach (var needItem in needItems)
             {
-                isEnough = false;
-                break;
+                var itemKey = needItem.itemData.itemKey;
+                if (!baseCharacter.OwningItemsDict.ContainsKey(itemKey) ||
+                    baseCharacter.OwningItemsDict[itemKey] < needItem.itemData.amount)
+                {
+                    return false;
+                }
             }
+            return true;
         }
-        return isEnough;
+        else if (baseCharacter is CustomerCharacter)
+        {
+            foreach (var needItem in needItems)
+            {
+                var requiredAmount = needItem.itemData.amount;
+                var itemKey = needItem.itemData.itemKey;
+                if (!selectedWK.ItemsInContainer.ContainsKey(itemKey)) return false;
+                var amountInWC = selectedWK.ItemsInContainer[itemKey];
+                if (amountInWC < requiredAmount)
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+        //default case
+        return false;
+
     }
-    private void PutNeedItemsToDoStep(Person person, StepPerformer step)
+    private void PutNeedItemsToDoStep(Person person, StepPerformer step, WorkContainer selectedWK)
     {
         var baseCharacter = person.BaseCharacter;
         var needItems = step.NeedItems;
         if (needItems == null || needItems.Count == 0) return;
-
-        foreach (var needItem in needItems)
+        if (baseCharacter is ServerCharacter)
         {
-            var itemKey = needItem.itemData.itemKey;
-            if (!baseCharacter.OwningItemsDict.TryGetValue(itemKey, out int amount)) return;
-            var requiredAmount = needItem.itemData.amount;
-            if (amount < requiredAmount) return;
-            baseCharacter.RemoveOwningItem(itemKey, requiredAmount);
+            foreach (var needItem in needItems)
+            {
+                var itemKey = needItem.itemData.itemKey;
+                if (!baseCharacter.OwningItemsDict.TryGetValue(itemKey, out int amount)) return;
+                var requiredAmount = needItem.itemData.amount;
+                if (amount < requiredAmount) return;
+                baseCharacter.RemoveOwningItem(itemKey, requiredAmount);
+            }
         }
+        else if (baseCharacter is CustomerCharacter)
+        {
+            foreach (var needItem in needItems)
+            {
+                var itemKey = needItem.itemData.itemKey;
+                if (!selectedWK.ItemsInContainer.TryGetValue(itemKey, out int amount)) return;
+                var requiredAmount = needItem.itemData.amount;
+                if (amount < requiredAmount) return;
+                selectedWK.AddItemToContainer(itemKey, -requiredAmount);
+                baseCharacter.AddOwningItem(itemKey, requiredAmount);
+            }
+        }
+
     }
     private void PutPossibleItemToContainer(BaseCharacter baseCharacter, WorkContainer selectedWK)
     {

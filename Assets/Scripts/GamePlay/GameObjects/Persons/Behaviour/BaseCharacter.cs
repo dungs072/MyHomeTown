@@ -70,7 +70,6 @@ public class BaseCharacter : MonoBehaviour
             owningItemsDict[key] -= amount;
             if (owningItemsDict[key] <= 0)
             {
-                owningItemsDict.Remove(key);
                 owningItemsList.Remove(key);
             }
 
