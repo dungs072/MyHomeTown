@@ -111,14 +111,9 @@ public class WorkContainer : MonoBehaviour
     /// <param name="amount"></param>
     public void AddItemToContainer(ItemKey itemKey, int amount)
     {
-        if (amount <= 0) return;
         if (itemsInContainer.ContainsKey(itemKey))
         {
             itemsInContainer[itemKey] += amount;
-            if (itemsInContainer[itemKey] <= 0)
-            {
-                itemsInContainer.Remove(itemKey);
-            }
         }
         else
         {
