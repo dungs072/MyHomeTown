@@ -8,17 +8,13 @@ public class BaseCharacter : MonoBehaviour
 {
     protected Person person;
     protected TaskHandler taskHandler;
-
+    protected AgentController agent;
 
     // owning items
-
     protected List<ItemKey> owningItemsList = new();
     protected Dictionary<ItemKey, int> owningItemsDict = new();
     public Dictionary<ItemKey, int> OwningItemsDict => owningItemsDict;
     public List<ItemKey> OwningItemsList => owningItemsList;
-
-
-
 
     void Awake()
     {
@@ -29,16 +25,135 @@ public class BaseCharacter : MonoBehaviour
     {
         person = GetComponent<Person>();
         taskHandler = GetComponent<TaskHandler>();
+        agent = GetComponent<AgentController>();
     }
 
     void Start()
     {
         //StartCoroutine(HandlePreTasks());
     }
+
+    #region Task Handling
+    public virtual void UpdateHandleTask()
+    {
+        var personStatus = person.PersonStatus;
+        var taskPerformer = personStatus.CurrentTaskPerformer;
+        if (taskPerformer == null || taskPerformer.IsFinished()) return;
+        var currentStep = taskPerformer.GetCurrentStepPerformer();
+
+        // find suitable work container
+        if (!personStatus.CurrentWorkContainer)
+        {
+            personStatus.CurrentWorkContainer = TaskCoordinator.GetSuitableWorkContainer(currentStep.Step.Data.WorkContainerType, person);
+            Debug.Log($"<color=#17037c>personStatus.CurrentWorkContainer: {personStatus.CurrentWorkContainer}</color>");
+
+        }
+
+        // do their own job
+        if (!TryToMoveToTarget()) return;
+        if (!TryToMeetConditionsToDoStep()) return;
+        HandleStep();
+        if (currentStep.IsFinished)
+        {
+            HandleFinishedTask();
+
+        }
+        if (taskPerformer.IsFinished())
+        {
+            taskHandler.MoveNextTask();
+        }
+    }
+    protected bool TryToMoveToTarget()
+    {
+        var selectedWK = person.PersonStatus.CurrentWorkContainer;
+        if (selectedWK == null) return false;
+        var targetPosition = GetTargetPosition();
+        if (!agent.IsReachedDestination(targetPosition))
+        {
+            agent.SetDestination(targetPosition);
+            person.SwitchState(PersonState.MOVE);
+            return false;
+        }
+        return true;
+    }
+    protected virtual Vector3 GetTargetPosition()
+    {
+        var selectedWK = person.PersonStatus.CurrentWorkContainer;
+        selectedWK.AddPersonToWorkContainer(person);
+        return selectedWK.GetWaitingPosition(person);
+    }
+    protected virtual bool TryToMeetConditionsToDoStep()
+    {
+        // Implement specific conditions to meet prerequisites for the step
+        return true;
+    }
+    protected void HandleStep()
+    {
+        var selectedWK = person.PersonStatus.CurrentWorkContainer;
+        var canWork = CanWork();
+        if (canWork)
+        {
+            DoWork();
+        }
+        else
+        {
+            Wait();
+        }
+    }
+    protected virtual bool CanWork()
+    {
+        var selectedWK = person.PersonStatus.CurrentWorkContainer;
+        var canWork = selectedWK.IsPersonUse(person);
+        return canWork;
+    }
+    protected virtual void DoWork()
+    {
+        var currentStep = person.PersonStatus.CurrentTaskPerformer.GetCurrentStepPerformer();
+        var currentProgress = currentStep.Progress;
+        var newProgress = currentProgress + Time.deltaTime;
+        currentStep.SetProgress(newProgress);
+        person.SwitchState(PersonState.WORK);
+    }
+    protected virtual void Wait()
+    {
+        person.SwitchState(PersonState.WAIT);
+    }
+    protected void HandleFinishedTask()
+    {
+        //var itemsInContainer = selectedWK.ItemsInContainer;
+        var personStatus = person.PersonStatus;
+        var selectedWK = personStatus.CurrentWorkContainer;
+        var taskPerformer = personStatus.CurrentTaskPerformer;
+
+        HandleWithItems();
+        //var currentStep = taskPerformer.GetCurrentStepPerformer();
+        //var createdItems = currentStep.Step.Data.PossibleCreateItems;
+        // PutNeedItemsToDoStep(person, currentStep, selectedWK);
+        // PutPossibleItemToContainer(baseCharacter, selectedWK);
+        // // items are need to be taken
+        // baseCharacter.TakeNeedItems(itemsInContainer);
+        // // items are created by finishing the step
+        // baseCharacter.AddOwningItems(createdItems);
+
+        taskPerformer.MoveToNextStep();
+        selectedWK.RemovePersonFromWorkContainer(person);
+        personStatus.CurrentWorkContainer = null;
+    }
+    protected virtual void HandleWithItems()
+    {
+        // Override this method to handle items after finishing the task
+        // For example, you can take items from the work container or add created items to the character's inventory
+    }
+
+
+
     protected virtual void OnAllTasksCompleted()
     {
         gameObject.SetActive(false);
     }
+    #endregion
+
+    #region Items
 
     public void AddOwningItem(ItemKey key, int amount)
     {
@@ -124,6 +239,6 @@ public class BaseCharacter : MonoBehaviour
         return items;
     }
 
-
+    #endregion
 
 }

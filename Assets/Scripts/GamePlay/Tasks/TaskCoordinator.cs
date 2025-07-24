@@ -5,34 +5,51 @@ using UnityEngine;
 using static ManagerSingleton;
 public class TaskCoordinator : MonoBehaviour
 {
-    private WorkContainerManager workContainerManager;
     private AgentManager agentManager;
+
+    private List<BaseCharacter> characters = new();
     void Start()
     {
-        workContainerManager = EmpireInstance.WorkContainerManager;
         agentManager = EmpireInstance.AgentManager;
+        Debug.Log($"<color=#bcbedd>agentManager: {agentManager}</color>");
+        var agentTypes = AgentTypeList.AgentTypes;
+        foreach (var agentType in agentTypes)
+        {
+            Debug.Log($"<color=#2ad14a>agentType: {agentType}</color>");
+            Debug.Log($"<color=#3b8b81>agentManager.AgentsDict.ContainsKey(agentType): {agentManager.AgentsDict.ContainsKey(agentType)}</color>");
+            if (!agentManager.AgentsDict.ContainsKey(agentType)) continue;
+            var agents = agentManager.AgentsDict[agentType];
+            Debug.Log($"<color=#0ddd57>agents: {agents}</color>");
+            if (agents == null || agents.Count == 0) continue;
+            foreach (var agent in agents)
+            {
+                if (!agent.TryGetComponent(out BaseCharacter baseCharacter)) continue;
+                Debug.Log($"<color=#e3d9d7>baseCharacter: {baseCharacter}</color>");
+                characters.Add(baseCharacter);
+            }
+        }
     }
 
     void Update()
     {
-        var agentTypes = AgentTypeList.AgentTypes;
-        foreach (var agentType in agentTypes)
+        foreach (var agents in agentManager.AgentsDict.Values)
         {
-            if (!agentManager.AgentsDict.ContainsKey(agentType)) continue;
-            var agents = agentManager.AgentsDict[agentType];
-            if (agents == null || agents.Count == 0) continue;
-            UpdateAgents(agents);
+            foreach (var agent in agents)
+            {
+                if (agent.TryGetComponent(out BaseCharacter baseCharacter))
+                {
+                    baseCharacter.UpdateHandleTask();
+                }
+            }
         }
-    }
-    private void UpdateAgents(List<AgentController> agents)
-    {
-        foreach (var agent in agents)
-        {
-            DoTask(agent);
-        }
+        // foreach (var character in characters)
+        // {
+        //     character.UpdateHandleTask();
+        // }
     }
     private void DoTask(AgentController agent)
     {
+
         if (!agent.TryGetComponent(out Person person)) return;
         var taskHandler = person.GetComponent<TaskHandler>();
         var personStatus = person.PersonStatus;
@@ -61,12 +78,10 @@ public class TaskCoordinator : MonoBehaviour
             var createdItems = currentStep.Step.Data.PossibleCreateItems;
             PutNeedItemsToDoStep(person, currentStep, selectedWK);
             PutPossibleItemToContainer(baseCharacter, selectedWK);
-
+            // items are need to be taken
             baseCharacter.TakeNeedItems(itemsInContainer);
             // items are created by finishing the step
             baseCharacter.AddOwningItems(createdItems);
-
-
 
             taskPerformer.MoveToNextStep();
             selectedWK.RemovePersonFromWorkContainer(person);
@@ -80,24 +95,22 @@ public class TaskCoordinator : MonoBehaviour
     private Vector3 GetTargetPosition(StepPerformer step, WorkContainer selectedWK, Person person)
     {
         var isWorkHereInfinite = step.IsWorkHereInfinite();
-        var targetPosition = Vector3.zero;
         var isPuttingStation = step.Step.Data.WorkContainerType == WorkContainerType.PUTTING_STATION; ;
         if (isWorkHereInfinite)
         {
             // Handle infinite work here
             selectedWK.SetServerPerson(person);
-            targetPosition = selectedWK.GetServerPosition();
+            return selectedWK.GetServerPosition();
         }
         else if (isPuttingStation && person.TryGetComponent(out ServerCharacter server))
         {
-            targetPosition = selectedWK.GetPuttingPosition();
+            return selectedWK.GetPuttingPosition();
         }
         else
         {
             selectedWK.AddPersonToWorkContainer(person);
-            targetPosition = selectedWK.GetWaitingPosition(person);
+            return selectedWK.GetWaitingPosition(person);
         }
-        return targetPosition;
     }
     private bool TryToMeetConditionsToDoStep(Person person, StepPerformer step, WorkContainer selectedWK)
     {
@@ -201,10 +214,10 @@ public class TaskCoordinator : MonoBehaviour
         }
     }
 
-    private WorkContainer GetSuitableWorkContainer(WorkContainerType type, Person person)
+    public static WorkContainer GetSuitableWorkContainer(WorkContainerType type, Person person)
     {
-        var workContainers = workContainerManager.WorkContainers
-      .FindAll(wc => wc.WorkContainerType == type);
+        var workContainers = EmpireInstance.WorkContainerManager.WorkContainers
+        .FindAll(wc => wc.WorkContainerType == type);
         if (workContainers.Count == 0) return null;
 
         WorkContainer closest = null;
