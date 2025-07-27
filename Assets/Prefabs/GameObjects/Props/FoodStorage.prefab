@@ -157,6 +157,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   workContainerType: 1
+  possibleContainItems: 000000000100000002000000
+  serverTransform: {fileID: 0}
+  puttingTransform: {fileID: 0}
 --- !u!114 &8402337095299375531
 MonoBehaviour:
   m_ObjectHideFlags: 0

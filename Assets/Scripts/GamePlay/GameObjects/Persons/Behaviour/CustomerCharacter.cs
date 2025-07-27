@@ -3,29 +3,11 @@ using UnityEngine;
 
 public class CustomerCharacter : BaseCharacter
 {
-    protected List<GatheredItem> needObjects;
-
-    public List<GatheredItem> NeedObjects => needObjects;
-
-    public void AddNeedObject(ItemRequirement item)
-    {
-        needObjects ??= new List<GatheredItem>();
-
-        var needObject = new GatheredItem
-        {
-            itemData = item,
-            gainedAmount = 0
-        };
-        var itemName = ItemKeyNames.ToName(item.itemKey);
-        person.InfoPersonUI.SetInfoText($"Need {itemName} x{item.amount}");
-        needObjects.Add(needObject);
-    }
-
-
     protected override bool TryToMeetConditionsToDoStep()
     {
         var personStatus = person.PersonStatus;
-        var step = personStatus.CurrentStepPerformer;
+        var currentTaskPerformer = personStatus.CurrentTaskPerformer;
+        var step = currentTaskPerformer.GetCurrentStepPerformer();
         var selectedWK = personStatus.CurrentWorkContainer;
         var needItems = step.NeedItems;
         if (needItems == null || needItems.Count == 0) return true;
@@ -52,9 +34,11 @@ public class CustomerCharacter : BaseCharacter
     {
 
         var personStatus = person.PersonStatus;
-        var step = personStatus.CurrentStepPerformer;
+        var currentTaskPerformer = personStatus.CurrentTaskPerformer;
+        var step = currentTaskPerformer.GetCurrentStepPerformer();
         var selectedWK = personStatus.CurrentWorkContainer;
         var needItems = step.NeedItems;
+        if (needItems == null || needItems.Count == 0) return;
         foreach (var needItem in needItems)
         {
             var itemKey = needItem.itemData.itemKey;
