@@ -22,5 +22,8 @@ MonoBehaviour:
     duration: -1
     needItems: []
     needPermissionToGiveItems: 0
+    possibleCreateItems: []
     children: []
     taskName: 5
+    position: {x: 46, y: 74.66666}
+    isMinimized: 0

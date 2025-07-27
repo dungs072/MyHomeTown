@@ -10,6 +10,8 @@ public class BaseCharacter : MonoBehaviour
     protected TaskHandler taskHandler;
     protected AgentController agent;
 
+    protected PatrollingSystem patrollingSystem;
+
     // owning items
     protected List<ItemKey> owningItemsList = new();
     protected Dictionary<ItemKey, int> owningItemsDict = new();
@@ -20,6 +22,9 @@ public class BaseCharacter : MonoBehaviour
 
     protected Dictionary<ItemKey, int> needItemsDict = new();
     public Dictionary<ItemKey, int> NeedItemsDict => needItemsDict;
+
+    // patrolling
+    protected int currentWaitPointIndex = 0;
 
     private TaskPerformer previousTaskPerformer;
 
@@ -37,8 +42,35 @@ public class BaseCharacter : MonoBehaviour
 
     void Start()
     {
+        patrollingSystem = EmpireInstance.PatrollingSystem;
         //StartCoroutine(HandlePreTasks());
     }
+    #region Patrolling
+    public virtual bool StartPatrollingOverTime()
+    {
+        if (!patrollingSystem) return true;
+        var patrollingPath = patrollingSystem.PathDictionary[PatrollingPathKey.DefaultPath];
+        if (patrollingPath == null) return true;
+        if (patrollingPath.Waypoints.Length == 0) return true;
+
+        var maxIndex = patrollingPath.Waypoints.Length - 1;
+        if (currentWaitPointIndex >= maxIndex)
+        {
+            return true;
+        }
+        var targetPosition = patrollingPath.Waypoints[currentWaitPointIndex].position;
+        person.SwitchState(PersonState.MOVE);
+        if (!agent.IsReachedDestination(targetPosition))
+        {
+            agent.SetDestination(targetPosition);
+        }
+        else
+        {
+            currentWaitPointIndex = (currentWaitPointIndex + 1) % patrollingPath.Waypoints.Length;
+        }
+        return false;
+    }
+    #endregion
 
     #region Task Handling
     public virtual void UpdateHandleTask()

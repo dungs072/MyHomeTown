@@ -40,7 +40,7 @@ public class ServerCharacter : BaseCharacter
             if (amount > itemsInContainer[itemKey])
             {
                 return false;
-            }
+            }   
         }
         return true;
     }

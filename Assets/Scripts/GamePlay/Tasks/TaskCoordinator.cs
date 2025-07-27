@@ -33,6 +33,8 @@ public class TaskCoordinator : MonoBehaviour
             {
                 if (agent.TryGetComponent(out BaseCharacter baseCharacter))
                 {
+                    var isFinishedPatrolling = baseCharacter.StartPatrollingOverTime();
+                    if (!isFinishedPatrolling) continue;
                     baseCharacter.UpdateHandleTask();
                 }
             }
@@ -40,16 +42,15 @@ public class TaskCoordinator : MonoBehaviour
     }
     public static WorkContainer GetSuitableWorkContainer(WorkContainerType type, Person person)
     {
-        var workContainers = EmpireInstance.WorkContainerManager.WorkContainers
-        .FindAll(wc => wc.WorkContainerType == type);
+        var wkDict = EmpireInstance.WorkContainerManager.WorkContainerDict;
+        if (!wkDict.TryGetValue(type, out var workContainers)) return null;
         if (workContainers.Count == 0) return null;
-
-        WorkContainer closest = null;
+        WorkContainer closest = workContainers[0];
         float minSqrDist = float.MaxValue;
         foreach (var wc in workContainers)
         {
             float sqrDist = (wc.transform.position - person.transform.position).sqrMagnitude;
-            if (sqrDist < minSqrDist)
+            if (sqrDist < minSqrDist && !wc.HasPersonWaiting())
             {
                 minSqrDist = sqrDist;
                 closest = wc;

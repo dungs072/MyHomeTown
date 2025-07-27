@@ -3,6 +3,7 @@ using UnityEngine;
 
 public class CustomerCharacter : BaseCharacter
 {
+
     protected override bool TryToMeetConditionsToDoStep()
     {
         var personStatus = person.PersonStatus;
