@@ -16,6 +16,13 @@ public class BaseCharacter : MonoBehaviour
     public Dictionary<ItemKey, int> OwningItemsDict => owningItemsDict;
     public List<ItemKey> OwningItemsList => owningItemsList;
 
+    // need items
+
+    protected Dictionary<ItemKey, int> needItemsDict = new();
+    public Dictionary<ItemKey, int> NeedItemsDict => needItemsDict;
+
+    private TaskPerformer previousTaskPerformer;
+
     void Awake()
     {
         InitComponents();
@@ -40,13 +47,16 @@ public class BaseCharacter : MonoBehaviour
         var taskPerformer = personStatus.CurrentTaskPerformer;
         if (taskPerformer == null || taskPerformer.IsFinished()) return;
         var currentStep = taskPerformer.GetCurrentStepPerformer();
-
         // find suitable work container
         if (!personStatus.CurrentWorkContainer)
         {
             personStatus.CurrentWorkContainer = TaskCoordinator.GetSuitableWorkContainer(currentStep.Step.Data.WorkContainerType, person);
-            Debug.Log($"<color=#17037c>personStatus.CurrentWorkContainer: {personStatus.CurrentWorkContainer}</color>");
 
+        }
+        if (previousTaskPerformer != taskPerformer)
+        {
+            HandleStartTask();
+            previousTaskPerformer = taskPerformer;
         }
 
         // do their own job
@@ -55,12 +65,27 @@ public class BaseCharacter : MonoBehaviour
         HandleStep();
         if (currentStep.IsFinished)
         {
-            HandleFinishedTask();
+            HandleFinishedStep();
 
         }
         if (taskPerformer.IsFinished())
         {
             taskHandler.MoveNextTask();
+            previousTaskPerformer = null;
+            needItemsDict.Clear();
+        }
+    }
+    protected virtual void HandleStartTask()
+    {
+        // This method can be overridden to handle the start of a task
+        var needItems = GetNeedItemsFromCurrentToEndStep();
+        if (needItems == null || needItems.Count == 0) return;
+        foreach (var needItem in needItems)
+        {
+            var itemData = needItem.itemData;
+            var itemKey = itemData.itemKey;
+            var itemAmount = itemData.amount;
+            AddNeedItem(itemKey, itemAmount);
         }
     }
     protected bool TryToMoveToTarget()
@@ -118,23 +143,12 @@ public class BaseCharacter : MonoBehaviour
     {
         person.SwitchState(PersonState.WAIT);
     }
-    protected void HandleFinishedTask()
+    protected void HandleFinishedStep()
     {
-        //var itemsInContainer = selectedWK.ItemsInContainer;
         var personStatus = person.PersonStatus;
         var selectedWK = personStatus.CurrentWorkContainer;
         var taskPerformer = personStatus.CurrentTaskPerformer;
-
         HandleWithItems();
-        //var currentStep = taskPerformer.GetCurrentStepPerformer();
-        //var createdItems = currentStep.Step.Data.PossibleCreateItems;
-        // PutNeedItemsToDoStep(person, currentStep, selectedWK);
-        // PutPossibleItemToContainer(baseCharacter, selectedWK);
-        // // items are need to be taken
-        // baseCharacter.TakeNeedItems(itemsInContainer);
-        // // items are created by finishing the step
-        // baseCharacter.AddOwningItems(createdItems);
-
         taskPerformer.MoveToNextStep();
         selectedWK.RemovePersonFromWorkContainer(person);
         personStatus.CurrentWorkContainer = null;
@@ -145,12 +159,6 @@ public class BaseCharacter : MonoBehaviour
         // For example, you can take items from the work container or add created items to the character's inventory
     }
 
-
-
-    protected virtual void OnAllTasksCompleted()
-    {
-        gameObject.SetActive(false);
-    }
     #endregion
 
     #region Items
@@ -190,6 +198,17 @@ public class BaseCharacter : MonoBehaviour
 
         }
         UpdateDisplayInfo();
+    }
+    public void AddNeedItem(ItemKey key, int amount)
+    {
+        if (needItemsDict.ContainsKey(key))
+        {
+            needItemsDict[key] += amount;
+        }
+        else
+        {
+            needItemsDict[key] = amount;
+        }
     }
     private void UpdateDisplayInfo()
     {

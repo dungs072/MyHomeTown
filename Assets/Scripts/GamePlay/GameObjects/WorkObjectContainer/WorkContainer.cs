@@ -17,6 +17,7 @@ public class WorkContainer : MonoBehaviour
     // handle items
     private Dictionary<ItemKey, int> itemsInContainer = new();
     public Dictionary<ItemKey, int> ItemsInContainer => itemsInContainer;
+    public List<ItemKey> PossibleContainItems => possibleContainItems;
     void Start()
     {
         if (workContainerType != WorkContainerType.FOOD_STORAGE) return;

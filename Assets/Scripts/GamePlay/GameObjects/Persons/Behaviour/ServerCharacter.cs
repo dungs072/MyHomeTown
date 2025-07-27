@@ -25,16 +25,19 @@ public class ServerCharacter : BaseCharacter
     }
     protected override bool TryToMeetConditionsToDoStep()
     {
+        var enoughItemInWK = IsEnoughNeedItemInWorkContainer();
+        return enoughItemInWK;
+    }
+    private bool IsEnoughNeedItemInWorkContainer()
+    {
         var personStatus = person.PersonStatus;
-        var taskPerformer = personStatus.CurrentTaskPerformer;
-        var currentStep = taskPerformer.GetCurrentStepPerformer();
-        var needItems = currentStep.NeedItems;
-        if (needItems == null || needItems.Count == 0) return true;
-        foreach (var needItem in needItems)
+        var selectedWK = personStatus.CurrentWorkContainer;
+        var possibleContainItems = selectedWK.PossibleContainItems;
+        var itemsInContainer = selectedWK.ItemsInContainer;
+        foreach (var itemKey in possibleContainItems)
         {
-            var itemKey = needItem.itemData.itemKey;
-            if (!OwningItemsDict.ContainsKey(itemKey) ||
-                OwningItemsDict[itemKey] < needItem.itemData.amount)
+            if (!NeedItemsDict.TryGetValue(itemKey, out int amount)) continue;
+            if (amount > itemsInContainer[itemKey])
             {
                 return false;
             }
@@ -85,6 +88,7 @@ public class ServerCharacter : BaseCharacter
             var requiredAmount = needItem.itemData.amount;
             if (amount < requiredAmount) return;
             RemoveOwningItem(itemKey, requiredAmount);
+            AddNeedItem(itemKey, -requiredAmount);
         }
     }
     private void PutPossibleItemsToPuttingStation(WorkContainer selectedWK)
