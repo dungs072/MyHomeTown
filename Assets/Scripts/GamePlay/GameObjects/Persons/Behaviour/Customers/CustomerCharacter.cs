@@ -31,7 +31,7 @@ public class CustomerCharacter : BaseCharacter
     {
         TakeItemsFromWorkContainer();
     }
-    private void TakeItemsFromWorkContainer()
+    protected virtual void TakeItemsFromWorkContainer()
     {
 
         var personStatus = person.PersonStatus;

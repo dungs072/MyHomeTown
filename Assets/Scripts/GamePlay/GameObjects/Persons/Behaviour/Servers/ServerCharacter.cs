@@ -3,6 +3,11 @@ using UnityEngine;
 
 public class ServerCharacter : BaseCharacter
 {
+    // server character does not patrol
+    public override bool StartPatrollingOverTime()
+    {
+        return true;
+    }
 
     protected override Vector3 GetTargetPosition()
     {
@@ -40,7 +45,7 @@ public class ServerCharacter : BaseCharacter
             if (amount > itemsInContainer[itemKey])
             {
                 return false;
-            }   
+            }
         }
         return true;
     }

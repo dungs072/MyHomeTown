@@ -43,11 +43,7 @@ public class StepPerformer
     {
         needItems ??= new List<GatheredItem>();
 
-        var needObject = new GatheredItem
-        {
-            itemData = item,
-            gainedAmount = 0
-        };
+        var needObject = new GatheredItem(item.itemKey, 0);
 
         needItems.Add(needObject);
     }

@@ -9,6 +9,7 @@ public class ManagerSingleton : MonoBehaviour
     [Header("Systems")]
     [SerializeField] private GridSystem gridSystem;
     [SerializeField] private PatrollingSystem patrollingSystem;
+    [SerializeField] private MenuSystem menuSystem;
     [Header("Manager")]
     [SerializeField] private TaskManager taskManager;
     [SerializeField] private WorkContainerManager workContainerManager;
@@ -25,6 +26,7 @@ public class ManagerSingleton : MonoBehaviour
 
     public GridSystem GridSystem => gridSystem;
     public PatrollingSystem PatrollingSystem => patrollingSystem;
+    public MenuSystem MenuSystem => menuSystem;
     // managers
     public TaskManager TaskManager => taskManager;
     public WorkContainerManager WorkContainerManager => workContainerManager;
