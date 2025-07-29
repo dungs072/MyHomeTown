@@ -1,8 +1,10 @@
-using System.Collections.Generic;
-using UnityEngine;
 
-public class CustomerCharacter : BaseCharacter
+public class CustomerBehaviour : BaseBehaviour
 {
+    public CustomerBehaviour(Person person) : base(person)
+    {
+        this.person = person;
+    }
 
     protected override bool TryToMeetConditionsToDoStep()
     {

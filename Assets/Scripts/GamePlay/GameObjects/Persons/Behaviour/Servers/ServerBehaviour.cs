@@ -1,10 +1,14 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ServerCharacter : BaseCharacter
+public class ServerBehaviour : BaseBehaviour
 {
+    public ServerBehaviour(Person person) : base(person)
+    {
+        this.person = person;
+    }
     // server character does not patrol
-    public override bool StartPatrollingOverTime()
+    protected override bool StartPatrollingOverTime()
     {
         return true;
     }

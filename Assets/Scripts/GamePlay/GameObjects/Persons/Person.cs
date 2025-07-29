@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Entities.UniversalDelegates;
 using UnityEngine;
 using static ManagerSingleton;
 
@@ -26,26 +27,35 @@ public class Person : MonoBehaviour
     private ManagerSingleton singleton;
     private AgentController agentController;
     private PersonStatus personStatus;
-
-    private BaseCharacter baseCharacter;
+    private IPersonBehaviour personBehaviour;
     public PersonData PersonData => personData;
     public InfoPersonUI InfoPersonUI => infoPersonUI;
-
-
     public AgentController AgentController => agentController;
     public PersonStatus PersonStatus => personStatus;
-    public BaseCharacter BaseCharacter => baseCharacter;
+
+    public IPersonBehaviour PersonBehaviour => personBehaviour;
 
     void Awake()
     {
         singleton = EmpireInstance;
         agentController = GetComponent<AgentController>();
-        baseCharacter = GetComponent<BaseCharacter>();
     }
 
     void Start()
     {
+        var agentType = agentController.AgentType;
+        SetBehavior(agentType);
         SetRandomColor();
+    }
+    public void SetBehavior(AgentType agentType)
+    {
+        personBehaviour = agentType switch
+        {
+            AgentType.CUSTOMER => new CustomerBehaviour(this),
+            AgentType.SERVER => new ServerBehaviour(this),
+            AgentType.RECEPTIONIST => new ServerBehaviour(this),
+            _ => new BaseBehaviour(this),
+        };
     }
 
     void OnEnable()

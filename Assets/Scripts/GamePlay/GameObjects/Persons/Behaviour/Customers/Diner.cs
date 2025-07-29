@@ -2,14 +2,18 @@ using System.Collections.Generic;
 using UnityEngine;
 using static ManagerSingleton;
 
-public class Diner : CustomerCharacter
+public class Diner : CustomerBehaviour
 {
-    private MenuSystem menuSystem;
-    protected override void InitSystems()
+    public Diner(Person person) : base(person)
     {
-        base.InitSystems();
-        menuSystem = EmpireInstance.MenuSystem;
+        this.person = person;
     }
+    private MenuSystem menuSystem;
+    // protected override void InitSystems()
+    // {
+    //     base.InitSystems();
+    //     menuSystem = EmpireInstance.MenuSystem;
+    // }
 
     protected override List<GatheredItem> GetNeedItemsFromCurrentToEndStep()
     {
@@ -29,7 +33,7 @@ public class Diner : CustomerCharacter
             var requiredAmount = needItemsDict[needKey];
             if (!selectedWK.ItemsInContainer.ContainsKey(needKey)) return false;
             var amountInWC = selectedWK.ItemsInContainer[needKey];
-            if (amountInWC < requiredAmount)    
+            if (amountInWC < requiredAmount)
             {
                 return false;
             }

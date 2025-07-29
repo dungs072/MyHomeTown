@@ -7,37 +7,30 @@ public class TaskCoordinator : MonoBehaviour
 {
     private AgentManager agentManager;
 
-    private List<BaseCharacter> characters = new();
+    private List<Person> persons = new();
+
     void Start()
     {
-        agentManager = EmpireInstance.AgentManager;
-        var agentTypes = AgentTypeList.AgentTypes;
-        foreach (var agentType in agentTypes)
-        {
-            if (!agentManager.AgentsDict.ContainsKey(agentType)) continue;
-            var agents = agentManager.AgentsDict[agentType];
-            if (agents == null || agents.Count == 0) continue;
-            foreach (var agent in agents)
-            {
-                if (!agent.TryGetComponent(out BaseCharacter baseCharacter)) continue;
-                characters.Add(baseCharacter);
-            }
-        }
+        AgentManager.OnAgentSpawned += OnAgentSpawned;
+    }
+    private void OnDestroy()
+    {
+        AgentManager.OnAgentSpawned -= OnAgentSpawned;
+    }
+    private void OnAgentSpawned(AgentController agent)
+    {
+        if (agent == null) return;
+        var person = agent.GetComponent<Person>();
+        if (person == null) return;
+        persons.Add(person);
     }
 
     void Update()
     {
-        foreach (var agents in agentManager.AgentsDict.Values)
+        foreach (var person in persons)
         {
-            foreach (var agent in agents)
-            {
-                if (agent.TryGetComponent(out BaseCharacter baseCharacter))
-                {
-                    var isFinishedPatrolling = baseCharacter.StartPatrollingOverTime();
-                    if (!isFinishedPatrolling) continue;
-                    baseCharacter.UpdateHandleTask();
-                }
-            }
+            if (person.PersonBehaviour == null) continue;
+            person.PersonBehaviour.ExecuteBehaviour();
         }
     }
     public static WorkContainer GetSuitableWorkContainer(WorkContainerType type, Person person)
