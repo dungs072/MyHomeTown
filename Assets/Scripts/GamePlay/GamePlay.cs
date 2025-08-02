@@ -27,6 +27,7 @@ public class GamePlay : MonoBehaviour
         var agentManager = EmpireInstance.AgentManager;
 
         agentManager.SpawnAgents(AgentType.RECEPTIONIST, 1);
+        agentManager.SpawnAgents(AgentType.SERVER, 5);
     }
 
     void Update()
@@ -50,7 +51,7 @@ public class GamePlay : MonoBehaviour
         var agentManager = EmpireInstance.AgentManager;
         int agentCount = UnityEngine.Random.Range(1, 25);
         agentManager.SpawnAgents(AgentType.CUSTOMER, agentCount);
-        agentManager.SpawnAgents(AgentType.SERVER, agentCount);
+
 
     }
 

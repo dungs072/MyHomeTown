@@ -1,8 +1,17 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ServerCharacter : BaseCharacter
+public class ServerBehaviour : BaseBehaviour
 {
+    public ServerBehaviour(Person person) : base(person)
+    {
+        this.person = person;
+    }
+    // server character does not patrol
+    protected override bool StartPatrollingOverTime()
+    {
+        return true;
+    }
 
     protected override Vector3 GetTargetPosition()
     {
@@ -72,20 +81,21 @@ public class ServerCharacter : BaseCharacter
         }
         // take items along
         var itemsInContainer = selectedWK.ItemsInContainer;
+        Debug.Log($"Items in container: {itemsInContainer.Count}");
         TakeNeedItems(itemsInContainer);
         // take items after done step
         var createdItems = currentStep.Step.Data.PossibleCreateItems;
         AddOwningItems(createdItems);
 
     }
-    private void PutItemsToDoStep(List<GatheredItem> needItems)
+    private void PutItemsToDoStep(List<ItemRequirement> needItems)
     {
         if (needItems == null || needItems.Count == 0) return;
         foreach (var needItem in needItems)
         {
-            var itemKey = needItem.itemData.itemKey;
+            var itemKey = needItem.itemKey;
             if (!OwningItemsDict.TryGetValue(itemKey, out int amount)) return;
-            var requiredAmount = needItem.itemData.amount;
+            var requiredAmount = needItem.amount;
             if (amount < requiredAmount) return;
             RemoveOwningItem(itemKey, requiredAmount);
             AddNeedItem(itemKey, -requiredAmount);

@@ -1082,10 +1082,6 @@ PrefabInstance:
       value: GamePlay
       objectReference: {fileID: 0}
     - target: {fileID: 8534147044951621783, guid: 87c557375c9dd724a86b598164e8ac08, type: 3}
-      propertyPath: workContainers.Array.size
-      value: 6
-      objectReference: {fileID: 0}
-    - target: {fileID: 8534147044951621783, guid: 87c557375c9dd724a86b598164e8ac08, type: 3}
       propertyPath: 'workContainers.Array.data[0]'
       value: 
       objectReference: {fileID: 198748681}

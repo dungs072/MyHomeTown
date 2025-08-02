@@ -38,6 +38,10 @@ public class WorkContainer : MonoBehaviour
         personsWantToWorkHere.Remove(person);
         //SortPersonsWaitingLine();
     }
+    public bool HasPersonWaiting()
+    {
+        return personsWantToWorkHere.Count > 0;
+    }
 
     public bool IsPersonUse(Person person)
     {
