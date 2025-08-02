@@ -15,7 +15,7 @@ public class Diner : CustomerBehaviour
     //     menuSystem = EmpireInstance.MenuSystem;
     // }
 
-    protected override List<GatheredItem> GetNeedItemsFromCurrentToEndStep()
+    protected override List<ItemRequirement> GetNeedItemsFromCurrentToEndStep()
     {
         var needItems = menuSystem.GetMenuItems();
         return needItems;

@@ -16,8 +16,8 @@ public class CustomerBehaviour : BaseBehaviour
         if (needItems == null || needItems.Count == 0) return true;
         foreach (var needItem in needItems)
         {
-            var requiredAmount = needItem.itemData.amount;
-            var itemKey = needItem.itemData.itemKey;
+            var requiredAmount = needItem.amount;
+            var itemKey = needItem.itemKey;
             if (!selectedWK.ItemsInContainer.ContainsKey(itemKey)) return false;
             var amountInWC = selectedWK.ItemsInContainer[itemKey];
             if (amountInWC < requiredAmount)
@@ -44,9 +44,9 @@ public class CustomerBehaviour : BaseBehaviour
         if (needItems == null || needItems.Count == 0) return;
         foreach (var needItem in needItems)
         {
-            var itemKey = needItem.itemData.itemKey;
+            var itemKey = needItem.itemKey;
             if (!selectedWK.ItemsInContainer.TryGetValue(itemKey, out int amount)) return;
-            var requiredAmount = needItem.itemData.amount;
+            var requiredAmount = needItem.amount;
             if (amount < requiredAmount) return;
             selectedWK.AddItemToContainer(itemKey, -requiredAmount);
             AddOwningItem(itemKey, requiredAmount);

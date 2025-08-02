@@ -9,15 +9,20 @@ public class MenuSystem : MonoBehaviour
     {
         InitializeMenu();
     }
-    public List<GatheredItem> GetMenuItems()
+    public List<ItemRequirement> GetMenuItems()
     {
-        List<GatheredItem> gatheredItems = new();
+        List<ItemRequirement> gatheredItems = new();
         foreach (var itemKey in menuItems)
         {
             var shouldAdd = Random.Range(0, 2) == 0; // Randomly decide to add item or not
             if (!shouldAdd) continue;
             var randomAmount = Random.Range(1, 3); // Random amount between 1 and 2
-            gatheredItems.Add(new GatheredItem(itemKey, randomAmount));
+            var itemRequirement = new ItemRequirement
+            {
+                itemKey = itemKey,
+                amount = randomAmount
+            };
+            gatheredItems.Add(itemRequirement);
         }
         return gatheredItems;
     }

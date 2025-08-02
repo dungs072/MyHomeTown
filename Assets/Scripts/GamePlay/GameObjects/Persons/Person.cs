@@ -43,10 +43,16 @@ public class Person : MonoBehaviour
 
     void Start()
     {
-        var agentType = agentController.AgentType;
-        SetBehavior(agentType);
+
+        Invoke(nameof(InitBehavior), 1f);
         SetRandomColor();
     }
+    private void InitBehavior()
+    {
+        var agentType = agentController.AgentType;
+        SetBehavior(agentType);
+    }
+
     public void SetBehavior(AgentType agentType)
     {
         personBehaviour = agentType switch

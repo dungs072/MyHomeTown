@@ -107,10 +107,8 @@ public class BaseBehaviour : IPersonBehaviour
 
         foreach (var needItem in needItems)
         {
-            var itemData = needItem.itemData;
-            if (itemData == null) continue;
-            var itemKey = itemData.itemKey;
-            var itemAmount = itemData.amount;
+            var itemKey = needItem.itemKey;
+            var itemAmount = needItem.amount;
             AddNeedItem(itemKey, itemAmount);
 
             if (!needItemsList.Contains(itemKey))
@@ -271,11 +269,10 @@ public class BaseBehaviour : IPersonBehaviour
     {
         var needItems = GetNeedItemsFromCurrentToEndStep();
         if (needItems == null || needItems.Count == 0) return;
-
         foreach (var needItem in needItems)
         {
-            var itemKey = needItem.itemData.itemKey;
-            var requiredAmount = needItem.itemData.amount;
+            var itemKey = needItem.itemKey;
+            var requiredAmount = needItem.amount;
 
             if (items.TryGetValue(itemKey, out int amount))
             {
@@ -285,10 +282,9 @@ public class BaseBehaviour : IPersonBehaviour
             }
         }
     }
-
-    protected virtual List<GatheredItem> GetNeedItemsFromCurrentToEndStep()
+    protected virtual List<ItemRequirement> GetNeedItemsFromCurrentToEndStep()
     {
-        List<GatheredItem> items = new();
+        List<ItemRequirement> items = new();
         var personStatus = person.PersonStatus;
         var currentTask = personStatus.CurrentTaskPerformer;
         var currentStep = currentTask.GetCurrentStepPerformer();
