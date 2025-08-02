@@ -81,7 +81,6 @@ public class ServerBehaviour : BaseBehaviour
         }
         // take items along
         var itemsInContainer = selectedWK.ItemsInContainer;
-        Debug.Log($"Items in container: {itemsInContainer.Count}");
         TakeNeedItems(itemsInContainer);
         // take items after done step
         var createdItems = currentStep.Step.Data.PossibleCreateItems;
