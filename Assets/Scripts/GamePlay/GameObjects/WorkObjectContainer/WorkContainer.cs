@@ -1,6 +1,8 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static GameController;
 
 public class WorkContainer : MonoBehaviour
 {
@@ -21,9 +23,29 @@ public class WorkContainer : MonoBehaviour
     void Start()
     {
         if (workContainerType != WorkContainerType.FOOD_STORAGE) return;
-        itemsInContainer.Add(ItemKey.VEGETABLE, 10);
-        itemsInContainer.Add(ItemKey.MEAT, 5);
-        itemsInContainer.Add(ItemKey.FRUIT, 20);
+        StartCoroutine(AutoSpawnItems());
+    }
+    //! for test purpose only
+    private IEnumerator AutoSpawnItems()
+    {
+        while (true)
+        {
+            yield return new WaitForSeconds(5f);
+            DebugStorage();
+        }
+    }
+    private void DebugStorage()
+    {
+        var screenName = ScreenName.GamePlayScreen.ToString();
+        var gamePlayScreen = GameInstance.ScreenManager.GetScreen<GamePlayScreen>(screenName);
+        var activityFeed = gamePlayScreen.Container.ActivityFeed;
+        activityFeed.AddActivity($"Added 10 Vegetables to {gameObject.name}");
+
+        activityFeed.AddActivity($"Added 5 Meat to {gameObject.name}");
+        activityFeed.AddActivity($"Added 20 Fruits to {gameObject.name}");
+        AddItemToContainer(ItemKey.VEGETABLE, 10);
+        AddItemToContainer(ItemKey.MEAT, 5);
+        AddItemToContainer(ItemKey.FRUIT, 20);
     }
 
     public void AddPersonToWorkContainer(Person person)
@@ -45,6 +67,7 @@ public class WorkContainer : MonoBehaviour
 
     public bool IsPersonUse(Person person)
     {
+        if (!HasPersonWaiting()) return true;
         var firstPerson = personsWantToWorkHere[0];
         return firstPerson == person || serverPerson == person;
     }

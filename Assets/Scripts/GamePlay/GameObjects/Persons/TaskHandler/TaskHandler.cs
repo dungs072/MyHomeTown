@@ -38,15 +38,20 @@ public class TaskHandler : MonoBehaviour
         {
             person.SwitchState(PersonState.IDLE);
             currentTaskIndex = 0;
-            gameObject.SetActive(false);
+            person.PersonStatus.CurrentTaskPerformer = null;
         }
         else
         {
-            person.PersonStatus.CurrentTaskPerformer = new TaskPerformer();
-            var taskManager = EmpireInstance.TaskManager;
-            var task = taskManager.TasksDict[taskNames[currentTaskIndex]];
-            person.PersonStatus.CurrentTaskPerformer.SetTask(task);
+            CreateNewTask();
         }
     }
+    public void CreateNewTask()
+    {
+        person.PersonStatus.CurrentTaskPerformer = new TaskPerformer();
+        var taskManager = EmpireInstance.TaskManager;
+        var task = taskManager.TasksDict[taskNames[currentTaskIndex]];
+        person.PersonStatus.CurrentTaskPerformer.SetTask(task);
+    }
+
 
 }

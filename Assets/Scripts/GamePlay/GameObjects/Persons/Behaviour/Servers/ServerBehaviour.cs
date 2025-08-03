@@ -8,7 +8,7 @@ public class ServerBehaviour : BaseBehaviour
         this.person = person;
     }
     // server character does not patrol
-    protected override bool StartPatrollingOverTime()
+    protected override bool StartPatrollingOverTime(string key = PatrollingPathKey.DefaultPath)
     {
         return true;
     }
@@ -81,25 +81,11 @@ public class ServerBehaviour : BaseBehaviour
         }
         // take items along
         var itemsInContainer = selectedWK.ItemsInContainer;
-        Debug.Log($"Items in container: {itemsInContainer.Count}");
         TakeNeedItems(itemsInContainer);
         // take items after done step
         var createdItems = currentStep.Step.Data.PossibleCreateItems;
         AddOwningItems(createdItems);
 
-    }
-    private void PutItemsToDoStep(List<ItemRequirement> needItems)
-    {
-        if (needItems == null || needItems.Count == 0) return;
-        foreach (var needItem in needItems)
-        {
-            var itemKey = needItem.itemKey;
-            if (!OwningItemsDict.TryGetValue(itemKey, out int amount)) return;
-            var requiredAmount = needItem.amount;
-            if (amount < requiredAmount) return;
-            RemoveOwningItem(itemKey, requiredAmount);
-            AddNeedItem(itemKey, -requiredAmount);
-        }
     }
     private void PutPossibleItemsToPuttingStation(WorkContainer selectedWK)
     {
