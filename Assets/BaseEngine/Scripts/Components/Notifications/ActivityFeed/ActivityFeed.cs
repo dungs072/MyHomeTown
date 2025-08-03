@@ -17,11 +17,12 @@ public class ActivityFeed : MonoBehaviour
         var element = GetFreeActivityElement();
         activeElements.Add(element);
         element.SetContent(content);
-        element.SetRectPosition(GetNextPosition());
+        element.SetOriginalPosition(GetNextPosition());
+        element.PrepareShowing();
         StartCoroutine(element.ShowAsync(() =>
         {
             activeElements.Remove(element);
-            gameObject.SetActive(false);
+            element.gameObject.SetActive(false);
         }));
     }
     private Vector3 GetNextPosition()
@@ -29,11 +30,10 @@ public class ActivityFeed : MonoBehaviour
         var basePosition = Vector3.zero;
         var index = activeElements.Count - 1;
         if (index <= 0) return basePosition;
-        var elementHeight = elementTransform.sizeDelta.y;
-
+        var elementHeight = elementTransform.rect.height;
         var position = new Vector3(
                 basePosition.x,
-                basePosition.y - (elementHeight / 2 + elementSpacing) * index,
+                basePosition.y - (elementHeight + elementSpacing) * index,
                 basePosition.z
         );
 

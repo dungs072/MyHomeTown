@@ -1,6 +1,7 @@
 
 public class CustomerBehaviour : BaseBehaviour
 {
+    private int currentEndWaitPoint = 0;
     public CustomerBehaviour(Person person) : base(person)
     {
         this.person = person;
@@ -31,6 +32,7 @@ public class CustomerBehaviour : BaseBehaviour
 
     protected override void HandleWithItems()
     {
+        base.HandleWithItems();
         TakeItemsFromWorkContainer();
     }
     protected virtual void TakeItemsFromWorkContainer()
@@ -51,5 +53,33 @@ public class CustomerBehaviour : BaseBehaviour
             selectedWK.AddItemToContainer(itemKey, -requiredAmount);
             AddOwningItem(itemKey, requiredAmount);
         }
+    }
+    protected override bool HandleEndTask()
+    {
+        if (person.PersonStatus.CurrentTaskPerformer != null) return false;
+        if (!patrollingSystem) return true;
+        var patrollingPath = patrollingSystem.PathDictionary[PatrollingPathKey.BackPath];
+        if (patrollingPath == null || patrollingPath.Waypoints.Length == 0) return true;
+
+        var maxIndex = patrollingPath.Waypoints.Length - 1;
+        if (currentEndWaitPoint > maxIndex)
+        {
+            person.gameObject.SetActive(false);
+            return true;
+        }
+
+        var targetPosition = patrollingPath.Waypoints[currentEndWaitPoint].position;
+        person.SwitchState(PersonState.MOVE);
+
+        if (!agent.IsReachedDestination(targetPosition))
+        {
+            agent.SetDestination(targetPosition);
+        }
+        else
+        {
+            currentEndWaitPoint++;
+        }
+
+        return false;
     }
 }

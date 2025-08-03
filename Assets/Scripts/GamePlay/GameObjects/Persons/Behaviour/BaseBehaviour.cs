@@ -34,17 +34,19 @@ public class BaseBehaviour : IPersonBehaviour
     {
         if (!StartPatrollingOverTime()) return;
         UpdateHandleTask();
+        HandleEndTask();
+
     }
 
     #region Patrolling
-    protected virtual bool StartPatrollingOverTime()
+    protected virtual bool StartPatrollingOverTime(string key = PatrollingPathKey.DefaultPath)
     {
         if (!patrollingSystem) return true;
-        var patrollingPath = patrollingSystem.PathDictionary[PatrollingPathKey.DefaultPath];
+        var patrollingPath = patrollingSystem.PathDictionary[key];
         if (patrollingPath == null || patrollingPath.Waypoints.Length == 0) return true;
 
         var maxIndex = patrollingPath.Waypoints.Length - 1;
-        if (currentWaitPointIndex >= maxIndex) return true;
+        if (currentWaitPointIndex > maxIndex) return true;
 
         var targetPosition = patrollingPath.Waypoints[currentWaitPointIndex].position;
         person.SwitchState(PersonState.MOVE);
@@ -55,7 +57,7 @@ public class BaseBehaviour : IPersonBehaviour
         }
         else
         {
-            currentWaitPointIndex = (currentWaitPointIndex + 1) % patrollingPath.Waypoints.Length;
+            currentWaitPointIndex++;
         }
 
         return false;
@@ -194,8 +196,26 @@ public class BaseBehaviour : IPersonBehaviour
 
     protected virtual void HandleWithItems()
     {
-        // Overridable logic
+        var personStatus = person.PersonStatus;
+        var currentTaskPerformer = personStatus.CurrentTaskPerformer;
+        var step = currentTaskPerformer.GetCurrentStepPerformer();
+        PutItemsToDoStep(step.NeedItems);
     }
+
+    protected void PutItemsToDoStep(List<ItemRequirement> needItems)
+    {
+        if (needItems == null || needItems.Count == 0) return;
+        foreach (var needItem in needItems)
+        {
+            var itemKey = needItem.itemKey;
+            if (!OwningItemsDict.TryGetValue(itemKey, out int amount)) return;
+            var requiredAmount = needItem.amount;
+            if (amount < requiredAmount) return;
+            RemoveOwningItem(itemKey, requiredAmount);
+            AddNeedItem(itemKey, -requiredAmount);
+        }
+    }
+
     #endregion
 
     #region Items
@@ -303,5 +323,13 @@ public class BaseBehaviour : IPersonBehaviour
     }
     #endregion
 
-
+    #region EndTask
+    protected virtual bool HandleEndTask()
+    {
+        if (person.PersonStatus.CurrentTaskPerformer != null) return false;
+        // Base case: no task performer, so we can reset the task handler
+        taskHandler.CreateNewTask();
+        return true;
+    }
+    #endregion
 }

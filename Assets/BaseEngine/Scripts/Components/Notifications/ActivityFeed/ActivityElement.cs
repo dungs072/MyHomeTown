@@ -7,18 +7,22 @@ using UnityEngine.UI;
 public class ActivityElement : MonoBehaviour
 {
     [SerializeField] private TMP_Text contentText;
-    private Image backgroundImage;
+    private CanvasGroup canvasGroup;
     private RectTransform rectTransform;
+    private Vector3 originalPosition;
     void Awake()
     {
-        backgroundImage = GetComponent<Image>();
+        canvasGroup = GetComponent<CanvasGroup>();
         rectTransform = GetComponent<RectTransform>();
     }
-
 
     public void SetContent(string content)
     {
         contentText.text = content;
+    }
+    public void SetOriginalPosition(Vector3 position)
+    {
+        originalPosition = position;
     }
     public void SetRectPosition(Vector3 position)
     {
@@ -26,7 +30,14 @@ public class ActivityElement : MonoBehaviour
         {
             rectTransform = GetComponent<RectTransform>();
         }
-        rectTransform.position = position;
+        rectTransform.anchoredPosition = position;
+    }
+
+    public void PrepareShowing()
+    {
+        canvasGroup.alpha = 0f;
+        var hidePosition = originalPosition + new Vector3(100, 0, 0);
+        SetRectPosition(hidePosition);
     }
 
     public IEnumerator ShowAsync(System.Action onComplete = null)
@@ -39,14 +50,15 @@ public class ActivityElement : MonoBehaviour
 
     public IEnumerator FadeIn()
     {
-        var fadeInAnim = backgroundImage.DOFade(1f, 1f);
-        yield return fadeInAnim;
+        var fadeInAnim = canvasGroup.DOFade(1f, 0.45f);
+        var moveAnim = rectTransform.DOAnchorPos(originalPosition, 0.45f);
+        yield return DOTween.Sequence().Join(fadeInAnim).Join(moveAnim).WaitForCompletion();
     }
 
     public IEnumerator FadeOut()
     {
-        var fadeOutAnim = backgroundImage.DOFade(0f, 1f);
-        yield return fadeOutAnim;
+        var fadeOutAnim = canvasGroup.DOFade(0f, 0.34f);
+        yield return fadeOutAnim.WaitForCompletion();
     }
 
 }
