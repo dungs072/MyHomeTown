@@ -196,24 +196,7 @@ public class BaseBehaviour : IPersonBehaviour
 
     protected virtual void HandleWithItems()
     {
-        var personStatus = person.PersonStatus;
-        var currentTaskPerformer = personStatus.CurrentTaskPerformer;
-        var step = currentTaskPerformer.GetCurrentStepPerformer();
-        PutItemsToDoStep(step.NeedItems);
-    }
-
-    protected void PutItemsToDoStep(List<ItemRequirement> needItems)
-    {
-        if (needItems == null || needItems.Count == 0) return;
-        foreach (var needItem in needItems)
-        {
-            var itemKey = needItem.itemKey;
-            if (!OwningItemsDict.TryGetValue(itemKey, out int amount)) return;
-            var requiredAmount = needItem.amount;
-            if (amount < requiredAmount) return;
-            RemoveOwningItem(itemKey, requiredAmount);
-            AddNeedItem(itemKey, -requiredAmount);
-        }
+        //todo
     }
 
     #endregion
@@ -247,6 +230,9 @@ public class BaseBehaviour : IPersonBehaviour
 
     public void RemoveOwningItem(ItemKey key, int amount)
     {
+        if (agent.AgentType == AgentType.CUSTOMER)
+        {
+        }
         if (owningItemsDict.ContainsKey(key))
         {
             owningItemsDict[key] -= amount;
@@ -255,7 +241,6 @@ public class BaseBehaviour : IPersonBehaviour
                 owningItemsList.Remove(key);
             }
         }
-
         UpdateDisplayInfo();
     }
 
