@@ -230,9 +230,6 @@ public class BaseBehaviour : IPersonBehaviour
 
     public void RemoveOwningItem(ItemKey key, int amount)
     {
-        if (agent.AgentType == AgentType.CUSTOMER)
-        {
-        }
         if (owningItemsDict.ContainsKey(key))
         {
             owningItemsDict[key] -= amount;
