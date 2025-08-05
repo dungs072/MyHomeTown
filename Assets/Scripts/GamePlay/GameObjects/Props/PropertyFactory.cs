@@ -82,7 +82,7 @@ public class PropertyFactory : BaseFactory
         HandleBuyProp(currentCreatingProduct);
         if (currentCreatingProduct.TryGetComponent(out WorkContainer workContainer))
         {
-            var workContainerManager = ManagerSingleton.EmpireInstance.WorkContainerManager;
+            var workContainerManager = EmpireInstance.WorkContainerManager;
             workContainerManager.AddWorkContainer(workContainer);
         }
 

@@ -12,10 +12,12 @@ public class TaskCoordinator : MonoBehaviour
     void Start()
     {
         AgentManager.OnAgentSpawned += OnAgentSpawned;
+        WorkContainer.OnAvailable += OnWorkContainerAvailable;
     }
     private void OnDestroy()
     {
         AgentManager.OnAgentSpawned -= OnAgentSpawned;
+        WorkContainer.OnAvailable -= OnWorkContainerAvailable;
     }
     private void OnAgentSpawned(AgentController agent)
     {
@@ -23,6 +25,21 @@ public class TaskCoordinator : MonoBehaviour
         var person = agent.GetComponent<Person>();
         if (person == null) return;
         persons.Add(person);
+    }
+    private void OnWorkContainerAvailable(WorkContainer workContainer)
+    {
+        foreach (var person in persons)
+        {
+            var personStatus = person.PersonStatus;
+            var selectedWK = personStatus.CurrentWorkContainer;
+            if (selectedWK == null || selectedWK == workContainer) continue;
+            if (workContainer.WorkContainerType != selectedWK.WorkContainerType) continue;
+            var isUsingWK = selectedWK.IsPersonUse(person);
+            if (isUsingWK) continue;
+            selectedWK.RemovePersonFromWorkContainer(person);
+            personStatus.CurrentWorkContainer = workContainer;
+            break;
+        }
     }
 
     void Update()
@@ -50,7 +67,6 @@ public class TaskCoordinator : MonoBehaviour
             }
         }
         return closest;
-
     }
 
 }

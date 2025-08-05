@@ -15,6 +15,10 @@ public class ActivityElement : MonoBehaviour
         canvasGroup = GetComponent<CanvasGroup>();
         rectTransform = GetComponent<RectTransform>();
     }
+    void OnDisable()
+    {
+        DOTween.Kill(gameObject);
+    }
 
     public void SetContent(string content)
     {
@@ -59,6 +63,11 @@ public class ActivityElement : MonoBehaviour
     {
         var fadeOutAnim = canvasGroup.DOFade(0f, 0.34f);
         yield return fadeOutAnim.WaitForCompletion();
+    }
+    public IEnumerator MoveToAsync(Vector3 targetPosition)
+    {
+        var moveAnim = rectTransform.DOAnchorPos(targetPosition, 0.45f);
+        yield return moveAnim.WaitForCompletion();
     }
 
 }

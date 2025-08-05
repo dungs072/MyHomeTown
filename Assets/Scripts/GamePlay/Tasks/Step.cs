@@ -28,5 +28,11 @@ public class Step
         WorkContainers.Add(workContainer);
     }
 
+    //! implement remove work container
+    public void RemoveWorkContainer(WorkContainer workContainer)
+    {
+        WorkContainers.Remove(workContainer);
+    }
+
 
 }

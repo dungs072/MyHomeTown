@@ -25,8 +25,8 @@ MonoBehaviour:
     possibleCreateItems: []
     children: []
     taskName: 0
-    position: {x: 431.99997, y: 105.33334}
-    isMinimized: 1
+    position: {x: 431.99997, y: 106.000015}
+    isMinimized: 0
   - uniqueId: 504d8583-10ca-4aa1-94fc-e56b2389c4f7
     stepName: Take Food
     description: 

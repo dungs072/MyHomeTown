@@ -23,12 +23,26 @@ public class ActivityFeed : MonoBehaviour
         {
             activeElements.Remove(element);
             element.gameObject.SetActive(false);
+            HandleWhenElementRemoved(element);
         }));
+    }
+    private void HandleWhenElementRemoved(ActivityElement element)
+    {
+        for (int i = 0; i < activeElements.Count; i++)
+        {
+            var activeElement = activeElements[i];
+            var currentPosition = GetCurrentPosition(i);
+            StartCoroutine(activeElement.MoveToAsync(currentPosition));
+        }
     }
     private Vector3 GetNextPosition()
     {
-        var basePosition = Vector3.zero;
         var index = activeElements.Count - 1;
+        return GetCurrentPosition(index);
+    }
+    private Vector3 GetCurrentPosition(int index)
+    {
+        var basePosition = Vector3.zero;
         if (index <= 0) return basePosition;
         var elementHeight = elementTransform.rect.height;
         var position = new Vector3(
