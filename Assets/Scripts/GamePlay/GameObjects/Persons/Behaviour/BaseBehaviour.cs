@@ -228,6 +228,9 @@ public class BaseBehaviour : IPersonBehaviour
         else
         {
             owningItemsDict[key] = amount;
+        }
+        if (!owningItemsList.Contains(key))
+        {
             owningItemsList.Add(key);
         }
 

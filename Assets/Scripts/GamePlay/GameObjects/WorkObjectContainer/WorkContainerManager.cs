@@ -31,6 +31,7 @@ public class WorkContainerManager : MonoBehaviour
         OnWorkContainerAdded?.Invoke(workContainer);
         workContainers.Add(workContainer);
         AddWorkContainerToDict(workContainer);
+        workContainer.OnWorkContainerReady();
     }
     public void RemoveWorkContainer(WorkContainer workContainer)
     {
@@ -38,6 +39,7 @@ public class WorkContainerManager : MonoBehaviour
         OnWorkContainerRemoved?.Invoke(workContainer);
         workContainers.Remove(workContainer);
         RemoveWorkContainerFromDict(workContainer);
+        workContainer.OnWorkContainerDemolished();
     }
     public void AddWorkContainerToDict(WorkContainer workContainer)
     {

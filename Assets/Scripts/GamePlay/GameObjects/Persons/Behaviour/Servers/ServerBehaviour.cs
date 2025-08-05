@@ -74,6 +74,7 @@ public class ServerBehaviour : BaseBehaviour
         if (selectedWK.IsPuttingStation())
         {
             PutPossibleItemsToPuttingStation(selectedWK);
+            return;
         }
         else
         {

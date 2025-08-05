@@ -6,6 +6,10 @@ using static GameController;
 
 public class WorkContainer : MonoBehaviour
 {
+    // Events
+    public static event Action<WorkContainer> OnAvailable;
+
+
     // handle task
     [SerializeField] private WorkContainerType workContainerType;
     [SerializeField] private List<ItemKey> possibleContainItems = new();
@@ -24,6 +28,14 @@ public class WorkContainer : MonoBehaviour
     {
         if (workContainerType != WorkContainerType.FOOD_STORAGE) return;
         StartCoroutine(AutoSpawnItems());
+    }
+    public void OnWorkContainerReady()
+    {
+        OnAvailable?.Invoke(this);
+    }
+    public void OnWorkContainerDemolished()
+    {
+        //TODO: Handle work container demolition
     }
     //! for test purpose only
     private IEnumerator AutoSpawnItems()
@@ -58,6 +70,10 @@ public class WorkContainer : MonoBehaviour
     {
         if (!personsWantToWorkHere.Contains(person)) return;
         personsWantToWorkHere.Remove(person);
+        if (personsWantToWorkHere.Count == 0)
+        {
+            OnAvailable?.Invoke(this);
+        }
         //SortPersonsWaitingLine();
     }
     public bool HasPersonWaiting()
