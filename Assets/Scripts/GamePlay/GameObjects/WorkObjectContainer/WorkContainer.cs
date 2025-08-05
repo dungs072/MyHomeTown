@@ -136,6 +136,10 @@ public class WorkContainer : MonoBehaviour
     {
         return workContainerType == WorkContainerType.PUTTING_STATION;
     }
+    public bool IsDiningTable()
+    {
+        return workContainerType == WorkContainerType.DINING_TABLE;
+    }
 
     private void OnDrawGizmos()
     {

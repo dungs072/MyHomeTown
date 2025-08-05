@@ -1,4 +1,5 @@
-
+using System.Collections.Generic;
+using UnityEngine;
 public class CustomerBehaviour : BaseBehaviour
 {
     private int currentEndWaitPoint = 0;
@@ -32,8 +33,17 @@ public class CustomerBehaviour : BaseBehaviour
 
     protected override void HandleWithItems()
     {
-        base.HandleWithItems();
-        TakeItemsFromWorkContainer();
+        var personStatus = person.PersonStatus;
+        var workContainer = personStatus.CurrentWorkContainer;
+        if (workContainer.IsDiningTable())
+        {
+            CleanNeedItems();
+        }
+        else
+        {
+            TakeItemsFromWorkContainer();
+
+        }
     }
     protected virtual void TakeItemsFromWorkContainer()
     {
@@ -52,6 +62,17 @@ public class CustomerBehaviour : BaseBehaviour
             if (amount < requiredAmount) return;
             selectedWK.AddItemToContainer(itemKey, -requiredAmount);
             AddOwningItem(itemKey, requiredAmount);
+        }
+    }
+    protected virtual void CleanNeedItems()
+    {
+        //! consider here for the performance
+        foreach (var pair in needItemsDict)
+        {
+            if (!OwningItemsDict.TryGetValue(pair.Key, out int amount)) continue;
+            var requiredAmount = pair.Value;
+            if (amount < requiredAmount) continue;
+            RemoveOwningItem(pair.Key, requiredAmount);
         }
     }
     protected override bool HandleEndTask()

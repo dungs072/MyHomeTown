@@ -88,6 +88,20 @@ public class ServerBehaviour : BaseBehaviour
         AddOwningItems(createdItems);
 
     }
+    protected void PutItemsToDoStep(List<ItemRequirement> needItems)
+    {
+        if (needItems == null || needItems.Count == 0) return;
+
+        foreach (var needItem in needItems)
+        {
+            var itemKey = needItem.itemKey;
+            if (!OwningItemsDict.TryGetValue(itemKey, out int amount)) continue;
+            var requiredAmount = needItem.amount;
+            if (amount < requiredAmount) continue;
+            RemoveOwningItem(itemKey, requiredAmount);
+            AddNeedItem(itemKey, -requiredAmount);
+        }
+    }
     private void PutPossibleItemsToPuttingStation(WorkContainer selectedWK)
     {
         var itemsToPut = new List<ItemKey>(OwningItemsList);
