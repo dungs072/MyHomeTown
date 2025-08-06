@@ -27,18 +27,53 @@ public class Person : MonoBehaviour
     private ManagerSingleton singleton;
     private AgentController agentController;
     private PersonStatus personStatus;
+    private Pack pack;
     private IPersonBehaviour personBehaviour;
+
     public PersonData PersonData => personData;
     public InfoPersonUI InfoPersonUI => infoPersonUI;
     public AgentController AgentController => agentController;
     public PersonStatus PersonStatus => personStatus;
+    public Pack Pack => pack;
 
     public IPersonBehaviour PersonBehaviour => personBehaviour;
 
     void Awake()
     {
+        InitComponents();
+        RegisterEvents();
+    }
+    private void InitComponents()
+    {
         singleton = EmpireInstance;
         agentController = GetComponent<AgentController>();
+        pack = new Pack(100);
+    }
+    private void RegisterEvents()
+    {
+        Pack.OnPackChanged += HandlePackChanged;
+    }
+    void OnDestroy()
+    {
+        UnregisterEvents();
+    }
+    private void UnregisterEvents()
+    {
+        Pack.OnPackChanged -= HandlePackChanged;
+    }
+
+    private void HandlePackChanged()
+    {
+        //? Update the UI or any other logic when the pack changes     
+        var stringBuilder = new System.Text.StringBuilder();
+
+        foreach (var item in pack.Items)
+        {
+            var itemName = ItemKeyNames.ToName(item);
+            stringBuilder.AppendLine($"{itemName} x{pack.GetAmount(item)}");
+        }
+
+        infoPersonUI.SetInfoText(stringBuilder.ToString());
     }
 
     void Start()
@@ -59,7 +94,7 @@ public class Person : MonoBehaviour
         {
             AgentType.CUSTOMER => new CustomerBehaviour(this),
             AgentType.SERVER => new ServerBehaviour(this),
-            AgentType.RECEPTIONIST => new ServerBehaviour(this),
+            AgentType.RECEPTIONIST => new Receptionist(this),
             _ => new BaseBehaviour(this),
         };
     }
