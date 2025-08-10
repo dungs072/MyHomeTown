@@ -12,12 +12,12 @@ public class TaskCoordinator : MonoBehaviour
     void Start()
     {
         AgentManager.OnAgentSpawned += OnAgentSpawned;
-        WorkContainer.OnAvailable += OnWorkContainerAvailable;
+        //WorkContainer.OnAvailable += OnWorkContainerAvailable;
     }
     private void OnDestroy()
     {
         AgentManager.OnAgentSpawned -= OnAgentSpawned;
-        WorkContainer.OnAvailable -= OnWorkContainerAvailable;
+        //WorkContainer.OnAvailable -= OnWorkContainerAvailable;
     }
     private void OnAgentSpawned(AgentController agent)
     {

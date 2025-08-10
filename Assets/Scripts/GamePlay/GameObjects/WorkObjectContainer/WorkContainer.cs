@@ -64,7 +64,7 @@ public class WorkContainer : MonoBehaviour
     {
         if (personsWantToWorkHere.Contains(person)) return;
         personsWantToWorkHere.Add(person);
-        SortPersonsWaitingLine();
+        //SortPersonsWaitingLine();
     }
     public void RemovePersonFromWorkContainer(Person person)
     {
@@ -83,7 +83,7 @@ public class WorkContainer : MonoBehaviour
 
     public bool IsPersonUse(Person person)
     {
-        if (!HasPersonWaiting()) return true;
+        // if (!HasPersonWaiting()) return true;
         var firstPerson = personsWantToWorkHere[0];
         return firstPerson == person || serverPerson == person;
     }
