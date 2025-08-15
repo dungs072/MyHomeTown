@@ -46,8 +46,8 @@ public class TaskCoordinator : MonoBehaviour
     {
         foreach (var person in persons)
         {
-            if (person.PersonBehaviour == null) continue;
-            person.PersonBehaviour.ExecuteBehaviour();
+            if (person.PersonBehavior == null) continue;
+            person.PersonBehavior.ExecuteBehavior();
         }
     }
     public static WorkContainer GetSuitableWorkContainer(WorkContainerType type, Person person)

@@ -8,6 +8,6 @@ public class PersonStatus
     public TaskPerformer CurrentTaskPerformer { get; set; }
     public WorkContainer CurrentWorkContainer { get; set; }
 
-    public PatrollingPath StartPatrollingPath { get; set; }
+    public PatrollingPath CurrentPatrollingPath { get; set; }
     public Vector3? TargetPosition { get; set; }
 }
