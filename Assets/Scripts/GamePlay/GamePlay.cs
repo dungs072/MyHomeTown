@@ -26,8 +26,9 @@ public class GamePlay : MonoBehaviour
         //! temporary code to spawn agents
         var agentManager = EmpireInstance.AgentManager;
 
-        agentManager.SpawnAgents(AgentType.RECEPTIONIST, 1);
-        agentManager.SpawnAgents(AgentType.SERVER, 10);
+        // agentManager.SpawnAgents(AgentType.RECEPTIONIST, 1);
+        //agentManager.SpawnAgents(AgentType.SERVER, 10);
+        agentManager.SpawnAgents(AgentType.CUSTOMER, 5);
     }
 
     void Update()
@@ -35,13 +36,13 @@ public class GamePlay : MonoBehaviour
         if (gameState == GamePlayState.NONE) return;
         if (gameState == GamePlayState.PLAYING)
         {
-            UpdateGamePlaying();
+            // UpdateGamePlaying();
         }
     }
     private void UpdateGamePlaying()
     {
         var agentManager = EmpireInstance.AgentManager;
-        int shouldSpawnAgentCount = UnityEngine.Random.Range(1, 100);
+        int shouldSpawnAgentCount = UnityEngine.Random.Range(1, 4);
         bool shouldSpawnAgent = agentManager.IsAllAgentsLessThan(shouldSpawnAgentCount);
         if (!shouldSpawnAgent) return;
         SpawnAgents();

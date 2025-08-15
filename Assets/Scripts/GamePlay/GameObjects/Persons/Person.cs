@@ -28,7 +28,7 @@ public class Person : MonoBehaviour
     private AgentController agentController;
     private PersonStatus personStatus;
     private Pack pack;
-    private IPersonBehaviour personBehaviour;
+    private BaseBehavior personBehavior;
 
     public PersonData PersonData => personData;
     public InfoPersonUI InfoPersonUI => infoPersonUI;
@@ -36,7 +36,7 @@ public class Person : MonoBehaviour
     public PersonStatus PersonStatus => personStatus;
     public Pack Pack => pack;
 
-    public IPersonBehaviour PersonBehaviour => personBehaviour;
+    public BaseBehavior PersonBehavior => personBehavior;
 
     void Awake()
     {
@@ -90,12 +90,12 @@ public class Person : MonoBehaviour
 
     public void SetBehavior(AgentType agentType)
     {
-        personBehaviour = agentType switch
+        personBehavior = agentType switch
         {
             AgentType.CUSTOMER => new CustomerBehaviour(this),
             AgentType.SERVER => new ServerBehaviour(this),
             AgentType.RECEPTIONIST => new Receptionist(this),
-            _ => new BaseBehaviour(this),
+            _ => new BaseBehavior(this),
         };
     }
 
@@ -137,11 +137,6 @@ public class Person : MonoBehaviour
                 return Color.white;
         }
     }
-    public void SwitchState(PersonState newState)
-    {
-        personStatus.CurrentState = newState;
-        // You can add additional logic here if needed when the state changes
-        OnPersonStatusChanged?.Invoke(this);
-    }
+
 
 }

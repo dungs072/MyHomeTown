@@ -12,12 +12,12 @@ public class TaskCoordinator : MonoBehaviour
     void Start()
     {
         AgentManager.OnAgentSpawned += OnAgentSpawned;
-        WorkContainer.OnAvailable += OnWorkContainerAvailable;
+        //WorkContainer.OnAvailable += OnWorkContainerAvailable;
     }
     private void OnDestroy()
     {
         AgentManager.OnAgentSpawned -= OnAgentSpawned;
-        WorkContainer.OnAvailable -= OnWorkContainerAvailable;
+        //WorkContainer.OnAvailable -= OnWorkContainerAvailable;
     }
     private void OnAgentSpawned(AgentController agent)
     {
@@ -46,8 +46,8 @@ public class TaskCoordinator : MonoBehaviour
     {
         foreach (var person in persons)
         {
-            if (person.PersonBehaviour == null) continue;
-            person.PersonBehaviour.ExecuteBehaviour();
+            if (person.PersonBehavior == null) continue;
+            person.PersonBehavior.ExecuteBehavior();
         }
     }
     public static WorkContainer GetSuitableWorkContainer(WorkContainerType type, Person person)
