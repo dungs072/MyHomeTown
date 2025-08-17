@@ -27,7 +27,7 @@ public class GamePlay : MonoBehaviour
         var agentManager = EmpireInstance.AgentManager;
 
         // agentManager.SpawnAgents(AgentType.RECEPTIONIST, 1);
-        //agentManager.SpawnAgents(AgentType.SERVER, 10);
+        agentManager.SpawnAgents(AgentType.SERVER, 2);
         agentManager.SpawnAgents(AgentType.CUSTOMER, 5);
     }
 
