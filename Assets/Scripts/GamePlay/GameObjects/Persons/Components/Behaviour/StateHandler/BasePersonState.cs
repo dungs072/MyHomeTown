@@ -15,12 +15,13 @@ public class BasePersonState : IState
         personStatus = person.PersonStatus;
         taskHandler = person.GetComponent<TaskHandler>();
         agent = person.GetComponent<AgentController>();
-        behavior = person.PersonBehavior;
     }
 
     public virtual void EnterState()
     {
         // Enter state logic can be implemented in derived classes
+        // get the behavior again 
+        behavior = person.PersonBehavior;
     }
     public virtual void UpdateState()
     {

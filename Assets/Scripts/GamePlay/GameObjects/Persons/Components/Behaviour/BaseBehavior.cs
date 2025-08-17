@@ -28,7 +28,7 @@ public class BaseBehavior : IPersonBehavior
         //! temporary code to initialize patrolling path
         InitBehavior();
     }
-    public void InitBehavior()
+    public virtual void InitBehavior()
     {
         var personStatus = person.PersonStatus;
         personStatus.CurrentPatrollingPath = patrollingSystem.PathDictionary[PatrollingPathKey.DefaultPath];
@@ -63,9 +63,18 @@ public class BaseBehavior : IPersonBehavior
         if (wk == null)
         {
             wk = TaskCoordinator.GetSuitableWorkContainer(currentStep.Step.Data.WorkContainerType, person);
-            personStatus.CurrentWorkContainer = wk;
             wk.AddPersonToWorkContainer(person);
+            personStatus.CurrentWorkContainer = wk;
             personStatus.TargetPosition = wk.GetWaitingPosition(person);
+
+            return;
+        }
+
+        var waitingPosition = wk.GetWaitingPosition(person);
+        if (!agent.IsReachedDestination(waitingPosition))
+        {
+            personStatus.TargetPosition = waitingPosition;
+            stateMachine.ChangeState<MoveState>();
             return;
         }
 

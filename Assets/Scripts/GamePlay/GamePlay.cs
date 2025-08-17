@@ -28,7 +28,7 @@ public class GamePlay : MonoBehaviour
 
         // agentManager.SpawnAgents(AgentType.RECEPTIONIST, 1);
         agentManager.SpawnAgents(AgentType.SERVER, 2);
-        agentManager.SpawnAgents(AgentType.CUSTOMER, 5);
+        //agentManager.SpawnAgents(AgentType.CUSTOMER, 5);
     }
 
     void Update()

@@ -1,12 +1,23 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ServerBehaviour : BaseBehavior
+public class ServerBehavior : BaseBehavior
 {
-    public ServerBehaviour(Person person) : base(person)
+    public ServerBehavior(Person person) : base(person)
     {
         this.person = person;
     }
+    public override void InitBehavior()
+    {
+        // no patrolling in default
+        return;
+    }
+
+    protected override void UpdatePersonState()
+    {
+        base.UpdatePersonState();
+    }
+
     protected override bool TryToMeetConditionsToWork()
     {
         var enoughItemInWK = IsEnoughNeedItemInWorkContainer();
@@ -32,7 +43,6 @@ public class ServerBehaviour : BaseBehavior
 
     public override void HandleFinishedStep()
     {
-        base.HandleFinishedStep();
         var personStatus = person.PersonStatus;
         var selectedWK = personStatus.CurrentWorkContainer;
         var taskPerformer = personStatus.CurrentTaskPerformer;
@@ -52,15 +62,10 @@ public class ServerBehaviour : BaseBehavior
         // take items after done step
         var createdItems = currentStep.Step.Data.PossibleCreateItems;
         person.Pack.AddItems(createdItems);
-    }
 
-    // protected override bool CanWork()
-    // {
-    //     var personStatus = person.PersonStatus;
-    //     var selectedWK = personStatus.CurrentWorkContainer;
-    //     var isPuttingStation = selectedWK.IsPuttingStation();
-    //     return base.CanWork() || isPuttingStation;
-    // }
+        //! reset all the current step
+        base.HandleFinishedStep();
+    }
 
     protected void PutItemsToDoStep(List<ItemRequirement> needItems)
     {
