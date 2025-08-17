@@ -42,6 +42,7 @@ public class Person : MonoBehaviour
     {
         InitComponents();
         RegisterEvents();
+        InitBehavior();
     }
     private void InitComponents()
     {
@@ -52,6 +53,11 @@ public class Person : MonoBehaviour
     private void RegisterEvents()
     {
         Pack.OnPackChanged += HandlePackChanged;
+    }
+    private void InitBehavior()
+    {
+        var agentType = agentController.AgentType;
+        SetBehavior(agentType);
     }
     void OnDestroy()
     {
@@ -78,22 +84,16 @@ public class Person : MonoBehaviour
 
     void Start()
     {
-
-        Invoke(nameof(InitBehavior), 1f);
         SetRandomColor();
     }
-    private void InitBehavior()
-    {
-        var agentType = agentController.AgentType;
-        SetBehavior(agentType);
-    }
+
 
     public void SetBehavior(AgentType agentType)
     {
         personBehavior = agentType switch
         {
             AgentType.CUSTOMER => new CustomerBehaviour(this),
-            AgentType.SERVER => new ServerBehaviour(this),
+            AgentType.SERVER => new ServerBehavior(this),
             AgentType.RECEPTIONIST => new Receptionist(this),
             _ => new BaseBehavior(this),
         };
