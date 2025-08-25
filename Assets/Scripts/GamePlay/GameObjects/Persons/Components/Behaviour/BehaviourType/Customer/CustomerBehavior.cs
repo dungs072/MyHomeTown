@@ -1,9 +1,9 @@
 using System.Collections.Generic;
 using UnityEngine;
-public class CustomerBehaviour : BaseBehavior
+public class CustomerBehavior : BaseBehavior
 {
     private int currentEndWaitPoint = 0;
-    public CustomerBehaviour(Person person) : base(person)
+    public CustomerBehavior(Person person) : base(person)
     {
         this.person = person;
     }

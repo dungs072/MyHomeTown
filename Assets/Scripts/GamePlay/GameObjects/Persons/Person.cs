@@ -92,7 +92,7 @@ public class Person : MonoBehaviour
     {
         personBehavior = agentType switch
         {
-            AgentType.CUSTOMER => new CustomerBehaviour(this),
+            AgentType.CUSTOMER => new CustomerBehavior(this),
             AgentType.SERVER => new ServerBehavior(this),
             AgentType.RECEPTIONIST => new Receptionist(this),
             _ => new BaseBehavior(this),
