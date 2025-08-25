@@ -50,18 +50,17 @@ public class ServerBehavior : BaseBehavior
         if (selectedWK.IsPuttingStation())
         {
             PutPossibleItemsToPuttingStation(selectedWK);
-            return;
         }
         else
         {
             PutItemsToDoStep(currentStep.NeedItems);
+            // take items along
+            var itemsInContainer = selectedWK.ItemsInContainer;
+            TakeNeedItemsFrom(itemsInContainer);
+            // take items after done step
+            var createdItems = currentStep.Step.Data.PossibleCreateItems;
+            person.Pack.AddItems(createdItems);
         }
-        // take items along
-        var itemsInContainer = selectedWK.ItemsInContainer;
-        TakeNeedItemsFrom(itemsInContainer);
-        // take items after done step
-        var createdItems = currentStep.Step.Data.PossibleCreateItems;
-        person.Pack.AddItems(createdItems);
 
         //! reset all the current step
         base.HandleFinishedStep();

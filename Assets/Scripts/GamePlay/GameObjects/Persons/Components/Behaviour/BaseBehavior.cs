@@ -128,8 +128,10 @@ public class BaseBehavior : IPersonBehavior
     protected virtual void HandleEndTask()
     {
         if (person.PersonStatus.CurrentTaskPerformer != null) return;
+        Debug.DebugBreak();
         // Base case: no task performer, so we can reset the task handler
         taskHandler.CreateNewTask();
+
     }
 
     #endregion
