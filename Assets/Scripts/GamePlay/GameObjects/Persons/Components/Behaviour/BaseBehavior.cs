@@ -19,14 +19,17 @@ public class BaseBehavior : IPersonBehavior
     public BaseBehavior(Person person)
     {
         this.person = person;
+        Debug.Log($"<color=#2c4763>this.person: {this.person}</color>");
+        InitComponents();
+        InitBehavior();
+    }
+    public virtual void InitComponents()
+    {
         taskHandler = person.GetComponent<TaskHandler>();
         agent = person.GetComponent<AgentController>();
         patrollingSystem = EmpireInstance.PatrollingSystem;
         stateMachine = new PersonStateMachine(person);
-        //! temporary code to initialize need items pack
         needItemsPack = new Pack(100);
-        //! temporary code to initialize patrolling path
-        InitBehavior();
     }
     public virtual void InitBehavior()
     {

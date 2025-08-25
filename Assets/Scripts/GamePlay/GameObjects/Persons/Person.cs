@@ -49,6 +49,7 @@ public class Person : MonoBehaviour
         singleton = EmpireInstance;
         agentController = GetComponent<AgentController>();
         pack = new Pack(100);
+        personStatus = new();
     }
     private void RegisterEvents()
     {
@@ -113,7 +114,6 @@ public class Person : MonoBehaviour
         string personName = PersonDataGenerator.GenerateName();
         int personAge = PersonDataGenerator.GenerateAge();
         personData = new PersonData(personName, personAge);
-        personStatus = new();
     }
 
     private void SetRandomColor()

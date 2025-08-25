@@ -6,6 +6,7 @@ public class CustomerBehavior : BaseBehavior
     public CustomerBehavior(Person person) : base(person)
     {
         this.person = person;
+        
     }
 
     protected override bool TryToMeetConditionsToWork()
