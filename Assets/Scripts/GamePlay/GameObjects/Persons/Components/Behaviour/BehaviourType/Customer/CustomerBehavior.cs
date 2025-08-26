@@ -35,7 +35,7 @@ public class CustomerBehavior : BaseBehavior
     {
         base.HandleFinishedStep();
         var personStatus = person.PersonStatus;
-        var workContainer = personStatus.CurrentWorkContainer;
+            var workContainer = personStatus.CurrentWorkContainer;
         if (workContainer.IsDiningTable())
         {
             AbsorbItems();

@@ -15,9 +15,77 @@ public class ServerBehavior : BaseBehavior
 
     protected override void UpdatePersonState()
     {
-        base.UpdatePersonState();
+        var personStatus = person.PersonStatus;
+        if (personStatus.CurrentPatrollingPath) return;
+
+        if (personStatus.TargetPosition != null)
+        {
+            stateMachine.ChangeState<MoveState>();
+            return;
+        }
+
+        if (personStatus.CurrentTaskPerformer == null)
+        {
+            stateMachine.ChangeState<IdleState>();
+            return;
+        }
+
+        var wk = personStatus.CurrentWorkContainer;
+        var currentStep = personStatus.CurrentTaskPerformer.GetCurrentStepPerformer();
+        if (wk == null)
+        {
+            wk = TaskCoordinator.GetSuitableWorkContainer(currentStep.Step.Data.WorkContainerType, person);
+            if (wk.IsPuttingStation())
+            {
+                personStatus.TargetPosition = wk.GetPuttingPosition();
+            }
+            else
+            {
+                wk.AddPersonToWorkContainer(person);
+                personStatus.TargetPosition = wk.GetWaitingPosition(person);
+            }
+            personStatus.CurrentWorkContainer = wk;
+            return;
+        }
+
+        var targetPosition = GetTargetPositionBaseOnWK();
+        if (!agent.IsReachedDestination(targetPosition))
+        {
+            personStatus.TargetPosition = targetPosition;
+            stateMachine.ChangeState<MoveState>();
+            return;
+        }
+
+        if (CanWork())
+        {
+            stateMachine.ChangeState<WorkState>();
+        }
+        else
+        {
+            stateMachine.ChangeState<WaitState>();
+        }
     }
 
+    private Vector3 GetTargetPositionBaseOnWK()
+    {
+        var personStatus = person.PersonStatus;
+        var selectedWK = personStatus.CurrentWorkContainer;
+        if (selectedWK.IsPuttingStation())
+        {
+            return selectedWK.GetPuttingPosition();
+        }
+        else
+        {
+            return selectedWK.GetWaitingPosition(person);
+        }
+
+    }
+    private bool CanWork()
+    {
+        var wk = person.PersonStatus.CurrentWorkContainer;
+        if (!wk.IsPersonUse(person) && !wk.IsPuttingStation()) return false;
+        return TryToMeetConditionsToWork();
+    }
     protected override bool TryToMeetConditionsToWork()
     {
         var enoughItemInWK = IsEnoughNeedItemInWorkContainer();

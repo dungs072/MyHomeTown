@@ -13,13 +13,12 @@ public class BaseBehavior : IPersonBehavior
     protected Pack needItemsPack;
     protected int currentWaitPointIndex = 0;
     private TaskPerformer previousTaskPerformer;
-    private PersonStateMachine stateMachine;
+    protected PersonStateMachine stateMachine;
 
 
     public BaseBehavior(Person person)
     {
         this.person = person;
-        Debug.Log($"<color=#2c4763>this.person: {this.person}</color>");
         InitComponents();
         InitBehavior();
     }
