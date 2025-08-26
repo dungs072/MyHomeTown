@@ -17,9 +17,7 @@ public class WorkContainer : MonoBehaviour
     [SerializeField] private Transform puttingTransform;
     public WorkContainerType WorkContainerType => workContainerType;
     private List<Person> personsWantToWorkHere = new();
-    public List<Person> PersonsWantToWorkHere => personsWantToWorkHere;
     private Person serverPerson;
-    public Person ServerPerson => serverPerson;
     // handle items
     private Dictionary<ItemKey, int> itemsInContainer = new();
     public Dictionary<ItemKey, int> ItemsInContainer => itemsInContainer;

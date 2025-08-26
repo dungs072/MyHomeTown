@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using static ManagerSingleton;
 
-public class Diner : CustomerBehaviour
+public class Diner : CustomerBehavior
 {
     public Diner(Person person) : base(person)
     {

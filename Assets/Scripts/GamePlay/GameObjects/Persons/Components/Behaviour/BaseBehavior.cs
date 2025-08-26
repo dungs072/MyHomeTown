@@ -13,20 +13,22 @@ public class BaseBehavior : IPersonBehavior
     protected Pack needItemsPack;
     protected int currentWaitPointIndex = 0;
     private TaskPerformer previousTaskPerformer;
-    private PersonStateMachine stateMachine;
+    protected PersonStateMachine stateMachine;
 
 
     public BaseBehavior(Person person)
     {
         this.person = person;
+        InitComponents();
+        InitBehavior();
+    }
+    public virtual void InitComponents()
+    {
         taskHandler = person.GetComponent<TaskHandler>();
         agent = person.GetComponent<AgentController>();
         patrollingSystem = EmpireInstance.PatrollingSystem;
         stateMachine = new PersonStateMachine(person);
-        //! temporary code to initialize need items pack
         needItemsPack = new Pack(100);
-        //! temporary code to initialize patrolling path
-        InitBehavior();
     }
     public virtual void InitBehavior()
     {
@@ -128,8 +130,10 @@ public class BaseBehavior : IPersonBehavior
     protected virtual void HandleEndTask()
     {
         if (person.PersonStatus.CurrentTaskPerformer != null) return;
+        Debug.DebugBreak();
         // Base case: no task performer, so we can reset the task handler
         taskHandler.CreateNewTask();
+
     }
 
     #endregion

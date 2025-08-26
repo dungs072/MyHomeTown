@@ -24,7 +24,6 @@ public class WorkState : BasePersonState
         var taskPerformer = personStatus.CurrentTaskPerformer;
         var currentStep = taskPerformer.GetCurrentStepPerformer();
         behavior.UpdateDoingStep();
-
         if (currentStep.IsFinished)
         {
             behavior.HandleFinishedStep();

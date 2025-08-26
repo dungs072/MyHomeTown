@@ -1,11 +1,12 @@
 using System.Collections.Generic;
 using UnityEngine;
-public class CustomerBehaviour : BaseBehavior
+public class CustomerBehavior : BaseBehavior
 {
     private int currentEndWaitPoint = 0;
-    public CustomerBehaviour(Person person) : base(person)
+    public CustomerBehavior(Person person) : base(person)
     {
         this.person = person;
+        
     }
 
     protected override bool TryToMeetConditionsToWork()
@@ -34,7 +35,7 @@ public class CustomerBehaviour : BaseBehavior
     {
         base.HandleFinishedStep();
         var personStatus = person.PersonStatus;
-        var workContainer = personStatus.CurrentWorkContainer;
+            var workContainer = personStatus.CurrentWorkContainer;
         if (workContainer.IsDiningTable())
         {
             AbsorbItems();

@@ -49,9 +49,10 @@ public class Person : MonoBehaviour
         singleton = EmpireInstance;
         agentController = GetComponent<AgentController>();
         pack = new Pack(100);
+        personStatus = new();
     }
     private void RegisterEvents()
-    {
+    {   
         Pack.OnPackChanged += HandlePackChanged;
     }
     private void InitBehavior()
@@ -92,7 +93,7 @@ public class Person : MonoBehaviour
     {
         personBehavior = agentType switch
         {
-            AgentType.CUSTOMER => new CustomerBehaviour(this),
+            AgentType.CUSTOMER => new CustomerBehavior(this),
             AgentType.SERVER => new ServerBehavior(this),
             AgentType.RECEPTIONIST => new Receptionist(this),
             _ => new BaseBehavior(this),
@@ -113,7 +114,6 @@ public class Person : MonoBehaviour
         string personName = PersonDataGenerator.GenerateName();
         int personAge = PersonDataGenerator.GenerateAge();
         personData = new PersonData(personName, personAge);
-        personStatus = new();
     }
 
     private void SetRandomColor()
