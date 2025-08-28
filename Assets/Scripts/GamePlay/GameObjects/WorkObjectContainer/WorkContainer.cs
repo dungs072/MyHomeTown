@@ -74,16 +74,16 @@ public class WorkContainer : MonoBehaviour
         }
         //SortPersonsWaitingLine();
     }
-    public bool HasPersonWaiting()
-    {
-        return personsWantToWorkHere.Count > 0;
-    }
 
     public bool IsPersonUse(Person person)
     {
-        // if (!HasPersonWaiting()) return true;
+        if (!HasPersonWaiting()) return true;
         var firstPerson = personsWantToWorkHere[0];
         return firstPerson == person || serverPerson == person;
+    }
+    public bool HasPersonWaiting()
+    {
+        return personsWantToWorkHere.Count > 0;
     }
     public Vector3 GetWaitingPosition(Person person)
     {

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 public class CustomerBehavior : BaseBehavior
 {
@@ -6,7 +7,16 @@ public class CustomerBehavior : BaseBehavior
     public CustomerBehavior(Person person) : base(person)
     {
         this.person = person;
-        
+    }
+    protected override void UpdatePersonState()
+    {
+        base.UpdatePersonState();
+        var personStatus = person.PersonStatus;
+        if (personStatus.CurrentTaskPerformer == null && personStatus.CurrentPatrollingPath == null)
+        {
+            // release person to the pool
+            person.gameObject.SetActive(false);
+        }
     }
 
     protected override bool TryToMeetConditionsToWork()
@@ -33,9 +43,8 @@ public class CustomerBehavior : BaseBehavior
     }
     public override void HandleFinishedStep()
     {
-        base.HandleFinishedStep();
         var personStatus = person.PersonStatus;
-            var workContainer = personStatus.CurrentWorkContainer;
+        var workContainer = personStatus.CurrentWorkContainer;
         if (workContainer.IsDiningTable())
         {
             AbsorbItems();
@@ -44,8 +53,8 @@ public class CustomerBehavior : BaseBehavior
         else
         {
             TakeItemsFromWorkContainer();
-
         }
+        base.HandleFinishedStep();
     }
     private void AbsorbItems()
     {
@@ -77,27 +86,10 @@ public class CustomerBehavior : BaseBehavior
     }
     protected override void HandleEndTask()
     {
-        if (person.PersonStatus.CurrentTaskPerformer != null) return;
+        var personStatus = person.PersonStatus;
+        if (personStatus.CurrentTaskPerformer != null) return;
         if (!patrollingSystem) return;
-        var patrollingPath = patrollingSystem.PathDictionary[PatrollingPathKey.BackPath];
-        if (patrollingPath == null || patrollingPath.Waypoints.Length == 0) return;
-
-        var maxIndex = patrollingPath.Waypoints.Length - 1;
-        if (currentEndWaitPoint > maxIndex)
-        {
-            person.gameObject.SetActive(false);
-        }
-
-        var targetPosition = patrollingPath.Waypoints[currentEndWaitPoint].position;
-        //person.SwitchState(PersonState.MOVE);
-
-        if (!agent.IsReachedDestination(targetPosition))
-        {
-            agent.SetDestination(targetPosition);
-        }
-        else
-        {
-            currentEndWaitPoint++;
-        }
+        personStatus.CurrentPatrollingPath = patrollingSystem.PathDictionary[PatrollingPathKey.BackPath];
+        stateMachine.ChangeState<PatrollingState>();
     }
 }
