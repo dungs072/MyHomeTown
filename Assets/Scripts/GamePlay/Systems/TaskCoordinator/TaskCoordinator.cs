@@ -3,12 +3,15 @@ using Unity.Entities.UniversalDelegates;
 using Unity.VisualScripting;
 using UnityEngine;
 using static ManagerSingleton;
+/// <summary>
+/// This will coordinate tasks between from agent to agent (server to customer).
+/// </summary>
 public class TaskCoordinator : MonoBehaviour
 {
     private AgentManager agentManager;
 
     private List<Person> persons = new();
-
+    private ServerCoordinator serverCoordinator = new();
     void Start()
     {
         AgentManager.OnAgentSpawned += OnAgentSpawned;
@@ -25,6 +28,15 @@ public class TaskCoordinator : MonoBehaviour
         var person = agent.GetComponent<Person>();
         if (person == null) return;
         persons.Add(person);
+        var taskHandler = person.GetComponent<TaskHandler>();
+        if (person.PersonBehavior is ServerBehavior)
+        {
+            serverCoordinator.AddServer(taskHandler);
+        }
+        else
+        {
+
+        }
     }
     private void OnWorkContainerAvailable(WorkContainer workContainer)
     {

@@ -52,7 +52,7 @@ public class Person : MonoBehaviour
         personStatus = new();
     }
     private void RegisterEvents()
-    {   
+    {
         Pack.OnPackChanged += HandlePackChanged;
     }
     private void InitBehavior()

@@ -10,6 +10,11 @@ public class TaskHandler : MonoBehaviour
     private int currentTaskIndex = 0;
 
     private Person person;
+
+    public bool IsFree()
+    {
+        return person.PersonStatus.CurrentTaskPerformer == null;
+    }
     void Awake()
     {
         person = GetComponent<Person>();
@@ -28,6 +33,23 @@ public class TaskHandler : MonoBehaviour
         if (task == null) return;
         person.PersonStatus.CurrentTaskPerformer = new TaskPerformer();
         person.PersonStatus.CurrentTaskPerformer.SetTask(task);
+    }
+    public void AddTask(TaskName taskName)
+    {
+        var taskManager = EmpireInstance.TaskManager;
+        var task = taskManager.TasksDict[taskName];
+        if (task == null) return;
+        var personStatus = person.PersonStatus;
+        var currentTask = personStatus.CurrentTaskPerformer;
+        if (currentTask == null)
+        {
+            personStatus.CurrentTaskPerformer = new TaskPerformer();
+            person.PersonStatus.CurrentTaskPerformer.SetTask(task);
+        }
+        else
+        {
+            taskNames.Add(taskName);
+        }
     }
 
     public void MoveNextTask()
