@@ -12,6 +12,7 @@ public class TaskCoordinator : MonoBehaviour
 
     private List<Person> persons = new();
     private ServerCoordinator serverCoordinator = new();
+    private CustomerCoordinator customerCoordinator = new();
     void Start()
     {
         AgentManager.OnAgentSpawned += OnAgentSpawned;
@@ -33,25 +34,15 @@ public class TaskCoordinator : MonoBehaviour
         {
             serverCoordinator.AddServer(taskHandler);
         }
-        else
+        else if (person.PersonBehavior is CustomerBehavior)
         {
-
+            customerCoordinator.AddCustomer(taskHandler);
         }
+        AssignRandomTaskToCustomers();
     }
-    private void OnWorkContainerAvailable(WorkContainer workContainer)
+    private void AssignRandomTaskToCustomers()
     {
-        foreach (var person in persons)
-        {
-            var personStatus = person.PersonStatus;
-            var selectedWK = personStatus.CurrentWorkContainer;
-            if (selectedWK == null || selectedWK == workContainer) continue;
-            if (workContainer.WorkContainerType != selectedWK.WorkContainerType) continue;
-            var isUsingWK = selectedWK.IsPersonUse(person);
-            if (isUsingWK) continue;
-            selectedWK.RemovePersonFromWorkContainer(person);
-            personStatus.CurrentWorkContainer = workContainer;
-            break;
-        }
+        customerCoordinator.AddSameTasksToAllCustomers(new List<TaskName> { TaskName.DINNER });
     }
 
     void Update()

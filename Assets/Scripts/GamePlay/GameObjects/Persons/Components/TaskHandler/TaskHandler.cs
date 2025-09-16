@@ -4,7 +4,7 @@ using static ManagerSingleton;
 [RequireComponent(typeof(Person))]
 public class TaskHandler : MonoBehaviour
 {
-    [SerializeField] private List<TaskName> taskNames;
+    [SerializeField] private List<TaskName> taskNames = new();
 
     public List<TaskName> TaskNames => taskNames;
     private int currentTaskIndex = 0;

@@ -10,7 +10,7 @@ public class ServerCoordinator
         servers.Add(server);
     }
 
-    public void AddTaskForServer(List<TaskName> taskNames)
+    public void AddTaskToCustomer(List<TaskName> taskNames)
     {
         var freeServers = servers.FindAll(server => server.IsFree());
         var suitableServers = freeServers.Count == 0 ? servers : freeServers;

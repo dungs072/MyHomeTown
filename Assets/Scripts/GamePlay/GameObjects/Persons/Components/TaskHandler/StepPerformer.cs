@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Unity.Entities.UniversalDelegates;
 using UnityEngine;
 
 
@@ -42,8 +43,7 @@ public class StepPerformer
     public void AddNeedObject(ItemRequirement item)
     {
         needItems ??= new List<ItemRequirement>();
-
-        needItems.Add(item);
+        needItems.Add(item.Clone());
     }
 
     public ItemRequirement GetNeedObject(ItemKey key)

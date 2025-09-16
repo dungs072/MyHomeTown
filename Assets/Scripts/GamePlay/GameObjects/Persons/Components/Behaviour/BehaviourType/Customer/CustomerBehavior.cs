@@ -3,10 +3,18 @@ using Unity.VisualScripting;
 using UnityEngine;
 public class CustomerBehavior : BaseBehavior
 {
-    private int currentEndWaitPoint = 0;
     public CustomerBehavior(Person person) : base(person)
     {
         this.person = person;
+    }
+    public override void InitBehavior()
+    {
+        if (taskHandler.TaskNames.Count == 0)
+        {
+            stateMachine.ChangeState<IdleState>();
+            return;
+        }
+        base.InitBehavior();
     }
     protected override void UpdatePersonState()
     {
