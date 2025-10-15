@@ -1,8 +1,9 @@
 using System.Collections.Generic;
+using BaseEngine.Debuggers;
 using UnityEngine;
 using static ManagerSingleton;
 
-public class BaseBehavior : IPersonBehavior
+public class BaseBehavior : IWorkable
 {
     protected Person person;
     protected TaskHandler taskHandler;
@@ -11,170 +12,62 @@ public class BaseBehavior : IPersonBehavior
 
     // need items
     protected Pack needItemsPack;
-    protected int currentWaitPointIndex = 0;
-    private TaskPerformer previousTaskPerformer;
-    protected PersonStateMachine stateMachine;
 
 
     public BaseBehavior(Person person)
     {
         this.person = person;
         InitComponents();
-        InitBehavior();
+        RegisterEvents();
     }
-    public virtual void InitComponents()
+    ~BaseBehavior()
+    {
+        UnregisterEvents();
+    }
+    private void InitComponents()
     {
         taskHandler = person.GetComponent<TaskHandler>();
         agent = person.GetComponent<AgentController>();
         patrollingSystem = EmpireInstance.PatrollingSystem;
-        stateMachine = new PersonStateMachine(person);
         needItemsPack = new Pack(100);
     }
-    public virtual void InitBehavior()
+    private void RegisterEvents()
     {
-        var personStatus = person.PersonStatus;
-        personStatus.CurrentPatrollingPath = patrollingSystem.PathDictionary[PatrollingPathKey.DefaultPath];
-        personStatus.TargetPosition = personStatus.CurrentPatrollingPath.Waypoints[0].position;
-        stateMachine.ChangeState<PatrollingState>();
+        EventBus.Subscribe(GameEvents.TaskHandlerEvents.OnTaskAvailable, OnTaskAvailable);
     }
-    public void ExecuteBehavior()
+    private void UnregisterEvents()
     {
-        UpdatePersonState();
-        stateMachine.Update();
-
+        EventBus.Unsubscribe(GameEvents.TaskHandlerEvents.OnTaskAvailable, OnTaskAvailable);
     }
-    protected virtual void UpdatePersonState()
+    private void OnTaskAvailable(object taskPerformer)
     {
-        var personStatus = person.PersonStatus;
-        if (personStatus.CurrentPatrollingPath) return;
-
-        if (personStatus.TargetPosition != null)
+        //? cast type check
+        if (taskPerformer is not TaskPerformer performer) return;
+        var step = performer.CurStep;
+        var wkType = step.WKType;
+        var chosenWK = TaskCoordinator.GetSuitableWorkContainer(wkType, person.transform);
+        if (chosenWK == null)
         {
-            stateMachine.ChangeState<MoveState>();
+            BugTracer.Trace($"No suitable work container found for type {wkType} for person {person.PersonData.Name}");
             return;
         }
-
-        if (personStatus.CurrentTaskPerformer == null)
+        chosenWK.RequestToWork(this);
+        agent.MoveTo(new Movable
         {
-            stateMachine.ChangeState<IdleState>();
-            return;
-        }
+            destination = chosenWK.transform.position,
 
-        var wk = personStatus.CurrentWorkContainer;
-        var currentStep = personStatus.CurrentTaskPerformer.GetCurrentStepPerformer();
-        if (wk == null)
-        {
-            wk = TaskCoordinator.GetSuitableWorkContainer(currentStep.Step.Data.WorkContainerType, person);
-            wk.AddPersonToWorkContainer(person);
-            personStatus.CurrentWorkContainer = wk;
-            personStatus.TargetPosition = wk.GetWaitingPosition(person);
+        });
 
-            return;
-        }
-
-        var waitingPosition = wk.GetWaitingPosition(person);
-        if (!agent.IsReachedDestination(waitingPosition))
-        {
-            personStatus.TargetPosition = waitingPosition;
-            stateMachine.ChangeState<MoveState>();
-            return;
-        }
-
-        if (wk.IsPersonUse(person) && TryToMeetConditionsToWork())
-        {
-            stateMachine.ChangeState<WorkState>();
-        }
-        else
-        {
-            stateMachine.ChangeState<WaitState>();
-        }
     }
-    protected virtual bool TryToMeetConditionsToWork()
+    public void DoWork()
     {
-        return true;
+        throw new System.NotImplementedException();
     }
 
-    #region Task Handling
-
-    public virtual void HandleStartTask()
+    public bool IsWorking()
     {
-        var needItems = GetNeedItemsFromCurrentToEndStep();
-        if (needItems == null || needItems.Count == 0) return;
-        needItemsPack.AddItems(needItems);
+        throw new System.NotImplementedException();
     }
 
-    public virtual void UpdateDoingStep()
-    {
-        var currentStep = person.PersonStatus.CurrentTaskPerformer.GetCurrentStepPerformer();
-        var currentProgress = currentStep.Progress;
-        var newProgress = currentProgress + Time.deltaTime;
-        currentStep.SetProgress(newProgress);
-    }
 
-    public virtual void HandleFinishedStep()
-    {
-        var personStatus = person.PersonStatus;
-        var selectedWK = personStatus.CurrentWorkContainer;
-        var taskPerformer = personStatus.CurrentTaskPerformer;
-
-        taskPerformer.MoveToNextStep();
-        selectedWK.RemovePersonFromWorkContainer(person);
-        personStatus.CurrentWorkContainer = null;
-    }
-    public virtual void HandleFinishedTask()
-    {
-        taskHandler.MoveNextTask();
-        needItemsPack.Clear();
-        HandleEndTask();
-    }
-    protected virtual void HandleEndTask()
-    {
-        if (person.PersonStatus.CurrentTaskPerformer != null) return;
-        // Base case: no task performer, so we can reset the task handler
-        taskHandler.CreateNewTask();
-
-    }
-
-    #endregion
-
-    #region Need Items
-
-    public void TakeNeedItemsFrom(Dictionary<ItemKey, int> items)
-    {
-        var needItems = GetNeedItemsFromCurrentToEndStep();
-        if (needItems == null || needItems.Count == 0) return;
-        foreach (var needItem in needItems)
-        {
-            var itemKey = needItem.itemKey;
-            var requiredAmount = needItem.amount;
-
-            if (items.TryGetValue(itemKey, out int amount))
-            {
-                var gainedAmount = Mathf.Min(amount, requiredAmount);
-                person.Pack.AddItem(itemKey, gainedAmount);
-                items[itemKey] -= gainedAmount;
-            }
-        }
-    }
-    protected virtual List<ItemRequirement> GetNeedItemsFromCurrentToEndStep()
-    {
-        List<ItemRequirement> items = new();
-        var personStatus = person.PersonStatus;
-        var currentTask = personStatus.CurrentTaskPerformer;
-        var currentStep = currentTask.GetCurrentStepPerformer();
-        if (currentStep == null) return null;
-
-        for (int i = currentTask.CurrentStepIndex; i < currentTask.StepPerformers.Count; i++)
-        {
-            var step = currentTask.StepPerformers[i];
-            if (step == null) continue;
-            var stepNeedItems = step.NeedItems;
-            if (stepNeedItems == null || stepNeedItems.Count == 0) continue;
-            items.AddRange(stepNeedItems);
-        }
-
-        return items;
-    }
-    #endregion
-        
 }

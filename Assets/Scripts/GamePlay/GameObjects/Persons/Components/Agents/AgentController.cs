@@ -7,57 +7,32 @@ using UnityEngine;
 public class AgentController : MonoBehaviour
 {
     [SerializeField] private AgentType agentType;
-    [SerializeField] private Transform target;
     public AgentType AgentType => agentType;
     private AgentAuthoring agent;
-
-    public void SetTarget(Transform target)
-    {
-        this.target = target;
-        SetDestination(target.position);
-    }
+    private Coroutine _curMoveCoroutine;
 
     private void Awake()
     {
         agent = GetComponent<AgentAuthoring>();
     }
 
-
-
-    void Start()
+    public void MoveTo(Movable payload)
     {
-        if (target == null) return;
-        SetDestination(target.position);
+        StopCoroutine(_curMoveCoroutine);
+        StartCoroutine(MoveToPosition(payload));
     }
 
-    public void SetDestination(Vector3 destination)
-    {
-        agent.SetDestinationDeferred(destination);
-    }
-    public void StopMoving()
-    {
-        agent.Stop();
-    }
-    /// <summary>
-    /// Move to specific position with coroutine. When the coroutine finished, 
-    /// the agent is reached the destination
-    /// </summary>
-    /// <param name="targetPos"></param>
-    /// <returns></returns>
 
-    public IEnumerator MoveToPosition(Vector3 destination, Func<bool> shouldStopMoving = null, Action moveFinished = null)
+    private IEnumerator MoveToPosition(Movable payload)
     {
-        SetDestination(destination);
+        var destination = payload.destination;
+        var finishedAction = payload.finishedAction;
+        agent.SetDestination(destination);
         while (!IsReachedDestination(destination))
         {
-            if (shouldStopMoving != null && shouldStopMoving())
-            {
-                agent.Stop();
-                yield break;
-            }
             yield return null;
         }
-        moveFinished?.Invoke();
+        EventBus.Publish(GameEvents.MovementEvents.OnMoveFinished, finishedAction);
     }
 
 
@@ -74,7 +49,7 @@ public class AgentController : MonoBehaviour
     }
     public void ResetAgent()
     {
-        StopMoving();
+        //StopMoving();
 
     }
 

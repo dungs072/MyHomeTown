@@ -7,9 +7,11 @@ public class TaskHandler : MonoBehaviour
     [SerializeField] private List<TaskName> taskNames = new();
 
     public List<TaskName> TaskNames => taskNames;
+    private TaskPerformer taskPerformer;
     private int currentTaskIndex = 0;
-
     private Person person;
+
+    public TaskPerformer CurrentTaskPerformer => taskPerformer;
 
     public bool IsFree()
     {
@@ -31,8 +33,9 @@ public class TaskHandler : MonoBehaviour
         var taskManager = EmpireInstance.TaskManager;
         var task = taskManager.TasksDict[taskNames[currentTaskIndex]];
         if (task == null) return;
-        person.PersonStatus.CurrentTaskPerformer = new TaskPerformer();
-        person.PersonStatus.CurrentTaskPerformer.SetTask(task);
+        taskPerformer = new TaskPerformer();
+        taskPerformer.SetTask(task);
+        EventBus.Publish(GameEvents.TaskHandlerEvents.OnTaskAvailable, taskPerformer);
     }
     public void AddTask(TaskName taskName)
     {

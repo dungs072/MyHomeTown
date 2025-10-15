@@ -10,14 +10,7 @@ public class TaskPerformer
 
     private List<StepPerformer> stepPerformers;
     private int currentStepIndex = 0;
-    public Task Task => task;
-    public int CurrentStepIndex => currentStepIndex;
-    public List<StepPerformer> StepPerformers => stepPerformers;
-
-    public StepPerformer GetCurrentStepPerformer()
-    {
-        return stepPerformers[currentStepIndex];
-    }
+    public StepPerformer CurStep => stepPerformers[currentStepIndex];
     public void MoveToNextStep()
     {
         currentStepIndex++;

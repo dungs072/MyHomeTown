@@ -45,15 +45,7 @@ public class TaskCoordinator : MonoBehaviour
         customerCoordinator.AddSameTasksToAllCustomers(new List<TaskName> { TaskName.DINNER });
     }
 
-    void Update()
-    {
-        foreach (var person in persons)
-        {
-            if (person.PersonBehavior == null) continue;
-            person.PersonBehavior.ExecuteBehavior();
-        }
-    }
-    public static WorkContainer GetSuitableWorkContainer(WorkContainerType type, Person person)
+    public static WorkContainer GetSuitableWorkContainer(WorkContainerType type, Transform worker)
     {
         var wkDict = EmpireInstance.WorkContainerManager.WorkContainerDict;
         if (!wkDict.TryGetValue(type, out var workContainers)) return null;
@@ -62,8 +54,8 @@ public class TaskCoordinator : MonoBehaviour
         float minSqrDist = float.MaxValue;
         foreach (var wc in workContainers)
         {
-            float sqrDist = (wc.transform.position - person.transform.position).sqrMagnitude;
-            if (sqrDist < minSqrDist && !wc.HasPersonWaiting())
+            float sqrDist = (wc.transform.position - worker.position).sqrMagnitude;
+            if (sqrDist < minSqrDist && !wc.HasWorkersInQueue())
             {
                 minSqrDist = sqrDist;
                 closest = wc;
