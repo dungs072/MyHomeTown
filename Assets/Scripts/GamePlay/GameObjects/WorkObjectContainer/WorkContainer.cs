@@ -5,27 +5,49 @@ using UnityEngine;
 
 public class WorkContainer : MonoBehaviour
 {
-    private List<IWorkable> workersQueue = new();
-
-    public bool IsReadyToUse()
-    {
-        if (workersQueue.Count == 0) return true;
-        var currentWorker = workersQueue[0];
-        return !currentWorker.IsWorking();
-    }
+    [SerializeField] private WorkContainerType workContainerType;
+    public WorkContainerType Type => workContainerType;
+    private List<IWorkable> _workersQueue = new();
     public bool HasWorkersInQueue()
     {
-        return workersQueue.Count > 0;
+        return _workersQueue.Count > 0;
+    }
+    public bool IsFreeToRequest()
+    {
+        for (int i = 0; i < _workersQueue.Count; i++)
+        {
+            var worker = _workersQueue[i];
+            if (worker.IsWorking()) return false;
+        }
+        return true;
     }
     public void RequestToWork(IWorkable worker)
     {
-        if (workersQueue.Contains(worker)) return;
-        workersQueue.Add(worker);
+        if (_workersQueue.Contains(worker)) return;
+        _workersQueue.Add(worker);
+    }
+    public void NotifyWorkersLeftWait()
+    {
+        for (int i = 0; i < _workersQueue.Count; i++)
+        {
+            var worker = _workersQueue[i];
+            if (worker.IsWorking()) continue;
+            worker.Wait();
+        }
     }
     public void FinishWork(IWorkable worker)
     {
-        if (!workersQueue.Contains(worker)) return;
-        workersQueue.Remove(worker);
+        if (!_workersQueue.Contains(worker)) return;
+        _workersQueue.Remove(worker);
+
+    }
+    public void NotifyWorkersLeftWork()
+    {
+        for (int i = 0; i < _workersQueue.Count; i++)
+        {
+            var nextWorker = _workersQueue[i];
+            nextWorker.ContinueWork();
+        }
     }
 
 }

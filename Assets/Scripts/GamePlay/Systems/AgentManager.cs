@@ -3,18 +3,18 @@ using System.Collections.Generic;
 using UnityEngine;
 public class AgentManager : MonoBehaviour
 {
-    public static event Action<AgentController> OnAgentSpawned;
+    public static event Action<Movement> OnAgentSpawned;
     [SerializeField] private List<Transform> spawnPoints;
     [SerializeField] private float radius = 5f;
     [Header("Agents")]
-    [SerializeField] private List<AgentController> agentPrefabs;
+    [SerializeField] private List<Movement> agentPrefabs;
 
     [Header("Debugger")]
     [SerializeField] private Transform target;
 
-    private Dictionary<AgentType, List<AgentController>> agentsDict = new();
+    private Dictionary<AgentType, List<Movement>> agentsDict = new();
 
-    public Dictionary<AgentType, List<AgentController>> AgentsDict
+    public Dictionary<AgentType, List<Movement>> AgentsDict
     {
         get { return agentsDict; }
     }
@@ -23,7 +23,7 @@ public class AgentManager : MonoBehaviour
         int count = 0;
         while (count < amount)
         {
-            AgentController agent = GetAgent(agentType);
+            Movement agent = GetAgent(agentType);
             OnAgentSpawned?.Invoke(agent);
             agent.transform.position = GetRandomStartSpawnPoint();
             // if (target != null)
@@ -46,10 +46,10 @@ public class AgentManager : MonoBehaviour
     }
 
     // handle pool
-    private AgentController GetAgent(AgentType agentType)
+    private Movement GetAgent(AgentType agentType)
     {
-        AgentController selectedAgent = null;
-        if (agentsDict.TryGetValue(agentType, out List<AgentController> agents))
+        Movement selectedAgent = null;
+        if (agentsDict.TryGetValue(agentType, out List<Movement> agents))
         {
             var agent = agents.Find(a => !a.gameObject.activeSelf && a.AgentType == agentType);
             if (agent == null)
@@ -71,7 +71,7 @@ public class AgentManager : MonoBehaviour
         }
         else
         {
-            agents = new List<AgentController>();
+            agents = new List<Movement>();
             agentsDict[agentType] = agents;
             var agent = CreateAgent(agentType);
             if (agent == null)
@@ -85,15 +85,15 @@ public class AgentManager : MonoBehaviour
         }
         return selectedAgent;
     }
-    private AgentController CreateAgent(AgentType agentType)
+    private Movement CreateAgent(AgentType agentType)
     {
-        AgentController agentPrefab = agentPrefabs.Find(a => a.AgentType == agentType);
+        Movement agentPrefab = agentPrefabs.Find(a => a.AgentType == agentType);
         if (agentPrefab == null)
         {
             Debug.LogError($"Agent prefab for type {agentType} not found.");
             return null;
         }
-        AgentController newAgent = Instantiate(agentPrefab, transform);
+        Movement newAgent = Instantiate(agentPrefab, transform);
         return newAgent;
     }
 

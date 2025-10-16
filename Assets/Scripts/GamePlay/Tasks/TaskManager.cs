@@ -133,7 +133,7 @@ public class TaskManager : MonoBehaviour
         {
             foreach (var step in task.Value.Steps)
             {
-                if (step.WorkContainerType == workContainer.WorkContainerType)
+                if (step.WorkContainerType == workContainer.Type)
                 {
                     step.AddWorkContainer(workContainer);
                 }
@@ -152,7 +152,7 @@ public class TaskManager : MonoBehaviour
         {
             foreach (var step in task.Value.Steps)
             {
-                if (step.WorkContainerType == workContainer.WorkContainerType)
+                if (step.WorkContainerType == workContainer.Type)
                 {
                     step.WorkContainers.Remove(workContainer);
                 }

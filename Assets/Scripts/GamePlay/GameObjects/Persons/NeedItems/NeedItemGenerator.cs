@@ -15,7 +15,7 @@ public class NeedItemGenerator : MonoBehaviour
         AgentManager.OnAgentSpawned -= HandleAddNeedItem;
     }
 
-    private void HandleAddNeedItem(AgentController agentController)
+    private void HandleAddNeedItem(Movement agentController)
     {
         // if (agentController.TryGetComponent(out CustomerCharacter customer))
         // {

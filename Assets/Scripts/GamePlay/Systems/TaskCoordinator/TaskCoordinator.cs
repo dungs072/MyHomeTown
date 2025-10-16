@@ -23,21 +23,21 @@ public class TaskCoordinator : MonoBehaviour
         AgentManager.OnAgentSpawned -= OnAgentSpawned;
         //WorkContainer.OnAvailable -= OnWorkContainerAvailable;
     }
-    private void OnAgentSpawned(AgentController agent)
+    private void OnAgentSpawned(Movement agent)
     {
         if (agent == null) return;
         var person = agent.GetComponent<Person>();
         if (person == null) return;
         persons.Add(person);
         var taskHandler = person.GetComponent<TaskHandler>();
-        if (person.PersonBehavior is ServerBehavior)
-        {
-            serverCoordinator.AddServer(taskHandler);
-        }
-        else if (person.PersonBehavior is CustomerBehavior)
-        {
-            customerCoordinator.AddCustomer(taskHandler);
-        }
+        // if (person.PersonBehavior is ServerBehavior)
+        // {
+        //     serverCoordinator.AddServer(taskHandler);
+        // }
+        // else if (person.PersonBehavior is CustomerBehavior)
+        // {
+        //     customerCoordinator.AddCustomer(taskHandler);
+        // }
         AssignRandomTaskToCustomers();
     }
     private void AssignRandomTaskToCustomers()

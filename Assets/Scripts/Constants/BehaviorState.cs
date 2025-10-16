@@ -1,8 +1,7 @@
-public enum PersonState
+public enum BehaviorState
 {
     IDLE,
     MOVE,
     WORK,
     WAIT,
-    PATROLLING
 }

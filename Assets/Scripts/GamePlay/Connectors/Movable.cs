@@ -1,8 +1,8 @@
 
 using UnityEngine;
-
+using System;
 public struct Movable
 {
     public Vector3 destination;
-    public IAction finishedAction;
+    public Action finishedAction;
 }

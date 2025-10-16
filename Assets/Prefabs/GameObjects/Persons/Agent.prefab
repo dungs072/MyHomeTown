@@ -283,10 +283,11 @@ GameObject:
   - component: {fileID: 9016698180414684254}
   - component: {fileID: 330555883515283830}
   - component: {fileID: 3225252078075124849}
+  - component: {fileID: 3025372721830674574}
   - component: {fileID: 3578921133018031440}
   - component: {fileID: 8066138087326353846}
   - component: {fileID: 8791239991844329536}
-  - component: {fileID: 3025372721830674574}
+  - component: {fileID: 1336931839049662337}
   m_Layer: 0
   m_Name: Agent
   m_TagString: Untagged
@@ -387,6 +388,19 @@ CapsuleCollider:
   m_Height: 2
   m_Direction: 1
   m_Center: {x: 0, y: 1, z: 0}
+--- !u!114 &3025372721830674574
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7458078509174832313}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 74da3a20a770ff544b2ea1e11b376010, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  selectionObject: {fileID: 1865145471189906866}
 --- !u!114 &3578921133018031440
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -414,7 +428,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   agentType: 0
-  target: {fileID: 0}
 --- !u!114 &8791239991844329536
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -428,7 +441,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   taskNames: 
---- !u!114 &3025372721830674574
+  isAutoDoTaskAgain: 0
+--- !u!114 &1336931839049662337
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -437,10 +451,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 7458078509174832313}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 74da3a20a770ff544b2ea1e11b376010, type: 3}
+  m_Script: {fileID: 11500000, guid: 1b46675b1603cb8468d4a0bbb27a28f2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  selectionObject: {fileID: 1865145471189906866}
 --- !u!1 &8292365035884547403
 GameObject:
   m_ObjectHideFlags: 0

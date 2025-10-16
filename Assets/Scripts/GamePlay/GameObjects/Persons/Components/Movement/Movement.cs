@@ -4,7 +4,7 @@ using ProjectDawn.Navigation;
 using ProjectDawn.Navigation.Hybrid;
 using UnityEngine;
 
-public class AgentController : MonoBehaviour
+public class Movement : MonoBehaviour
 {
     [SerializeField] private AgentType agentType;
     public AgentType AgentType => agentType;
@@ -18,10 +18,12 @@ public class AgentController : MonoBehaviour
 
     public void MoveTo(Movable payload)
     {
-        StopCoroutine(_curMoveCoroutine);
+        if (_curMoveCoroutine != null)
+        {
+            StopCoroutine(_curMoveCoroutine);
+        }
         StartCoroutine(MoveToPosition(payload));
     }
-
 
     private IEnumerator MoveToPosition(Movable payload)
     {
@@ -32,25 +34,17 @@ public class AgentController : MonoBehaviour
         {
             yield return null;
         }
-        EventBus.Publish(GameEvents.MovementEvents.OnMoveFinished, finishedAction);
+        finishedAction?.Invoke();
     }
-
-
-
-
-    public bool IsReachedDestination(Vector3 destination)
+    private bool IsReachedDestination(Vector3 destination)
     {
-        float SMALLEST_SQRT_DISTANCE = agent.DefaultLocomotion.StoppingDistance;
+        float SMALLEST_SQRT_DISTANCE = 1.0f;
         return Vector3.SqrMagnitude(agent.transform.position - destination) < SMALLEST_SQRT_DISTANCE;
     }
-    public float GetRemainingDistance()
-    {
-        return agent.Body.RemainingDistance;
-    }
-    public void ResetAgent()
-    {
-        //StopMoving();
 
+    public void Stop()
+    {
+        agent.Stop();
+        StopAllCoroutines();
     }
-
 }

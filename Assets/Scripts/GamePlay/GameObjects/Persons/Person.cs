@@ -25,14 +25,14 @@ public class Person : MonoBehaviour
     [SerializeField] private MeshRenderer meshRenderer;
     [SerializeField] private InfoPersonUI infoPersonUI;
     private ManagerSingleton singleton;
-    private AgentController agentController;
+    private Movement movement;
     private PersonStatus personStatus;
     private Pack pack;
     private BaseBehavior personBehavior;
 
     public PersonData PersonData => personData;
     public InfoPersonUI InfoPersonUI => infoPersonUI;
-    public AgentController AgentController => agentController;
+    public Movement Movement => movement;
     public PersonStatus PersonStatus => personStatus;
     public Pack Pack => pack;
 
@@ -47,7 +47,7 @@ public class Person : MonoBehaviour
     private void InitComponents()
     {
         singleton = EmpireInstance;
-        agentController = GetComponent<AgentController>();
+        movement = GetComponent<Movement>();
         pack = new Pack(100);
         personStatus = new();
     }
@@ -57,7 +57,7 @@ public class Person : MonoBehaviour
     }
     private void InitBehavior()
     {
-        var agentType = agentController.AgentType;
+        var agentType = movement.AgentType;
         SetBehavior(agentType);
     }
     void OnDestroy()
@@ -93,9 +93,9 @@ public class Person : MonoBehaviour
     {
         personBehavior = agentType switch
         {
-            AgentType.CUSTOMER => new CustomerBehavior(this),
-            AgentType.SERVER => new ServerBehavior(this),
-            AgentType.RECEPTIONIST => new Receptionist(this),
+            AgentType.CUSTOMER => new BaseBehavior(this),
+            AgentType.SERVER => new BaseBehavior(this),
+            AgentType.RECEPTIONIST => new BaseBehavior(this),
             _ => new BaseBehavior(this),
         };
     }
@@ -107,7 +107,7 @@ public class Person : MonoBehaviour
     // reset the person here to reuse it again
     void OnDisable()
     {
-        agentController.ResetAgent();
+        movement.Stop();
     }
     private void CreatePersonData()
     {
@@ -118,7 +118,7 @@ public class Person : MonoBehaviour
 
     private void SetRandomColor()
     {
-        var agentType = agentController.AgentType;
+        var agentType = movement.AgentType;
         Color randomColor = GetColor(agentType);
         meshRenderer.material.color = randomColor;
     }

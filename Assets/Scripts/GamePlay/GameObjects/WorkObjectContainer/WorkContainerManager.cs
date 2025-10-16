@@ -31,7 +31,6 @@ public class WorkContainerManager : MonoBehaviour
         OnWorkContainerAdded?.Invoke(workContainer);
         workContainers.Add(workContainer);
         AddWorkContainerToDict(workContainer);
-        workContainer.OnWorkContainerReady();
     }
     public void RemoveWorkContainer(WorkContainer workContainer)
     {
@@ -39,24 +38,23 @@ public class WorkContainerManager : MonoBehaviour
         OnWorkContainerRemoved?.Invoke(workContainer);
         workContainers.Remove(workContainer);
         RemoveWorkContainerFromDict(workContainer);
-        workContainer.OnWorkContainerDemolished();
     }
     public void AddWorkContainerToDict(WorkContainer workContainer)
     {
-        if (!workContainerDict.ContainsKey(workContainer.WorkContainerType))
+        if (!workContainerDict.ContainsKey(workContainer.Type))
         {
-            workContainerDict[workContainer.WorkContainerType] = new List<WorkContainer>();
+            workContainerDict[workContainer.Type] = new List<WorkContainer>();
         }
-        workContainerDict[workContainer.WorkContainerType].Add(workContainer);
+        workContainerDict[workContainer.Type].Add(workContainer);
     }
     public void RemoveWorkContainerFromDict(WorkContainer workContainer)
     {
-        if (!workContainerDict.ContainsKey(workContainer.WorkContainerType)) return;
-        var workContainerList = workContainerDict[workContainer.WorkContainerType];
+        if (!workContainerDict.ContainsKey(workContainer.Type)) return;
+        var workContainerList = workContainerDict[workContainer.Type];
         workContainerList.Remove(workContainer);
         if (workContainerList.Count == 0)
         {
-            workContainerDict.Remove(workContainer.WorkContainerType);
+            workContainerDict.Remove(workContainer.Type);
         }
     }
 }

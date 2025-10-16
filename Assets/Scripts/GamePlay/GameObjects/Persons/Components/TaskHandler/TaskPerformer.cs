@@ -10,8 +10,9 @@ public class TaskPerformer
 
     private List<StepPerformer> stepPerformers;
     private int currentStepIndex = 0;
-    public StepPerformer CurStep => stepPerformers[currentStepIndex];
-    public void MoveToNextStep()
+    public StepPerformer CurStep => currentStepIndex < stepPerformers.Count ?
+                                    stepPerformers[currentStepIndex] : null;
+    public void MoveNextStep()
     {
         currentStepIndex++;
     }

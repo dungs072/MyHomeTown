@@ -5,14 +5,13 @@ using static ManagerSingleton;
 public class TaskHandler : MonoBehaviour
 {
     [SerializeField] private List<TaskName> taskNames = new();
-
-    public List<TaskName> TaskNames => taskNames;
+    [SerializeField] private bool isAutoDoTaskAgain = false;
     private TaskPerformer taskPerformer;
     private int currentTaskIndex = 0;
     private Person person;
 
     public TaskPerformer CurrentTaskPerformer => taskPerformer;
-
+    public StepPerformer CurrentStepPerformer => taskPerformer?.CurStep;
     public bool IsFree()
     {
         return person.PersonStatus.CurrentTaskPerformer == null;
@@ -24,12 +23,17 @@ public class TaskHandler : MonoBehaviour
 
     private void OnEnable()
     {
-        SetInitTasks();
+        if (taskNames.Count == 0) return;
+        InitNewTask();
     }
 
-    private void SetInitTasks()
+    private void InitNewTask()
     {
-        // temporary code to set initial tasks
+        if (currentTaskIndex == -1)
+        {
+            taskPerformer = null;
+            return;
+        }
         var taskManager = EmpireInstance.TaskManager;
         var task = taskManager.TasksDict[taskNames[currentTaskIndex]];
         if (task == null) return;
@@ -57,23 +61,21 @@ public class TaskHandler : MonoBehaviour
 
     public void MoveNextTask()
     {
+
+        //? just for test
         currentTaskIndex++;
         if (currentTaskIndex >= taskNames.Count)
         {
-            currentTaskIndex = 0;
-            person.PersonStatus.CurrentTaskPerformer = null;
+            if (isAutoDoTaskAgain)
+            {
+                currentTaskIndex = 0;
+            }
+            else
+            {
+                currentTaskIndex = -1;
+            }
         }
-        else
-        {
-            CreateNewTask();
-        }
-    }
-    public void CreateNewTask()
-    {
-        person.PersonStatus.CurrentTaskPerformer = new TaskPerformer();
-        var taskManager = EmpireInstance.TaskManager;
-        var task = taskManager.TasksDict[taskNames[currentTaskIndex]];
-        person.PersonStatus.CurrentTaskPerformer.SetTask(task);
+        InitNewTask();
     }
 
 
